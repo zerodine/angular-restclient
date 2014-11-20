@@ -1,7 +1,7 @@
 (function() {
     angular
         .module('restclient', [])
-        .provider('restclient', restclientProvider)
+        .provider('api', restclientProvider)
         .factory('Model', Model);
 
     function restclientProvider() {
