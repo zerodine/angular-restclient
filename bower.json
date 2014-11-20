@@ -1,0 +1,29 @@
+{
+  "name": "angular-restclient",
+  "version": "0.1",
+  "homepage": "https://github.com/zerodine/angular-restclient",
+  "authors": [
+    "Philipp Spinnler <pspinnler@zerodine.com>",
+    "Thomas Spycher <tspycher@zerodine.com>"
+  ],
+  "description": "An angularJS rest client with ORM",
+  "main": "./angular-restclient.js",
+  "keywords": [
+    "angular",
+    "rest",
+    "api",
+    "client",
+    "orm"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-resource": "1.2.x"
+  }
+}
