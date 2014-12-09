@@ -2,7 +2,8 @@
     angular
         .module('restclient', [])
         .provider('api', restclientProvider)
-        .factory('Model', Model);
+        .factory('Model', Model)
+        .factory('Validator', Validator);
 
     function restclientProvider() {
         this.endpoints = {};
@@ -69,7 +70,7 @@
         };
 
         Endpoint.prototype.update = function (params, model, success, error) {
-            model.beforeSave();
+            model._clean();
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to update is");
             this.log.debug(model);
@@ -87,7 +88,7 @@
             var success = arguments[2];
             var error = arguments[3];
 
-            if (typeof arguments[3] === 'undefined') {
+            if (angular.isUndefined(arguments[3])) {
                 model = arguments[0];
                 success = arguments[1];
                 error = arguments[2];
@@ -96,7 +97,7 @@
             console.log(params);
             console.log(model);
 
-            model.beforeSave();
+            model._clean();
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to save is");
             this.log.debug(model);
@@ -137,7 +138,7 @@
         }];
     }
 
-    function Model($log, $injector) {
+    function Model($log, $injector, Validator) {
         function Model() {}
 
         Model.prototype.afterLoad = function() {
@@ -148,17 +149,51 @@
             return true;
         };
 
-        Model.prototype.objectMapper = function(object) {
-            if (typeof object === 'undefined') return false;
+        Model.prototype._clean = function() {
+            for (var property in this) {
+                if (!this.hasOwnProperty(property)) continue;
 
+                if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
+                    if (!this.__annotation[property].save) delete this[property];
+                    if (this.__annotation[property].save == 'reference') this.referenceOnly(this[property]);
+                }
+            }
+            delete this.__annotation;
+            this.beforeSave();
+        };
+
+        Model.prototype.init = function(object) {
             this.__foreignData = object;
+            this.__annotation = {};
 
             $log.debug("Model (" + this.constructor.name + "): Original response object is");
             $log.debug(this.__foreignData);
 
             for (var property in this) {
-                if(this.hasOwnProperty(property) && object.hasOwnProperty(property)){
-                    this[property] = object[property];
+                // If property is a method, then continue
+                if (!this.hasOwnProperty(property) || ['__foreignData', '__annotation'].indexOf(property) > -1) continue;
+
+                // If annotations are given, set them
+                if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this.__annotation[property] = this[property];
+
+                // If no object is given, stop here
+                if (angular.isUndefined(object)) continue;
+
+                if(!object.hasOwnProperty(property)) {
+                    this[property] = "";
+                    continue;
+                }
+
+                this[property] = object[property];
+
+                if (angular.isDefined(this.__annotation[property]) && this.__annotation[property].type == 'relation') {
+                    var relation = this.__annotation[property].relation;
+
+                    if (angular.isUndefined(relation.foreignField)) relation.foreignField = property;
+                    if (angular.isUndefined(this.__foreignData[relation.foreignField])) continue;
+
+                    if (relation.type == 'many') this.mapArray(property, this.__foreignData[relation.foreignField], relation.model);
+                    if (relation.type == 'one') this.mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
                 }
             }
 
@@ -169,7 +204,7 @@
         Model.prototype.mapArray = function(attribute, apiAttributes, modelName) {
             var self = this;
 
-            if (typeof apiAttributes === 'undefined' || apiAttributes == null || apiAttributes.length == 0) {
+            if (angular.isUndefined(apiAttributes) || apiAttributes == null || apiAttributes.length == 0) {
                 self[attribute] = [];
                 return;
             }
@@ -183,7 +218,7 @@
         };
 
         Model.prototype.mapProperty = function(attribute, apiAttribute, modelName) {
-            if (typeof apiAttribute === 'undefined') {
+            if (angular.isUndefined(apiAttribute)) {
                 this[attribute] = "";
                 return;
             }
@@ -214,19 +249,54 @@
         Model.prototype.callBeforeSave = function(models) {
             if (angular.isArray(models)) {
                 angular.forEach(models, function(model) {
-                    model.beforeSave();
+                    model._clean();
                 });
             } else {
-                models.beforeSave();
+                models._clean();
             }
         };
 
-        Model.prototype.getNewModel = function(model) {
-            var Model = $injector.get(model);
-            return new Model();
+        Model.prototype.isValid = function() {
+            for (var property in this) {
+                // If property is a method, then continue
+                if (!this.hasOwnProperty(property)) continue;
+
+                if (angular.isDefined(this.__annotation[property])) {
+                    if (!Validator[this.__annotation[property].type](this[property])) return false;
+                }
+            }
+
+            return true;
         };
 
         return Model;
     }
-    Model.$inject = ["$log", "$injector"];
+    Model.$inject = ["$log", "$injector", "Validator"];
+
+    function Validator() {
+        return {
+            string: function(string) {
+                return angular.isString(string);
+            },
+            int: function(int) {
+                return angular.isNumber(int);
+            },
+            email: function(email) {
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(email);
+            },
+            relation: function(relation) {
+                return true;
+            },
+            boolean: function(boolean) {
+                return true;
+            },
+            date: function(date) {
+                return angular.isDate(date);
+            },
+            float: function(float) {
+                return angular.isNumber(float);
+            }
+        }
+    }
 })();
