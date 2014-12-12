@@ -251,7 +251,9 @@
                 angular.forEach(models, function(model) {
                     model._clean();
                 });
-            } else {
+            }
+
+            if (angular.isObject(models)) {
                 models._clean();
             }
         };
