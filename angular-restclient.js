@@ -94,9 +94,6 @@
                 error = arguments[2];
             }
 
-            console.log(params);
-            console.log(model);
-
             model._clean();
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to save is");
@@ -159,6 +156,7 @@
                 }
             }
             delete this.__annotation;
+
             this.beforeSave();
         };
 
@@ -179,8 +177,8 @@
                 // If no object is given, stop here
                 if (angular.isUndefined(object)) continue;
 
-                if(!object.hasOwnProperty(property)) {
-                    this[property] = "";
+                if(!angular.isObject(object) || !object.hasOwnProperty(property)) {
+                    this[property] = null;
                     continue;
                 }
 
@@ -219,7 +217,7 @@
 
         Model.prototype.mapProperty = function(attribute, apiAttribute, modelName) {
             if (angular.isUndefined(apiAttribute)) {
-                this[attribute] = "";
+                this[attribute] = null;
                 return;
             }
 
@@ -253,7 +251,7 @@
                 });
             }
 
-            if (angular.isObject(models)) {
+            if (angular.isObject(models) && !angular.isArray(models)) {
                 models._clean();
             }
         };
