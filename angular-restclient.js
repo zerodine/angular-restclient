@@ -70,6 +70,7 @@
         };
 
         Endpoint.prototype.update = function (params, model, success, error) {
+            model.__method = 'update';
             model._clean();
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to update is");
@@ -94,6 +95,7 @@
                 error = arguments[2];
             }
 
+            model.__method = 'save';
             model._clean();
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to save is");
@@ -146,20 +148,6 @@
             return true;
         };
 
-        Model.prototype._clean = function() {
-            for (var property in this) {
-                if (!this.hasOwnProperty(property)) continue;
-
-                if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
-                    if (!this.__annotation[property].save) delete this[property];
-                    if (this.__annotation[property].save == 'reference') this.referenceOnly(this[property]);
-                }
-            }
-            delete this.__annotation;
-
-            this.beforeSave();
-        };
-
         Model.prototype.init = function(object) {
             this.__foreignData = object;
             this.__annotation = {};
@@ -190,8 +178,8 @@
                     if (angular.isUndefined(relation.foreignField)) relation.foreignField = property;
                     if (angular.isUndefined(this.__foreignData[relation.foreignField])) continue;
 
-                    if (relation.type == 'many') this.mapArray(property, this.__foreignData[relation.foreignField], relation.model);
-                    if (relation.type == 'one') this.mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
+                    if (relation.type == 'many') this._mapArray(property, this.__foreignData[relation.foreignField], relation.model);
+                    if (relation.type == 'one') this._mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
                 }
             }
 
@@ -199,7 +187,35 @@
             delete this.__foreignData;
         };
 
-        Model.prototype.mapArray = function(attribute, apiAttributes, modelName) {
+        Model.prototype.callBeforeSave = function(models) {
+            if (angular.isArray(models)) {
+                angular.forEach(models, function(model) {
+                    model._clean();
+                });
+            }
+
+            if (angular.isObject(models) && !angular.isArray(models)) {
+                models._clean();
+            }
+        };
+
+        Model.prototype._clean = function() {
+            this.beforeSave();
+
+            for (var property in this) {
+                if (!this.hasOwnProperty(property)) continue;
+
+                if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
+                    if (!this.__annotation[property].save) delete this[property];
+                    if (this.__annotation[property].save == 'reference') this._referenceOnly(this[property]);
+                }
+            }
+
+            delete this.__method;
+            delete this.__annotation;
+        };
+
+        Model.prototype._mapArray = function(attribute, apiAttributes, modelName) {
             var self = this;
 
             if (angular.isUndefined(apiAttributes) || apiAttributes == null || apiAttributes.length == 0) {
@@ -215,7 +231,7 @@
             });
         };
 
-        Model.prototype.mapProperty = function(attribute, apiAttribute, modelName) {
+        Model.prototype._mapProperty = function(attribute, apiAttribute, modelName) {
             if (angular.isUndefined(apiAttribute)) {
                 this[attribute] = null;
                 return;
@@ -228,7 +244,7 @@
 
         Model.prototype.__reference = 'id';
 
-        Model.prototype.referenceOnly = function(models) {
+        Model.prototype._referenceOnly = function(models) {
             if (angular.isArray(models)) {
                 angular.forEach(models, function(model) {
                     model.referenceOnly(model);
@@ -241,18 +257,6 @@
                         }
                     }
                 }
-            }
-        };
-
-        Model.prototype.callBeforeSave = function(models) {
-            if (angular.isArray(models)) {
-                angular.forEach(models, function(model) {
-                    model._clean();
-                });
-            }
-
-            if (angular.isObject(models) && !angular.isArray(models)) {
-                models._clean();
             }
         };
 
