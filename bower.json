@@ -1,6 +1,6 @@
 {
   "name": "angular-restclient",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "homepage": "https://github.com/zerodine/angular-restclient",
   "authors": [
     "Philipp Spinnler <pspinnler@zerodine.com>",
@@ -21,7 +21,9 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "src",
+    "doc"
   ],
   "dependencies": {
     "angular-resource": ">1.2.0"
