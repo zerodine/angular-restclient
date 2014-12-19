@@ -25,7 +25,7 @@ app.config(function(apiProvider) {
 });
 ```
 
-##Model Example `User.js`
+##Model example
 ```js
 app.factory('User', function(Model) {
     function User(object) {
@@ -66,7 +66,7 @@ app.factory('User', function(Model) {
 });
 ```
 
-##Make A Call
+##Make a call
 ```js
 app.controller('Ctrl', function(api) {
     api.users.get().then(function(data) {
@@ -74,3 +74,6 @@ app.controller('Ctrl', function(api) {
     });
 });
 ```
+
+##More information
+Read the [API Documentation](blob/master/doc/md/angular-restclient.md)
