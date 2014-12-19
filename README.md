@@ -76,4 +76,4 @@ app.controller('Ctrl', function(api) {
 ```
 
 ##More information
-Read the [API Documentation](blob/master/doc/md/angular-restclient.md)
+Read the [API Documentation](doc/md/angular-restclient.md)
