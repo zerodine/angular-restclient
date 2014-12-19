@@ -27,25 +27,7 @@
          *
          * @constructor EndpointConfig
          */
-        function EndpointConfig() {
-            /**
-             * Route to the actual endpoint
-             * @type {string}
-             */
-            this.route = null;
-
-            /**
-             * The model name which is used to transform the response to it
-             * @type {string}
-             */
-            this.model = null;
-
-            /**
-             * If the response is wraped, then the container gives the name of the wraping object
-             * @type {string}
-             */
-            this.container = '';
-        }
+        function EndpointConfig() {}
 
         /**
          * Set the route to this endpoint
@@ -348,6 +330,7 @@
          */
         Model.prototype.init = function(object) {
             this.__foreignData = object;
+            this.__annotation = {};
 
             $log.debug("Model (" + this.constructor.name + "): Original response object is");
             $log.debug(this.__foreignData);
@@ -477,7 +460,7 @@
             // Load the model
             var model = $injector.get(modelName);
 
-            self[attribute] = [];
+            self[property] = [];
 
             // Map the model
             angular.forEach(apiProperty, function(value) {

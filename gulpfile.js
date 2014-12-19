@@ -39,3 +39,7 @@ gulp.task("doc-md", function(){
 gulp.task('doc', function() {
     gulp.start('doc-html', 'doc-md');
 });
+
+gulp.task('build', function() {
+    gulp.start('js', 'doc')
+});
