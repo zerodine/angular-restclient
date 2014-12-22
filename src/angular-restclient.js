@@ -364,6 +364,12 @@
                     // If the foreign field can not be found, continue
                     if (angular.isUndefined(this.__foreignData[relation.foreignField])) continue;
 
+                    // If the foreign field is null, set the property to null
+                    if (this.__foreignData[relation.foreignField] === null) {
+                        this[property] = null;
+                        continue;
+                    }
+
                     // Check which relation typ is defined and map the data
                     if (relation.type == 'many') this._mapArray(property, this.__foreignData[relation.foreignField], relation.model);
                     if (relation.type == 'one') this._mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
