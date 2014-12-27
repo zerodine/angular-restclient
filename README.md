@@ -56,7 +56,7 @@ app.factory('User', function(Model) {
             save: false
         };
         
-        // Map the data received by api
+        // Map the given object
         this.init(object);
     }
 
