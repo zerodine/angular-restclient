@@ -202,7 +202,7 @@ Maps an array of models to an property
 **Access**: private  
 <a name="Model#_referenceOnly"></a>
 ##model._referenceOnly(models)
-Maps an array of models to an property
+Returns only the reference of a related model
 
 **Params**
 

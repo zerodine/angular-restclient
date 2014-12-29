@@ -499,7 +499,7 @@
         };
 
         /**
-         * Maps an array of models to an property
+         * Returns only the reference of a related model
          *
          * @private
          * @param {Model/array} models
