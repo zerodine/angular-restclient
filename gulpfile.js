@@ -11,9 +11,9 @@ var stripDebug = require('gulp-strip-debug');
 gulp.task('js', function () {
     gulp.src('./src/*.js')
         .pipe(concat('angular-restclient.js'))
+        .pipe(ngannotate())
         .pipe(gulp.dest('./dist'))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(ngannotate())
         .pipe(stripDebug())
         .pipe(uglify())
         .pipe(gulp.dest('./dist'))

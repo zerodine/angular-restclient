@@ -9,7 +9,6 @@
   * [endpointConfig.container(container)](#EndpointConfig#container)
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector)](#new_Endpoint)
-  * [Endpoint.$inject](#Endpoint.$inject)
   * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.update(params, model, success, error)](#Endpoint#update)
   * [endpoint.save(params, model, success, error)](#Endpoint#save)
@@ -72,7 +71,6 @@ Set the container that wraps the response. Default is null.
 
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector)](#new_Endpoint)
-  * [Endpoint.$inject](#Endpoint.$inject)
   * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.update(params, model, success, error)](#Endpoint#update)
   * [endpoint.save(params, model, success, error)](#Endpoint#save)
@@ -89,10 +87,6 @@ Class representing an Endpoint with all the functionality for receiving, saving 
 - $resource `$resource` - The Angular $resource factory  
 - $log `$log` - The Angular $log factory  
 - $injector `$injector` - The Angular $injector factory  
-
-<a name="Endpoint.$inject"></a>
-##Endpoint.$inject
-Let the angularjs injector inject all needed arguments
 
 <a name="Endpoint#get"></a>
 ##endpoint.get(params)

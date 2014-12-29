@@ -75,6 +75,7 @@
          * @param {$log} $log The Angular $log factory
          * @param {$injector} $injector The Angular $injector factory
          * @constructor Endpoint
+         * @ngInject
          */
         function Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector) {
             /**
@@ -107,13 +108,6 @@
              */
             this.injector = $injector;
         }
-
-        /**
-         * Let the angularjs injector inject all needed arguments
-         *
-         * @memberof Endpoint
-         */
-        Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "$resource", "$log", "$injector"];
 
         /**
          * Call an endpoint and map the response to one or more models given in the endpoint config
@@ -249,8 +243,9 @@
         /**
          * The factory method
          * @param {$injector} $injector
+         * @ngInject
          */
-        this.$get = ['$injector', function ($injector) {
+        this.$get = function ($injector) {
             var self = this;
             var api = {};
 
@@ -269,12 +264,13 @@
             });
 
             return api;
-        }];
+        };
     }
 
     /**
      * The factory to get the abstract model
      * @constructor
+     * @ngInject
      */
     function ModelFactory($log, $injector, Validator) {
 
@@ -577,11 +573,6 @@
 
         return Model;
     }
-
-    /**
-     * Let the angularjs injector inject all needed arguments
-     */
-    ModelFactory.$inject = ["$log", "$injector", "Validator"];
 
     function ValidatorFactory() {
         return {
