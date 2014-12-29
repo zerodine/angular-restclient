@@ -385,6 +385,7 @@
          *
          * @param {Model/array} models Can ether be a model or an array of models
          * @memberof Model
+         * @deprecated The beforeSave method is called automatically when a save call is performed
          */
         Model.prototype.callBeforeSave = function(models) {
 
@@ -433,10 +434,39 @@
                 if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
 
                     // Check if property should be deleted before model is saved
-                    if (!this.__annotation[property].save) delete this[property];
+                    if (!this.__annotation[property].save) {
+                        delete this[property];
+                        continue;
+                    }
 
-                    // Ckeck if property should only be a reference to another model
-                    if (this.__annotation[property].save == 'reference') this._referenceOnly(this[property]);
+                    // Check if property should only be a reference to another model
+                    if (this.__annotation[property].save == 'reference') {
+                        this._referenceOnly(this[property]);
+                        continue;
+                    }
+                }
+
+                if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].type)) {
+                    // If property is a relation then call the _clean method of related models
+                    if (this.__annotation[property].type == 'relation' && this[property] !== null) {
+
+                        if (!angular.isDefined(this.__annotation[property].relation.type)) continue;
+
+                        if (this.__annotation[property].relation.type == 'one') {
+
+                            // Call the _clean method on the related model
+                            this[property]._clean();
+                            continue;
+                        }
+
+                        if (this.__annotation[property].relation.type == 'many') {
+                            angular.forEach(this[property], function(model) {
+
+                                // Call the _clean method on the related model
+                                model._clean();
+                            });
+                        }
+                    }
                 }
             }
 

@@ -18,7 +18,7 @@
   * [model.afterLoad()](#Model#afterLoad)
   * [model.beforeSave()](#Model#beforeSave)
   * [model.init(object)](#Model#init)
-  * [model.callBeforeSave(models)](#Model#callBeforeSave)
+  * [~~model.callBeforeSave(models)~~](#Model#callBeforeSave)
   * [model._clean()](#Model#_clean)
   * [model._mapArray(property, apiProperty, modelName)](#Model#_mapArray)
   * [model._mapProperty(property, apiProperty, modelName)](#Model#_mapProperty)
@@ -134,7 +134,7 @@ Save an object
   * [model.afterLoad()](#Model#afterLoad)
   * [model.beforeSave()](#Model#beforeSave)
   * [model.init(object)](#Model#init)
-  * [model.callBeforeSave(models)](#Model#callBeforeSave)
+  * [~~model.callBeforeSave(models)~~](#Model#callBeforeSave)
   * [model._clean()](#Model#_clean)
   * [model._mapArray(property, apiProperty, modelName)](#Model#_mapArray)
   * [model._mapProperty(property, apiProperty, modelName)](#Model#_mapProperty)
@@ -166,13 +166,14 @@ Every model must call this method in it's constructor. It in charge of mapping t
 - object `object` - The given object. This can come ether from the backend or created manualy  
 
 <a name="Model#callBeforeSave"></a>
-##model.callBeforeSave(models)
+##~~model.callBeforeSave(models)~~
 This method can be used to call the beforeSave method on a related model.
 
 **Params**
 
 - models `Model/array` - Can ether be a model or an array of models  
 
+***Deprecated***  
 <a name="Model#_clean"></a>
 ##model._clean()
 This method gets called bei the api before a model is sent to the backend.
