@@ -8,8 +8,9 @@
   * [endpointConfig.model(model)](#EndpointConfig#model)
   * [endpointConfig.container(container)](#EndpointConfig#container)
 * [class: Endpoint](#Endpoint)
-  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector)](#new_Endpoint)
+  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)](#new_Endpoint)
   * [endpoint.get(params)](#Endpoint#get)
+  * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model, success, error)](#Endpoint#update)
   * [endpoint.save(params, model, success, error)](#Endpoint#save)
 * [class: Model](#Model)
@@ -70,13 +71,14 @@ Set the container that wraps the response. Default is null.
 **Members**
 
 * [class: Endpoint](#Endpoint)
-  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector)](#new_Endpoint)
+  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)](#new_Endpoint)
   * [endpoint.get(params)](#Endpoint#get)
+  * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model, success, error)](#Endpoint#update)
   * [endpoint.save(params, model, success, error)](#Endpoint#save)
 
 <a name="new_Endpoint"></a>
-##new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector)
+##new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)
 Class representing an Endpoint with all the functionality for receiving, saving and updating data from the backend
 
 **Params**
@@ -87,6 +89,7 @@ Class representing an Endpoint with all the functionality for receiving, saving 
 - $resource `$resource` - The Angular $resource factory  
 - $log `$log` - The Angular $log factory  
 - $injector `$injector` - The Angular $injector factory  
+- $q `$q` - The Angular $q factory  
 
 <a name="Endpoint#get"></a>
 ##endpoint.get(params)
@@ -97,6 +100,15 @@ Call an endpoint and map the response to one or more models given in the endpoin
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 
 **Returns**: [Model](#Model) - Returns one or an array of mapped models  
+<a name="Endpoint#head"></a>
+##endpoint.head(params)
+Call an endpoint with the HEAD method
+
+**Params**
+
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
+
+**Returns**: `object` - Returns an object with the requested headers  
 <a name="Endpoint#update"></a>
 ##endpoint.update(params, model, success, error)
 Update an object

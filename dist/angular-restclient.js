@@ -23,6 +23,12 @@
         this.baseRoute = "";
 
         /**
+         * Prefix of a header in a HEAD response
+         * @type {string}
+         */
+        this.headResponseHeaderPrefix = "";
+
+        /**
          * This class represents one configuration for an endpoint
          *
          * @constructor EndpointConfig
@@ -74,15 +80,22 @@
          * @param {$resource} $resource The Angular $resource factory
          * @param {$log} $log The Angular $log factory
          * @param {$injector} $injector The Angular $injector factory
+         * @param {$q} $q The Angular $q factory
          * @constructor Endpoint
          * @ngInject
          */
-        function Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector) {
+        function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
             /**
              * The name of the endpoint
              * @type {string}
              */
             this.endpointName = endpoint;
+
+            /**
+             * Prefix of a header in a HEAD response
+             * @type {string}
+             */
+            this.headResponseHeaderPrefix = headResponseHeaderPrefix;
 
             /**
              * The EndpointConfig object defined for this endpoint
@@ -94,7 +107,7 @@
              * An instance if the $resource factory from the angularjs library
              * @type {$resource}
              */
-            this.resource = $resource(baseRoute + this.endpointConfig.route, {}, {update: {method: 'PUT'}});
+            this.resource = $resource(baseRoute + this.endpointConfig.route, {}, {update: {method: 'PUT'}, head: {method: 'HEAD'}});
 
             /**
              * An instance if the $log factory from the angularjs library
@@ -107,8 +120,14 @@
              * @type {$injector}
              */
             this.injector = $injector;
+
+            /**
+             * An instance if the $q factory from the angularjs library
+             * @type {$q}
+             */
+            this.q = $q;
         }
-        Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "$resource", "$log", "$injector"];
+        Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
 
         /**
          * Call an endpoint and map the response to one or more models given in the endpoint config
@@ -155,6 +174,50 @@
 
                 return models;
             });
+        };
+
+        /**
+         * Call an endpoint with the HEAD method
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @return {object} Returns an object with the requested headers
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.head = function(params) {
+            var self = this;
+
+            self.log.debug("apiFactory (" + self.endpointName + "): (HEAD) Endpoint called");
+
+            var defer = this.q.defer();
+
+            // Call the given endpoint and get the promise
+            this.resource.head(params, function(data, headersFunc) {
+                var headers = headersFunc();
+
+                // Check if a prefix is given
+                if (angular.isDefined(self.headResponseHeaderPrefix) && self.headResponseHeaderPrefix !== '*') {
+
+                    for (var header in headers) {
+
+                        // Delete all headers without the given prefix
+                        if (header.toLowerCase().indexOf(self.headResponseHeaderPrefix.toLowerCase()) != 0) {
+                            delete headers[header];
+                            continue;
+                        }
+
+                        // Make a alias without the prefix
+                        headers[header.substr(self.headResponseHeaderPrefix.length, header.length)] = headers[header];
+
+                        // Delete the orignial headers
+                        //delete headers[header];
+                    }
+                }
+
+                // Resolve the promise
+                defer.resolve(headers);
+            });
+
+            return defer.promise;
         };
 
         /**
@@ -232,6 +295,14 @@
         };
 
         /**
+         * Set the head response header prefix
+         * @param {string} headResponseHeaderPrefix
+         */
+        this.headResponseHeaderPrefix = function(headResponseHeaderPrefix) {
+            this.headResponseHeaderPrefix = headResponseHeaderPrefix;
+        };
+
+        /**
          * Add an endpoint to the endpoint array
          * @param {Endpoint} endpoint
          */
@@ -256,11 +327,15 @@
                 // Check if an container is given and if not, set it to the name of the endpoint
                 if (angular.isFunction(endpointConfig.container)) endpointConfig.container = name;
 
+                // Check if headResponseHeaderPrefix is set
+                if (angular.isFunction(self.headResponseHeaderPrefix)) delete self.headResponseHeaderPrefix;
+
                 // Get an instance of the endpoint and add it to the api object
                 api[name] = $injector.instantiate(Endpoint, {
                     endpoint: name,
                     endpointConfig: endpointConfig,
-                    baseRoute: self.baseRoute
+                    baseRoute: self.baseRoute,
+                    headResponseHeaderPrefix: self.headResponseHeaderPrefix
                 });
             });
 
