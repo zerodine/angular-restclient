@@ -28,6 +28,8 @@
          */
         this.headResponseHeaderPrefix = "";
 
+        this.pagination = false;
+
         /**
          * This class represents one configuration for an endpoint
          *
@@ -84,7 +86,7 @@
          * @constructor Endpoint
          * @ngInject
          */
-        function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
+        function Endpoint(endpoint, endpointConfig, pagination, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
             /**
              * The name of the endpoint
              * @type {string}
@@ -102,6 +104,8 @@
              * @type {EndpointConfig}
              */
             this.endpointConfig = endpointConfig;
+
+            this.pagination = pagination;
 
             /**
              * An instance if the $resource factory from the angularjs library
@@ -127,7 +131,7 @@
              */
             this.q = $q;
         }
-        Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
+        Endpoint.$inject = ["endpoint", "endpointConfig", "pagination", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
 
         /**
          * Call an endpoint and map the response to one or more models given in the endpoint config
@@ -150,29 +154,41 @@
 
             // Call the given endpoint and get the promise
             var resource = this.resource.get(params).$promise;
-            return resource.then(function (result) {
+            return resource.then(function(data) {
 
                 // Check if response is an array
-                if (angular.isArray(result[container])) {
+                if (angular.isArray(data[container])) {
                     self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
                     var models = [];
 
-                    // Iterate thru every object in the response and mapp it to a model
-                    angular.forEach(result[container], function (value) {
+                    // Iterate thru every object in the response and map it to a model
+                    angular.forEach(data[container], function (value) {
                         models.push(new model(value));
                     });
+
+                    if (self.pagination) {
+                        var result = {
+                            count: data.count,
+                            offset: data.offset,
+                            limit: data.limit,
+                            data: models
+                        };
+                    } else {
+                        var result = models;
+                    }
+
                 } else {
                     self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
 
                     // If only one object is given, mapp it to the model
-                    var models = new model(result);
+                    var result = new model(data);
                 }
 
                 self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is");
-                self.log.debug(models);
+                self.log.debug(result);
 
-                return models;
+                return result;
             });
         };
 
@@ -295,6 +311,14 @@
         };
 
         /**
+         * Set the base route
+         * @param {string} baseRoute
+         */
+        this.enablePagination = function(pagination) {
+            this.pagination = pagination;
+        };
+
+        /**
          * Set the head response header prefix
          * @param {string} headResponseHeaderPrefix
          */
@@ -334,6 +358,7 @@
                 api[name] = $injector.instantiate(Endpoint, {
                     endpoint: name,
                     endpointConfig: endpointConfig,
+                    pagination: self.pagination,
                     baseRoute: self.baseRoute,
                     headResponseHeaderPrefix: self.headResponseHeaderPrefix
                 });
