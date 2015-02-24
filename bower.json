@@ -1,13 +1,13 @@
 {
   "name": "angular-restclient",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "homepage": "https://github.com/zerodine/angular-restclient",
   "authors": [
     "Philipp Spinnler <pspinnler@zerodine.com>",
     "Thomas Spycher <tspycher@zerodine.com>"
   ],
   "description": "An angularJS rest client with ORM",
-  "main": "./angular-restclient.js",
+  "main": "./dist/angular-restclient.js",
   "keywords": [
     "angular",
     "rest",

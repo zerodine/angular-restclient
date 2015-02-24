@@ -142,7 +142,18 @@
          */
         Endpoint.prototype.get = function (params) {
             var self = this;
+            var defer = self.q.defer();
 
+
+            this.resource.get(params, function(data) {
+                defer.resolve(self.mapResult(data));
+            });
+
+            return defer.promise;
+        };
+
+        Endpoint.prototype.mapResult = function(data) {
+            var self = this;
             self.log.debug("apiFactory (" + self.endpointName + "): Endpoint called");
 
             // Set the name of the wrapping container
@@ -152,44 +163,39 @@
 
             self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
 
-            // Call the given endpoint and get the promise
-            var resource = this.resource.get(params).$promise;
-            return resource.then(function(data) {
+            // Check if response is an array
+            if (angular.isArray(data[container])) {
+                self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
-                // Check if response is an array
-                if (angular.isArray(data[container])) {
-                    self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
+                var models = [];
 
-                    var models = [];
+                // Iterate thru every object in the response and map it to a model
+                angular.forEach(data[container], function (value) {
+                    models.push(new model(value));
+                });
 
-                    // Iterate thru every object in the response and map it to a model
-                    angular.forEach(data[container], function (value) {
-                        models.push(new model(value));
-                    });
-
-                    if (self.pagination) {
-                        var result = {
-                            count: data.count,
-                            offset: data.offset,
-                            limit: data.limit,
-                            data: models
-                        };
-                    } else {
-                        var result = models;
-                    }
-
+                if (self.pagination) {
+                    var result = {
+                        count: data.count,
+                        offset: data.offset,
+                        limit: data.limit,
+                        data: models
+                    };
                 } else {
-                    self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
-
-                    // If only one object is given, mapp it to the model
-                    var result = new model(data);
+                    var result = models;
                 }
 
-                self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is");
-                self.log.debug(result);
+            } else {
+                self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
 
-                return result;
-            });
+                // If only one object is given, map it to the model
+                var result = new model(data);
+            }
+
+            self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is");
+            self.log.debug(result);
+
+            return result;
         };
 
         /**
@@ -245,7 +251,8 @@
          * @param {function} error Callback if the update did not work
          * @memberof Endpoint
          */
-        Endpoint.prototype.update = function (params, model, success, error) {
+        Endpoint.prototype.update = function (params, model) {
+            var self = this;
             // Set the action that is performed. This can be checked in the model.
             model.__method = 'update';
 
@@ -255,12 +262,16 @@
             this.log.debug("apiFactory (" + this.endpointName + "): Model to update is");
             this.log.debug(model);
 
+            var defer = this.q.defer();
+
             // Use angularjs $resource to perform the update
-            this.resource.update(params, model, function () {
-                success();
-            }, function (givenError) {
-                error(givenError);
+            this.resource.update(params, model, function (data) {
+                defer.resolve(self.mapResult(data));
+            }, function (error) {
+                defer.reject(error)
             });
+
+            return defer.promise;
         };
 
         /**
