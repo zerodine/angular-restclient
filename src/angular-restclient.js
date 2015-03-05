@@ -1,6 +1,6 @@
 (function() {
     angular
-        .module('restclient', [])
+        .module('restclient', ['ngResource'])
         .provider('api', RestClientProvider)
         .factory('Model', ModelFactory)
         .factory('Validator', ValidatorFactory);
