@@ -7,8 +7,9 @@ var concat = require("gulp-concat");
 var uglify = require('gulp-uglify');
 var ngannotate = require('gulp-ng-annotate');
 var stripDebug = require('gulp-strip-debug');
+var karma = require('gulp-karma');
 
-gulp.task('js', function () {
+gulp.task('js', ['test'], function () {
     gulp.src('./src/*.js')
         .pipe(concat('angular-restclient.js'))
         .pipe(ngannotate())
@@ -36,10 +37,29 @@ gulp.task("doc-md", function(){
         .pipe(gulp.dest("./doc/md"));
 });
 
-gulp.task('doc', function() {
+gulp.task('doc', ['test'], function() {
     gulp.start('doc-html', 'doc-md');
 });
 
+gulp.task('test', function() {
+    return gulp.src([
+        'node_modules/angular/angular.js',
+        'node_modules/angular-mocks/angular-mocks.js',
+        'node_modules/angular-resource/angular-resource.js',
+        'src/angular-restclient.js',
+
+        'test/TestModel.js',
+        'test/**/*Spec.js'
+    ])
+        .pipe(karma({
+            configFile: 'karma.conf.js',
+            action: 'run'
+        }))
+        .on('error', function(err) {
+            throw err;
+        });
+});
+
 gulp.task('build', function() {
-    gulp.start('js', 'doc')
+    gulp.start('test', 'js', 'doc')
 });
