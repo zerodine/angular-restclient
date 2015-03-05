@@ -4,7 +4,8 @@
   "description": "An angularJS rest client with ORM",
   "main": "angular-restclient.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "build": "gulp build"
   },
   "repository": {
     "type": "git",
