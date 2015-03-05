@@ -143,7 +143,6 @@
             var self = this;
             var defer = self.q.defer();
 
-
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
             });
@@ -283,17 +282,18 @@
          * @memberof Endpoint
          */
         Endpoint.prototype.save = function () {
-            var params = arguments[0];
-            var model = arguments[1];
-            var success = arguments[2];
-            var error = arguments[3];
 
-            // Check if only three arguments are given
-            if (angular.isUndefined(arguments[3])) {
+            var self = this;
+
+            // Check if only two arguments are given
+            if (angular.isUndefined(arguments[1])) {
                 model = arguments[0];
-                success = arguments[1];
-                error = arguments[2];
+            } else {
+                var params = arguments[0];
+                var model = arguments[1];
             }
+
+            var defer = this.q.defer();
 
             // Set the action that is performed. This can be checked in the model.
             model.__method = 'save';
@@ -305,11 +305,13 @@
             this.log.debug(model);
 
             // Use angularjs $resource to perform the save
-            this.resource.save(params, model, function () {
-                success();
+            this.resource.save(params, model, function (response) {
+                defer.resolve(self.mapResult(response));
             }, function (givenError) {
-                error(givenError);
+                defer.reject(givenError);
             });
+
+            return defer.promise;
         };
 
         /**

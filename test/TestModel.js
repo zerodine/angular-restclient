@@ -17,7 +17,8 @@
                 };
 
                 this.fullname = {
-                    type: 'string'
+                    type: 'string',
+                    save: false
                 };
 
                 // Map the given object
@@ -28,6 +29,10 @@
 
             TestModel.prototype.afterLoad = function() {
                 this.fullname = this.__foreignData['firstname'] + ' ' + this.__foreignData['lastname'];
+            };
+
+            TestModel.prototype.beforeSave = function() {
+                this.firstname = this.firstname + '_';
             };
 
             return TestModel;
