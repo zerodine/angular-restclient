@@ -1,5 +1,5 @@
 #angular-restclient
-An angularJS rest client with ORM
+A work-in-progress AngularJS rest client with ORM
 
 ##Install
 ```sh
