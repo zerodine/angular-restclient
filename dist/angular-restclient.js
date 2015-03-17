@@ -1,7 +1,7 @@
 (function() {
     angular
-        .module('restclient', [])
-        .provider('api', RestClientProvider)
+        .module('restclient', ['ngResource'])
+        .provider('api', apiProvider)
         .factory('Model', ModelFactory)
         .factory('Validator', ValidatorFactory);
 
@@ -9,7 +9,7 @@
      * The provider to get the api
      * @constructor
      */
-    function RestClientProvider() {
+    function apiProvider() {
         /**
          * All the endpoints
          * @type {object}
@@ -27,8 +27,6 @@
          * @type {string}
          */
         this.headResponseHeaderPrefix = "";
-
-        this.pagination = false;
 
         /**
          * This class represents one configuration for an endpoint
@@ -79,6 +77,7 @@
          * @param {string} endpoint The name of the endpoint
          * @param {EndpointConfig} endpointConfig Config of the endpoint which was defined earlier
          * @param {string} baseRoute URL to the backend
+         * @param {string} headResponseHeaderPrefix Prefix of head request header
          * @param {$resource} $resource The Angular $resource factory
          * @param {$log} $log The Angular $log factory
          * @param {$injector} $injector The Angular $injector factory
@@ -86,7 +85,7 @@
          * @constructor Endpoint
          * @ngInject
          */
-        function Endpoint(endpoint, endpointConfig, pagination, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
+        function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
             /**
              * The name of the endpoint
              * @type {string}
@@ -104,8 +103,6 @@
              * @type {EndpointConfig}
              */
             this.endpointConfig = endpointConfig;
-
-            this.pagination = pagination;
 
             /**
              * An instance if the $resource factory from the angularjs library
@@ -131,19 +128,18 @@
              */
             this.q = $q;
         }
-        Endpoint.$inject = ["endpoint", "endpointConfig", "pagination", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
+        Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
 
         /**
          * Call an endpoint and map the response to one or more models given in the endpoint config
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @return {Model} Returns one or an array of mapped models
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.get = function (params) {
             var self = this;
             var defer = self.q.defer();
-
 
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
@@ -152,6 +148,14 @@
             return defer.promise;
         };
 
+        /**
+         * Maps an object or array to the endpoint model
+         *
+         * @private
+         * @param {object} data Object or array of raw data
+         * @return {Model|Array}
+         * @memberof Endpoint
+         */
         Endpoint.prototype.mapResult = function(data) {
             var self = this;
             self.log.debug("apiFactory (" + self.endpointName + "): Endpoint called");
@@ -174,16 +178,7 @@
                     models.push(new model(value));
                 });
 
-                if (self.pagination) {
-                    var result = {
-                        count: data.count,
-                        offset: data.offset,
-                        limit: data.limit,
-                        data: models
-                    };
-                } else {
-                    var result = models;
-                }
+                var result = models;
 
             } else {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
@@ -202,7 +197,7 @@
          * Call an endpoint with the HEAD method
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @return {object} Returns an object with the requested headers
+         * @return {Promise<object|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.head = function(params) {
@@ -247,8 +242,7 @@
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
          * @param {Model} model The model to be updated
-         * @param {function} success Callback if the update was an success
-         * @param {function} error Callback if the update did not work
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.update = function (params, model) {
@@ -275,26 +269,36 @@
         };
 
         /**
+         * Update an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {Model} model The model to be updated
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.put = Endpoint.prototype.update;
+
+        /**
          * Save an object
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
          * @param {Model} model The model to be updated
-         * @param {function} success Callback if the update was an success
-         * @param {function} error Callback if the update did not work
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.save = function () {
-            var params = arguments[0];
-            var model = arguments[1];
-            var success = arguments[2];
-            var error = arguments[3];
 
-            // Check if only three arguments are given
-            if (angular.isUndefined(arguments[3])) {
+            var self = this;
+
+            // Check if only two arguments are given
+            if (angular.isUndefined(arguments[1])) {
                 model = arguments[0];
-                success = arguments[1];
-                error = arguments[2];
+            } else {
+                var params = arguments[0];
+                var model = arguments[1];
             }
+
+            var defer = this.q.defer();
 
             // Set the action that is performed. This can be checked in the model.
             model.__method = 'save';
@@ -306,12 +310,24 @@
             this.log.debug(model);
 
             // Use angularjs $resource to perform the save
-            this.resource.save(params, model, function () {
-                success();
+            this.resource.save(params, model, function (response) {
+                defer.resolve(self.mapResult(response));
             }, function (givenError) {
-                error(givenError);
+                defer.reject(givenError);
             });
+
+            return defer.promise;
         };
+
+        /**
+         * Save an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {Model} model The model to be updated
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.post = Endpoint.prototype.save;
 
         /**
          * Set the base route
@@ -319,14 +335,6 @@
          */
         this.baseRoute = function(baseRoute) {
             this.baseRoute = baseRoute;
-        };
-
-        /**
-         * Set the base route
-         * @param {string} baseRoute
-         */
-        this.enablePagination = function(pagination) {
-            this.pagination = pagination;
         };
 
         /**
@@ -352,7 +360,7 @@
          * @param {$injector} $injector
          * @ngInject
          */
-        this.$get = ["$injector", function ($injector) {
+        this.$get = ["$injector", function($injector) {
             var self = this;
             var api = {};
 
@@ -369,7 +377,6 @@
                 api[name] = $injector.instantiate(Endpoint, {
                     endpoint: name,
                     endpointConfig: endpointConfig,
-                    pagination: self.pagination,
                     baseRoute: self.baseRoute,
                     headResponseHeaderPrefix: self.headResponseHeaderPrefix
                 });
