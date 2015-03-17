@@ -1,7 +1,7 @@
 (function() {
     angular
         .module('restclient', ['ngResource'])
-        .provider('api', RestClientProvider)
+        .provider('api', apiProvider)
         .factory('Model', ModelFactory)
         .factory('Validator', ValidatorFactory);
 
@@ -9,7 +9,7 @@
      * The provider to get the api
      * @constructor
      */
-    function RestClientProvider() {
+    function apiProvider() {
         /**
          * All the endpoints
          * @type {object}
@@ -272,6 +272,9 @@
             return defer.promise;
         };
 
+        // Alias for update request
+        Endpoint.prototype.put = Endpoint.prototype.update;
+
         /**
          * Save an object
          *
@@ -313,6 +316,9 @@
 
             return defer.promise;
         };
+
+        // Alias for save request
+        Endpoint.prototype.post = Endpoint.prototype.save;
 
         /**
          * Set the base route

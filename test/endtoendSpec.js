@@ -57,7 +57,7 @@ describe('EndToEnd', function() {
     }));
 
     it('tests to save a model with the api', inject(function($injector, TestModel) {
-        $httpBackend.expectPOST('/users', {
+        $httpBackend.whenPOST('/users', {
             firstname: 'Bart_',
             lastname: 'Simpsons'
         }).respond(200, {
@@ -68,23 +68,33 @@ describe('EndToEnd', function() {
 
         var api = provider.$get($injector);
 
-        var user = new TestModel({
+        var user_save = new TestModel({
             id: 1,
             firstname: 'Bart',
             lastname: 'Simpsons'
         });
 
-        api.users.save(user).then(function(createdUser) {
+        var user_post = new TestModel({
+            id: 1,
+            firstname: 'Bart',
+            lastname: 'Simpsons'
+        });
+
+        api.users.save(user_save).then(function(createdUser) {
             expect(createdUser.fullname).toBe('Bart Simpsons');
             expect(createdUser instanceof TestModel).toBe(true);
+        });
 
+        api.users.post(user_post).then(function(createdUser) {
+            expect(createdUser.fullname).toBe('Bart Simpsons');
+            expect(createdUser instanceof TestModel).toBe(true);
         });
 
         $httpBackend.flush();
     }));
 
     it('tests to update a model with the api', inject(function($injector, TestModel) {
-        $httpBackend.expectPUT('/users/1', {
+        $httpBackend.whenPUT('/users/1', {
             firstname: 'ElBarto_',
             lastname: 'Simpsons'
         }).respond(200, {
@@ -95,13 +105,24 @@ describe('EndToEnd', function() {
 
         var api = provider.$get($injector);
 
-        var user = new TestModel({
+        var user_update = new TestModel({
             id: 1,
             firstname: 'ElBarto',
             lastname: 'Simpsons'
         });
 
-        api.users.update({id: 1}, user).then(function(updatedUser) {
+        var user_put = new TestModel({
+            id: 1,
+            firstname: 'ElBarto',
+            lastname: 'Simpsons'
+        });
+
+        api.users.update({id: 1}, user_update).then(function(updatedUser) {
+            expect(updatedUser.fullname).toBe('ElBarto Simpsons');
+            expect(updatedUser instanceof TestModel).toBe(true);
+        });
+
+        api.users.update({id: 1}, user_put).then(function(updatedUser) {
             expect(updatedUser.fullname).toBe('ElBarto Simpsons');
             expect(updatedUser instanceof TestModel).toBe(true);
         });
