@@ -77,6 +77,7 @@
          * @param {string} endpoint The name of the endpoint
          * @param {EndpointConfig} endpointConfig Config of the endpoint which was defined earlier
          * @param {string} baseRoute URL to the backend
+         * @param {string} headResponseHeaderPrefix Prefix of head request header
          * @param {$resource} $resource The Angular $resource factory
          * @param {$log} $log The Angular $log factory
          * @param {$injector} $injector The Angular $injector factory
@@ -132,7 +133,7 @@
          * Call an endpoint and map the response to one or more models given in the endpoint config
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @return {Model} Returns one or an array of mapped models
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.get = function (params) {
@@ -146,6 +147,14 @@
             return defer.promise;
         };
 
+        /**
+         * Maps an object or array to the endpoint model
+         *
+         * @private
+         * @param {object} data Object or array of raw data
+         * @return {Model|Array}
+         * @memberof Endpoint
+         */
         Endpoint.prototype.mapResult = function(data) {
             var self = this;
             self.log.debug("apiFactory (" + self.endpointName + "): Endpoint called");
@@ -187,7 +196,7 @@
          * Call an endpoint with the HEAD method
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @return {object} Returns an object with the requested headers
+         * @return {Promise<object|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.head = function(params) {
@@ -232,8 +241,7 @@
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
          * @param {Model} model The model to be updated
-         * @param {function} success Callback if the update was an success
-         * @param {function} error Callback if the update did not work
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.update = function (params, model) {
@@ -259,7 +267,14 @@
             return defer.promise;
         };
 
-        // Alias for update request
+        /**
+         * Update an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {Model} model The model to be updated
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
         Endpoint.prototype.put = Endpoint.prototype.update;
 
         /**
@@ -267,8 +282,7 @@
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
          * @param {Model} model The model to be updated
-         * @param {function} success Callback if the update was an success
-         * @param {function} error Callback if the update did not work
+         * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.save = function () {
@@ -304,7 +318,14 @@
             return defer.promise;
         };
 
-        // Alias for save request
+        /**
+         * Save an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {Model} model The model to be updated
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
         Endpoint.prototype.post = Endpoint.prototype.save;
 
         /**
@@ -338,7 +359,7 @@
          * @param {$injector} $injector
          * @ngInject
          */
-        this.$get = function ($injector) {
+        this.$get = function($injector) {
             var self = this;
             var api = {};
 

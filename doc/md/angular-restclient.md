@@ -8,11 +8,14 @@
   * [endpointConfig.model(model)](#EndpointConfig#model)
   * [endpointConfig.container(container)](#EndpointConfig#container)
 * [class: Endpoint](#Endpoint)
-  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [endpoint.put](#Endpoint#put)
+  * [endpoint.post](#Endpoint#post)
   * [endpoint.get(params)](#Endpoint#get)
+  * [endpoint.mapResult(data)](#Endpoint#mapResult)
   * [endpoint.head(params)](#Endpoint#head)
-  * [endpoint.update(params, model, success, error)](#Endpoint#update)
-  * [endpoint.save(params, model, success, error)](#Endpoint#save)
+  * [endpoint.update(params, model)](#Endpoint#update)
+  * [endpoint.save(params, model)](#Endpoint#save)
 * [class: Model](#Model)
   * [new Model()](#new_Model)
   * [model.afterLoad()](#Model#afterLoad)
@@ -71,14 +74,17 @@ Set the container that wraps the response. Default is null.
 **Members**
 
 * [class: Endpoint](#Endpoint)
-  * [new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [endpoint.put](#Endpoint#put)
+  * [endpoint.post](#Endpoint#post)
   * [endpoint.get(params)](#Endpoint#get)
+  * [endpoint.mapResult(data)](#Endpoint#mapResult)
   * [endpoint.head(params)](#Endpoint#head)
-  * [endpoint.update(params, model, success, error)](#Endpoint#update)
-  * [endpoint.save(params, model, success, error)](#Endpoint#save)
+  * [endpoint.update(params, model)](#Endpoint#update)
+  * [endpoint.save(params, model)](#Endpoint#save)
 
 <a name="new_Endpoint"></a>
-##new Endpoint(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)
+##new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)
 Class representing an Endpoint with all the functionality for receiving, saving and updating data from the backend
 
 **Params**
@@ -86,11 +92,32 @@ Class representing an Endpoint with all the functionality for receiving, saving 
 - endpoint `string` - The name of the endpoint  
 - endpointConfig <code>[EndpointConfig](#EndpointConfig)</code> - Config of the endpoint which was defined earlier  
 - baseRoute `string` - URL to the backend  
+- headResponseHeaderPrefix `string` - Prefix of head request header  
 - $resource `$resource` - The Angular $resource factory  
 - $log `$log` - The Angular $log factory  
 - $injector `$injector` - The Angular $injector factory  
 - $q `$q` - The Angular $q factory  
 
+<a name="Endpoint#put"></a>
+##endpoint.put
+Update an object
+
+**Params**
+
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
+- model <code>[Model](#Model)</code> - The model to be updated  
+
+**Returns**: `Promise.<Model,Error>`  
+<a name="Endpoint#post"></a>
+##endpoint.post
+Save an object
+
+**Params**
+
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
+- model <code>[Model](#Model)</code> - The model to be updated  
+
+**Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#get"></a>
 ##endpoint.get(params)
 Call an endpoint and map the response to one or more models given in the endpoint config
@@ -99,7 +126,17 @@ Call an endpoint and map the response to one or more models given in the endpoin
 
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 
-**Returns**: [Model](#Model) - Returns one or an array of mapped models  
+**Returns**: `Promise.<Model,Error>`  
+<a name="Endpoint#mapResult"></a>
+##endpoint.mapResult(data)
+Maps an object or array to the endpoint model
+
+**Params**
+
+- data `object` - Object or array of raw data  
+
+**Returns**: [Model](#Model) | `Array`  
+**Access**: private  
 <a name="Endpoint#head"></a>
 ##endpoint.head(params)
 Call an endpoint with the HEAD method
@@ -108,29 +145,27 @@ Call an endpoint with the HEAD method
 
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 
-**Returns**: `object` - Returns an object with the requested headers  
+**Returns**: `Promise.<object,Error>`  
 <a name="Endpoint#update"></a>
-##endpoint.update(params, model, success, error)
+##endpoint.update(params, model)
 Update an object
 
 **Params**
 
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 - model <code>[Model](#Model)</code> - The model to be updated  
-- success `function` - Callback if the update was an success  
-- error `function` - Callback if the update did not work  
 
+**Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#save"></a>
-##endpoint.save(params, model, success, error)
+##endpoint.save(params, model)
 Save an object
 
 **Params**
 
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 - model <code>[Model](#Model)</code> - The model to be updated  
-- success `function` - Callback if the update was an success  
-- error `function` - Callback if the update did not work  
 
+**Returns**: `Promise.<Model,Error>`  
 <a name="Model"></a>
 #class: Model
 **Members**

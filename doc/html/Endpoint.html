@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="Endpoint"><span class="type-signature"></span>new Endpoint<span class="signature">(endpoint, endpointConfig, baseRoute, $resource, $log, $injector, $q)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Endpoint"><span class="type-signature"></span>new Endpoint<span class="signature">(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -144,6 +144,29 @@
             
 
             <td class="description last">URL to the backend</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>headResponseHeaderPrefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prefix of head request header</td>
         </tr>
 
     
@@ -266,7 +289,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line76">line 76</a>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -307,6 +330,122 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="post"><span class="type-signature"></span>post<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Save an object
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line329">line 329</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="put"><span class="type-signature"></span>put<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Update an object
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line278">line 278</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -314,7 +453,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(params)</span><span class="type-signature"> &rarr; {<a href="Model.html">Model</a>}</span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(params)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="Model.html">Model</a>|Error)>}</span></h4>
 
     
 </dt>
@@ -403,7 +542,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line142">line 142</a>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line139">line 139</a>
     </li></ul></dd>
     
 
@@ -429,10 +568,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    Returns one or an array of mapped models
-</div>
-
 
 
 <dl>
@@ -441,7 +576,7 @@
     </dt>
     <dd>
         
-<span class="param-type"><a href="Model.html">Model</a></span>
+<span class="param-type">Promise.&lt;(<a href="Model.html">Model</a>|Error)></span>
 
 
     </dd>
@@ -455,7 +590,7 @@
         
             
 <dt>
-    <h4 class="name" id="head"><span class="type-signature"></span>head<span class="signature">(params)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="head"><span class="type-signature"></span>head<span class="signature">(params)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|Error)>}</span></h4>
 
     
 </dt>
@@ -544,7 +679,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line207">line 207</a>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -570,10 +705,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    Returns an object with the requested headers
-</div>
-
 
 
 <dl>
@@ -582,7 +713,7 @@
     </dt>
     <dd>
         
-<span class="param-type">object</span>
+<span class="param-type">Promise.&lt;(object|Error)></span>
 
 
     </dd>
@@ -596,7 +727,7 @@
         
             
 <dt>
-    <h4 class="name" id="save"><span class="type-signature"></span>save<span class="signature">(params, model, success, error)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="save"><span class="type-signature"></span>save<span class="signature">(params, model)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="Model.html">Model</a>|Error)>}</span></h4>
 
     
 </dt>
@@ -681,52 +812,6 @@
         </tr>
 
     
-
-        <tr>
-            
-                <td class="name"><code>success</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Callback if the update was an success</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Callback if the update did not work</td>
-        </tr>
-
-    
     </tbody>
 </table>
     
@@ -754,7 +839,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line285">line 285</a>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line288">line 288</a>
     </li></ul></dd>
     
 
@@ -777,6 +862,24 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(<a href="Model.html">Model</a>|Error)></span>
+
+
+    </dd>
+</dl>
+
+        
 
     
 </dd>
@@ -784,7 +887,7 @@
         
             
 <dt>
-    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(params, model, success, error)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(params, model)</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="Model.html">Model</a>|Error)>}</span></h4>
 
     
 </dt>
@@ -869,52 +972,6 @@
         </tr>
 
     
-
-        <tr>
-            
-                <td class="name"><code>success</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Callback if the update was an success</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Callback if the update did not work</td>
-        </tr>
-
-    
     </tbody>
 </table>
     
@@ -942,7 +999,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line253">line 253</a>
+        <a href="angular-restclient.js.html">angular-restclient.js</a>, <a href="angular-restclient.js.html#line247">line 247</a>
     </li></ul></dd>
     
 
@@ -965,6 +1022,24 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(<a href="Model.html">Model</a>|Error)></span>
+
+
+    </dd>
+</dl>
+
+        
 
     
 </dd>
@@ -991,7 +1066,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Feb 24 2015 16:15:18 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Mar 17 2015 08:59:17 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
