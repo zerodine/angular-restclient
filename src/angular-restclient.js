@@ -28,8 +28,6 @@
          */
         this.headResponseHeaderPrefix = "";
 
-        this.pagination = false;
-
         /**
          * This class represents one configuration for an endpoint
          *
@@ -86,7 +84,7 @@
          * @constructor Endpoint
          * @ngInject
          */
-        function Endpoint(endpoint, endpointConfig, pagination, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
+        function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
             /**
              * The name of the endpoint
              * @type {string}
@@ -104,8 +102,6 @@
              * @type {EndpointConfig}
              */
             this.endpointConfig = endpointConfig;
-
-            this.pagination = pagination;
 
             /**
              * An instance if the $resource factory from the angularjs library
@@ -172,16 +168,7 @@
                     models.push(new model(value));
                 });
 
-                if (self.pagination) {
-                    var result = {
-                        count: data.count,
-                        offset: data.offset,
-                        limit: data.limit,
-                        data: models
-                    };
-                } else {
-                    var result = models;
-                }
+                var result = models;
 
             } else {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
@@ -329,14 +316,6 @@
         };
 
         /**
-         * Set the base route
-         * @param {string} baseRoute
-         */
-        this.enablePagination = function(pagination) {
-            this.pagination = pagination;
-        };
-
-        /**
          * Set the head response header prefix
          * @param {string} headResponseHeaderPrefix
          */
@@ -376,7 +355,6 @@
                 api[name] = $injector.instantiate(Endpoint, {
                     endpoint: name,
                     endpointConfig: endpointConfig,
-                    pagination: self.pagination,
                     baseRoute: self.baseRoute,
                     headResponseHeaderPrefix: self.headResponseHeaderPrefix
                 });
