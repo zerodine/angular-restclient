@@ -187,13 +187,14 @@
             self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
 
             // Check if response is an array
-            if (angular.isArray(data[container])) {
+            if (angular.isArray(data) || angular.isArray(data[container])) {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
+                var arrayData = angular.isArray(data) ? data : data[container];
                 var models = [];
 
                 // Iterate thru every object in the response and map it to a model
-                angular.forEach(data[container], function (value) {
+                angular.forEach(arrayData, function (value) {
                     models.push(new model(value));
                 });
 
