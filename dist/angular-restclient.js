@@ -149,6 +149,25 @@
         };
 
         /**
+         * Call an endpoint and map the response to one or more models given in the endpoint config. As opposed
+         * to the {@link get}, this method expects an array to be returned from the endpoint.
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.query = function (params) {
+            var self = this;
+            var defer = self.q.defer();
+
+            this.resource.query(params, function(data) {
+                defer.resolve(self.mapResult(data));
+            });
+
+            return defer.promise;
+        };
+
+        /**
          * Maps an object or array to the endpoint model
          *
          * @private
