@@ -142,6 +142,8 @@
 
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
+            }, function (error) {
+                defer.reject(error)
             });
 
             return defer.promise;
@@ -231,6 +233,8 @@
 
                 // Resolve the promise
                 defer.resolve(headers);
+            }, function (error) {
+                defer.reject(error)
             });
 
             return defer.promise;
@@ -268,12 +272,7 @@
         };
 
         /**
-         * Update an object
-         *
-         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @param {Model} model The model to be updated
-         * @return {Promise<Model|Error>}
-         * @memberof Endpoint
+         * This is an alias of the update method
          */
         Endpoint.prototype.put = Endpoint.prototype.update;
 
@@ -311,20 +310,15 @@
             // Use angularjs $resource to perform the save
             this.resource.save(params, model, function (response) {
                 defer.resolve(self.mapResult(response));
-            }, function (givenError) {
-                defer.reject(givenError);
+            }, function (error) {
+                defer.reject(error);
             });
 
             return defer.promise;
         };
 
         /**
-         * Save an object
-         *
-         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @param {Model} model The model to be updated
-         * @return {Promise<Model|Error>}
-         * @memberof Endpoint
+         * This is an alias of the save method
          */
         Endpoint.prototype.post = Endpoint.prototype.save;
 
