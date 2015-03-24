@@ -143,6 +143,8 @@
 
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
+            }, function(error) {
+                defer.reject(error);
             });
 
             return defer.promise;
@@ -162,6 +164,8 @@
 
             this.resource.query(params, function(data) {
                 defer.resolve(self.mapResult(data));
+            }, function(error) {
+                defer.reject(error);
             });
 
             return defer.promise;
@@ -252,6 +256,8 @@
 
                 // Resolve the promise
                 defer.resolve(headers);
+            }, function(error) {
+                defer.reject(error);
             });
 
             return defer.promise;
