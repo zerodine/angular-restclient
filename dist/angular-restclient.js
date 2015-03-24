@@ -143,6 +143,29 @@
 
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
+            }, function(error) {
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        };
+
+        /**
+         * Call an endpoint and map the response to one or more models given in the endpoint config. As opposed
+         * to the {@link get}, this method expects an array to be returned from the endpoint.
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.query = function (params) {
+            var self = this;
+            var defer = self.q.defer();
+
+            this.resource.query(params, function(data) {
+                defer.resolve(self.mapResult(data));
+            }, function(error) {
+                defer.reject(error);
             });
 
             return defer.promise;
@@ -168,13 +191,14 @@
             self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
 
             // Check if response is an array
-            if (angular.isArray(data[container])) {
+            if (angular.isArray(data) || angular.isArray(data[container])) {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
+                var arrayData = angular.isArray(data) ? data : data[container];
                 var models = [];
 
                 // Iterate thru every object in the response and map it to a model
-                angular.forEach(data[container], function (value) {
+                angular.forEach(arrayData, function (value) {
                     models.push(new model(value));
                 });
 
@@ -232,6 +256,8 @@
 
                 // Resolve the promise
                 defer.resolve(headers);
+            }, function(error) {
+                defer.reject(error);
             });
 
             return defer.promise;
