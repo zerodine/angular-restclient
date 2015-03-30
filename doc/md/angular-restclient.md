@@ -12,7 +12,7 @@
   * [endpoint.put](#Endpoint#put)
   * [endpoint.post](#Endpoint#post)
   * [endpoint.get(params)](#Endpoint#get)
-  * [endpoint.mapResult(data)](#Endpoint#mapResult)
+  * [endpoint.query(params)](#Endpoint#query)
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
@@ -22,10 +22,6 @@
   * [model.beforeSave()](#Model#beforeSave)
   * [model.init(object)](#Model#init)
   * [~~model.callBeforeSave(models)~~](#Model#callBeforeSave)
-  * [model._clean()](#Model#_clean)
-  * [model._mapArray(property, apiProperty, modelName)](#Model#_mapArray)
-  * [model._mapProperty(property, apiProperty, modelName)](#Model#_mapProperty)
-  * [model._referenceOnly(models)](#Model#_referenceOnly)
   * [model.isValid()](#Model#isValid)
  
 <a name="EndpointConfig"></a>
@@ -78,7 +74,7 @@ Set the container that wraps the response. Default is null.
   * [endpoint.put](#Endpoint#put)
   * [endpoint.post](#Endpoint#post)
   * [endpoint.get(params)](#Endpoint#get)
-  * [endpoint.mapResult(data)](#Endpoint#mapResult)
+  * [endpoint.query(params)](#Endpoint#query)
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
@@ -127,16 +123,16 @@ Call an endpoint and map the response to one or more models given in the endpoin
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
 
 **Returns**: `Promise.<Model,Error>`  
-<a name="Endpoint#mapResult"></a>
-##endpoint.mapResult(data)
-Maps an object or array to the endpoint model
+<a name="Endpoint#query"></a>
+##endpoint.query(params)
+Call an endpoint and map the response to one or more models given in the endpoint config. As opposed
+to the `get`, this method expects an array to be returned from the endpoint.
 
 **Params**
 
-- data `object` - Object or array of raw data  
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
 
-**Returns**: [Model](#Model) | `Array`  
-**Access**: private  
+**Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#head"></a>
 ##endpoint.head(params)
 Call an endpoint with the HEAD method
@@ -176,10 +172,6 @@ Save an object
   * [model.beforeSave()](#Model#beforeSave)
   * [model.init(object)](#Model#init)
   * [~~model.callBeforeSave(models)~~](#Model#callBeforeSave)
-  * [model._clean()](#Model#_clean)
-  * [model._mapArray(property, apiProperty, modelName)](#Model#_mapArray)
-  * [model._mapProperty(property, apiProperty, modelName)](#Model#_mapProperty)
-  * [model._referenceOnly(models)](#Model#_referenceOnly)
   * [model.isValid()](#Model#isValid)
 
 <a name="new_Model"></a>
@@ -215,42 +207,6 @@ This method can be used to call the beforeSave method on a related model.
 - models `Model/array` - Can ether be a model or an array of models  
 
 ***Deprecated***  
-<a name="Model#_clean"></a>
-##model._clean()
-This method gets called bei the api before a model is sent to the backend.
-
-**Access**: private  
-<a name="Model#_mapArray"></a>
-##model._mapArray(property, apiProperty, modelName)
-Maps an array of models to an property
-
-**Params**
-
-- property `string` - The property which should be mapped  
-- apiProperty `string` - Foreign property as it comes from the api  
-- modelName `string` - Name of the model which is used for the matching  
-
-**Access**: private  
-<a name="Model#_mapProperty"></a>
-##model._mapProperty(property, apiProperty, modelName)
-Maps an array of models to an property
-
-**Params**
-
-- property `string` - The property which should be mapped  
-- apiProperty `string` - Foreign property as it comes from the api  
-- modelName `string` - Name of the model which is used for the matching  
-
-**Access**: private  
-<a name="Model#_referenceOnly"></a>
-##model._referenceOnly(models)
-Returns only the reference of a related model
-
-**Params**
-
-- models `Model/array`  
-
-**Access**: private  
 <a name="Model#isValid"></a>
 ##model.isValid()
 Validate the properties of the model
