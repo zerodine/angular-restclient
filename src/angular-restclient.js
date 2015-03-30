@@ -72,6 +72,17 @@
         };
 
         /**
+         * Define if the response from the api is going to be an array
+         *
+         * @return {EndpointConfig} Returns the endpoint config object
+         * @memberof EndpointConfig
+         */
+        EndpointConfig.prototype.isArray = function() {
+            this.isArray = true;
+            return this;
+        };
+
+        /**
          * Class representing an Endpoint with all the functionality for receiving, saving and updating data from the backend
          *
          * @param {string} endpoint The name of the endpoint
@@ -131,14 +142,28 @@
 
         /**
          * Call an endpoint and map the response to one or more models given in the endpoint config
+         * The server response must be an object
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {boolean} isArray Set if the expected result is not an object but an array
          * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
-        Endpoint.prototype.get = function (params) {
+        Endpoint.prototype.get = function (params, isArray) {
+            isArray = isArray || false;
+
             var self = this;
             var defer = self.q.defer();
+
+            if (isArray || (angular.isUndefined(params) && self.endpointConfig.isArray === true)) {
+                this.resource.query(params, function(data) {
+                    defer.resolve(self.mapResult(data));
+                }, function (error) {
+                    defer.reject(error)
+                });
+
+                return defer.promise;
+            }
 
             this.resource.get(params, function(data) {
                 defer.resolve(self.mapResult(data));
@@ -169,13 +194,14 @@
             self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
 
             // Check if response is an array
-            if (angular.isArray(data[container])) {
+            if (angular.isArray(data) || angular.isArray(data[container])) {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
+                var arrayData = angular.isArray(data) ? data : data[container];
                 var models = [];
 
                 // Iterate thru every object in the response and map it to a model
-                angular.forEach(data[container], function (value) {
+                angular.forEach(arrayData, function (value) {
                     models.push(new model(value));
                 });
 
