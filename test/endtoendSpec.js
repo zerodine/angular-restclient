@@ -11,10 +11,6 @@ describe('EndToEnd', function() {
         provider.endpoint('users')
             .route('/users/:id')
             .model('TestModel');
-        provider.endpoint('usersArray')
-            .route('/users/:id')
-            .model('TestModel')
-            .isArray();
     }));
 
     beforeEach(inject(function(_$httpBackend_) {
@@ -63,7 +59,7 @@ describe('EndToEnd', function() {
 
         var api = provider.$get($injector);
 
-        api.users.get({}, isArray=true).then(function(users) {
+        api.users.get().then(function(users) {
             expect(users[0] instanceof TestModel).toBe(true);
             expect(users[0].fullname).toBe('Jack Bauer');
         });
@@ -71,44 +67,20 @@ describe('EndToEnd', function() {
         $httpBackend.flush();
     }));
 
-    it('tests to get an array (configured in endpoint) resource and map it', inject(function($injector, TestModel) {
-        $httpBackend.whenGET('/users').respond([
+    it('tests to get an array resource and map it', inject(function($injector, TestModel) {
+        $httpBackend.whenGET('/users/1').respond([
                 {
                     id: 1,
                     firstname: 'Jack',
                     lastname: 'Bauer'
-                },
-                {
-                    id: 2,
-                    firstname: 'Sandra',
-                    lastname: 'Bullock'
                 }
             ]);
 
         var api = provider.$get($injector);
 
-        api.usersArray.get().then(function(users) {
-            expect(users[0] instanceof TestModel).toBe(true);
-            expect(users[0].fullname).toBe('Jack Bauer');
-        });
-
-        $httpBackend.flush();
-    }));
-
-    it('tests to get an object (configured isArray-Endpoint) resource and map it', inject(function($injector, TestModel) {
-        $httpBackend.whenGET('/users/1').respond(
-                {
-                    id: 1,
-                    firstname: 'Jack',
-                    lastname: 'Bauer'
-                }
-        );
-
-        var api = provider.$get($injector);
-
-        api.usersArray.get({id: 1}).then(function(user) {
-            expect(user instanceof TestModel).toBe(true);
-            expect(user.fullname).toBe('Jack Bauer');
+        api.users.get({id: 1}).then(function(user) {
+            expect(user[0] instanceof TestModel).toBe(true);
+            expect(user[0].fullname).toBe('Jack Bauer');
         });
 
         $httpBackend.flush();
