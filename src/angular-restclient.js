@@ -238,8 +238,7 @@
                 var result = new model(data);
             }
 
-            self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is");
-            self.log.debug(result);
+            self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is:", result);
 
             return result;
         };
@@ -326,8 +325,7 @@
             // Call the _clean method of the model
             model._clean();
 
-            this.log.debug("apiFactory (" + this.endpointName + "): Model to update is");
-            this.log.debug(model);
+            this.log.debug("apiFactory (" + this.endpointName + "): Model to update is:", model);
 
             var defer = this.q.defer();
 
@@ -371,8 +369,7 @@
             // Call the _clean method of the model
             model._clean();
 
-            this.log.debug("apiFactory (" + this.endpointName + "): Model to save is");
-            this.log.debug(model);
+            this.log.debug("apiFactory (" + this.endpointName + "): Model to save is:", model);
 
             // Use angularjs $resource to perform the save
             this.resource.save(params, model, function (data) {
@@ -507,8 +504,7 @@
             this.__foreignData = object;
             this.__annotation = {};
 
-            $log.debug("Model (" + this.constructor.name + "): Original response object is");
-            $log.debug(this.__foreignData);
+            $log.debug("Model (" + this.constructor.name + "): Original response object is:", this.__foreignData);
 
             for (var property in this) {
                 // If property is a method, then continue
