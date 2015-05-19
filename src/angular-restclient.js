@@ -83,6 +83,17 @@
         };
 
         /**
+         * Overwrites the baseRoute from the global configuration
+         *
+         * @return {EndpointConfig} Returns the endpoint config object
+         * @memberof EndpointConfig
+         */
+        EndpointConfig.prototype.baseRoute = function(baseRoute) {
+            this.baseRoute = baseRoute;
+            return this;
+        };
+
+        /**
          * This is just a helper function because a merge is not supported by angular until version > 1.4
          *
          * @deprecated Will be supported by angular with version > 1.4
@@ -132,6 +143,8 @@
          */
         function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
             var self = this;
+
+            if (!angular.isFunction(endpointConfig.baseRoute)) baseRoute = endpointConfig.baseRoute;
 
             /**
              * The name of the endpoint
