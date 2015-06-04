@@ -72,6 +72,62 @@
         };
 
         /**
+         * Define if the response from the api is going to be an array
+         *
+         * @return {EndpointConfig} Returns the endpoint config object
+         * @memberof EndpointConfig
+         */
+        EndpointConfig.prototype.actions = function(actions) {
+            this.actions = actions;
+            return this;
+        };
+
+        /**
+         * Overwrites the baseRoute from the global configuration
+         *
+         * @return {EndpointConfig} Returns the endpoint config object
+         * @memberof EndpointConfig
+         */
+        EndpointConfig.prototype.baseRoute = function(baseRoute) {
+            this.baseRoute = baseRoute;
+            return this;
+        };
+
+        /**
+         * This is just a helper function because a merge is not supported by angular until version > 1.4
+         *
+         * @deprecated Will be supported by angular with version > 1.4
+         * @param dst
+         * @param src
+         * @returns {*}
+         */
+        function merge(dst, src) {
+            var h = dst.$$hashKey;
+
+            if (!angular.isObject(src) && !angular.isFunction(src)) return;
+            var keys = Object.keys(src);
+            for (var j = 0, jj = keys.length; j < jj; j++) {
+                var key = keys[j];
+                var src_new = src[key];
+
+                if (angular.isObject(src_new)) {
+                    if (!angular.isObject(dst[key])) dst[key] = angular.isArray(src_new) ? [] : {};
+                    merge(dst[key], src_new);
+                } else {
+                    dst[key] = src_new;
+                }
+            }
+
+            if (h) {
+                dst.$$hashKey = h;
+            } else {
+                delete dst.$$hashKey;
+            }
+
+            return dst;
+        }
+
+        /**
          * Class representing an Endpoint with all the functionality for receiving, saving and updating data from the backend
          *
          * @param {string} endpoint The name of the endpoint
@@ -86,6 +142,10 @@
          * @ngInject
          */
         function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q) {
+            var self = this;
+
+            if (!angular.isFunction(endpointConfig.baseRoute)) baseRoute = endpointConfig.baseRoute;
+
             /**
              * The name of the endpoint
              * @type {string}
@@ -108,7 +168,29 @@
              * An instance if the $resource factory from the angularjs library
              * @type {$resource}
              */
-            this.resource = $resource(baseRoute + this.endpointConfig.route, {}, {update: {method: 'PUT'}, head: {method: 'HEAD'}});
+            this.resource = $resource(baseRoute + this.endpointConfig.route, {}, merge({
+                get: {
+                    method: 'GET',
+                    transformResponse: function(data) {
+                        return {result: self.mapResult(angular.fromJson(data))};
+                    }
+                },
+                save: {
+                    method: 'POST',
+                    transformResponse: function(data) {
+                        return {result: self.mapResult(angular.fromJson(data))};
+                    }
+                },
+                update: {
+                    method: 'PUT',
+                    transformResponse: function(data) {
+                        return {result: self.mapResult(angular.fromJson(data))};
+                    }
+                },
+                head: {
+                    method: 'HEAD'
+                }
+            }, endpointConfig.actions));
 
             /**
              * An instance if the $log factory from the angularjs library
@@ -131,24 +213,6 @@
         Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
 
         /**
-         * Call an endpoint and map the response to one or more models given in the endpoint config
-         *
-         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @return {Promise<Model|Error>}
-         * @memberof Endpoint
-         */
-        Endpoint.prototype.get = function (params) {
-            var self = this;
-            var defer = self.q.defer();
-
-            this.resource.get(params, function(data) {
-                defer.resolve(self.mapResult(data));
-            });
-
-            return defer.promise;
-        };
-
-        /**
          * Maps an object or array to the endpoint model
          *
          * @private
@@ -168,13 +232,14 @@
             self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
 
             // Check if response is an array
-            if (angular.isArray(data[container])) {
+            if (angular.isArray(data) || angular.isArray(data[container])) {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
 
+                var arrayData = angular.isArray(data) ? data : data[container];
                 var models = [];
 
                 // Iterate thru every object in the response and map it to a model
-                angular.forEach(data[container], function (value) {
+                angular.forEach(arrayData, function (value) {
                     models.push(new model(value));
                 });
 
@@ -187,10 +252,30 @@
                 var result = new model(data);
             }
 
-            self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is");
-            self.log.debug(result);
+            self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is:", result);
 
             return result;
+        };
+
+        /**
+         * Call an endpoint and map the response to one or more models given in the endpoint config
+         * The server response must be an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.get = function (params) {
+            var self = this;
+            var defer = self.q.defer();
+
+            this.resource.get(params, function(data) {
+                defer.resolve(data.result);
+            }, function (error) {
+                defer.reject(error);
+            });
+
+            return defer.promise;
         };
 
         /**
@@ -232,35 +317,6 @@
 
                 // Resolve the promise
                 defer.resolve(headers);
-            });
-
-            return defer.promise;
-        };
-
-        /**
-         * Update an object
-         *
-         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @param {Model} model The model to be updated
-         * @return {Promise<Model|Error>}
-         * @memberof Endpoint
-         */
-        Endpoint.prototype.update = function (params, model) {
-            var self = this;
-            // Set the action that is performed. This can be checked in the model.
-            model.__method = 'update';
-
-            // Call the _clean method of the model
-            model._clean();
-
-            this.log.debug("apiFactory (" + this.endpointName + "): Model to update is");
-            this.log.debug(model);
-
-            var defer = this.q.defer();
-
-            // Use angularjs $resource to perform the update
-            this.resource.update(params, model, function (data) {
-                defer.resolve(self.mapResult(data));
             }, function (error) {
                 defer.reject(error)
             });
@@ -276,6 +332,30 @@
          * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
+        Endpoint.prototype.update = function (params, model) {
+            // Set the action that is performed. This can be checked in the model.
+            model.__method = 'update';
+
+            // Call the _clean method of the model
+            model._clean();
+
+            this.log.debug("apiFactory (" + this.endpointName + "): Model to update is:", model);
+
+            var defer = this.q.defer();
+
+            // Use angularjs $resource to perform the update
+            this.resource.update(params, model, function (data) {
+                defer.resolve(data.result);
+            }, function (error) {
+                defer.reject(error)
+            });
+
+            return defer.promise;
+        };
+
+        /**
+         * This is an alias of the update method
+         */
         Endpoint.prototype.put = Endpoint.prototype.update;
 
         /**
@@ -287,9 +367,6 @@
          * @memberof Endpoint
          */
         Endpoint.prototype.save = function () {
-
-            var self = this;
-
             // Check if only two arguments are given
             if (angular.isUndefined(arguments[1])) {
                 model = arguments[0];
@@ -306,26 +383,20 @@
             // Call the _clean method of the model
             model._clean();
 
-            this.log.debug("apiFactory (" + this.endpointName + "): Model to save is");
-            this.log.debug(model);
+            this.log.debug("apiFactory (" + this.endpointName + "): Model to save is:", model);
 
             // Use angularjs $resource to perform the save
-            this.resource.save(params, model, function (response) {
-                defer.resolve(self.mapResult(response));
-            }, function (givenError) {
-                defer.reject(givenError);
+            this.resource.save(params, model, function (data) {
+                defer.resolve(data.result);
+            }, function (error) {
+                defer.reject(error);
             });
 
             return defer.promise;
         };
 
         /**
-         * Save an object
-         *
-         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @param {Model} model The model to be updated
-         * @return {Promise<Model|Error>}
-         * @memberof Endpoint
+         * This is an alias of the save method
          */
         Endpoint.prototype.post = Endpoint.prototype.save;
 
@@ -448,8 +519,7 @@
             this.__foreignData = object;
             this.__annotation = {};
 
-            $log.debug("Model (" + this.constructor.name + "): Original response object is");
-            $log.debug(this.__foreignData);
+            $log.debug("Model (" + this.constructor.name + "): Original response object is:", this.__foreignData);
 
             for (var property in this) {
                 // If property is a method, then continue

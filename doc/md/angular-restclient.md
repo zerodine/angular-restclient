@@ -7,12 +7,12 @@
   * [endpointConfig.route(route)](#EndpointConfig#route)
   * [endpointConfig.model(model)](#EndpointConfig#model)
   * [endpointConfig.container(container)](#EndpointConfig#container)
+  * [endpointConfig.actions()](#EndpointConfig#actions)
+  * [endpointConfig.baseRoute()](#EndpointConfig#baseRoute)
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
-  * [endpoint.put](#Endpoint#put)
-  * [endpoint.post](#Endpoint#post)
-  * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.mapResult(data)](#Endpoint#mapResult)
+  * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
@@ -37,6 +37,8 @@
   * [endpointConfig.route(route)](#EndpointConfig#route)
   * [endpointConfig.model(model)](#EndpointConfig#model)
   * [endpointConfig.container(container)](#EndpointConfig#container)
+  * [endpointConfig.actions()](#EndpointConfig#actions)
+  * [endpointConfig.baseRoute()](#EndpointConfig#baseRoute)
 
 <a name="new_EndpointConfig"></a>
 ##new EndpointConfig()
@@ -69,16 +71,24 @@ Set the container that wraps the response. Default is null.
 - container `string` - The container defined as string  
 
 **Returns**: [EndpointConfig](#EndpointConfig) - Returns the endpoint config object  
+<a name="EndpointConfig#actions"></a>
+##endpointConfig.actions()
+Define if the response from the api is going to be an array
+
+**Returns**: [EndpointConfig](#EndpointConfig) - Returns the endpoint config object  
+<a name="EndpointConfig#baseRoute"></a>
+##endpointConfig.baseRoute()
+Overwrites the baseRoute from the global configuration
+
+**Returns**: [EndpointConfig](#EndpointConfig) - Returns the endpoint config object  
 <a name="Endpoint"></a>
 #class: Endpoint
 **Members**
 
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
-  * [endpoint.put](#Endpoint#put)
-  * [endpoint.post](#Endpoint#post)
-  * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.mapResult(data)](#Endpoint#mapResult)
+  * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
@@ -98,35 +108,6 @@ Class representing an Endpoint with all the functionality for receiving, saving 
 - $injector `$injector` - The Angular $injector factory  
 - $q `$q` - The Angular $q factory  
 
-<a name="Endpoint#put"></a>
-##endpoint.put
-Update an object
-
-**Params**
-
-- params `object` - The parameters that ether map in the route or get appended as GET parameters  
-- model <code>[Model](#Model)</code> - The model to be updated  
-
-**Returns**: `Promise.<Model,Error>`  
-<a name="Endpoint#post"></a>
-##endpoint.post
-Save an object
-
-**Params**
-
-- params `object` - The parameters that ether map in the route or get appended as GET parameters  
-- model <code>[Model](#Model)</code> - The model to be updated  
-
-**Returns**: `Promise.<Model,Error>`  
-<a name="Endpoint#get"></a>
-##endpoint.get(params)
-Call an endpoint and map the response to one or more models given in the endpoint config
-
-**Params**
-
-- params `object` - The parameters that ether map in the route or get appended as GET parameters  
-
-**Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#mapResult"></a>
 ##endpoint.mapResult(data)
 Maps an object or array to the endpoint model
@@ -137,6 +118,16 @@ Maps an object or array to the endpoint model
 
 **Returns**: [Model](#Model) | `Array`  
 **Access**: private  
+<a name="Endpoint#get"></a>
+##endpoint.get(params)
+Call an endpoint and map the response to one or more models given in the endpoint config
+The server response must be an object
+
+**Params**
+
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
+
+**Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#head"></a>
 ##endpoint.head(params)
 Call an endpoint with the HEAD method
