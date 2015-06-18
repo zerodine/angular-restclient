@@ -172,7 +172,10 @@
                 get: {
                     method: 'GET',
                     transformResponse: function(data) {
-                        return {result: self.mapResult(angular.fromJson(data))};
+                        return {
+                            result: self.mapResult(angular.fromJson(data)),
+                            pagination: self.getPagination(angular.fromJson(data))
+                        };
                     }
                 },
                 save: {
@@ -210,6 +213,37 @@
              */
             this.q = $q;
         }
+
+        Endpoint.prototype.getPagination = function(data) {
+            if (
+                angular.isDefined(data.count) &&
+                    angular.isDefined(data.limit) &&
+                    angular.isDefined(data.skip) &&
+                    data.limit > 0
+            ) {
+
+                // Calc the number of pages and generate array
+                data.pagesArray = [];
+
+                var pages = data.count / data.limit;
+                if (pages % 1 !== 0) pages = Math.ceil(pages);
+
+                for (var i=1; i<=pages; i++) data.pagesArray.push(i);
+
+                var currentPage = parseInt(data.skip / data.limit + 1);
+
+                return {
+                    count: data.count,
+                    limit: data.limit,
+                    skip: data.skip,
+                    pagesArray: data.pagesArray,
+                    pagesCount: pages,
+                    currentPage: currentPage
+                }
+            }
+
+            return null;
+        };
 
         /**
          * Maps an object or array to the endpoint model
@@ -269,6 +303,17 @@
             var defer = self.q.defer();
 
             this.resource.get(params, function(data) {
+                data.result.pagination = data.pagination;
+                data.result.endpoint = self;
+                data.result.next = function() {
+                    return this.endpoint.get({_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit});
+                };
+                data.result.previous = function() {
+                    return this.endpoint.get({_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit});
+                };
+                data.result.page = function(page) {
+                    return this.endpoint.get({_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit});
+                };
                 defer.resolve(data.result);
             }, function (error) {
                 defer.reject(error);
@@ -677,6 +722,14 @@
                 return;
             }
 
+            // If no model is set return the raw value
+            if (modelName == null) {
+                angular.forEach(apiProperty, function(value) {
+                    self[property].push(value);
+                });
+                return;
+            }
+
             // Load the model
             var model = $injector.get(modelName);
 
@@ -702,6 +755,13 @@
             // Check if the api property is set
             if (angular.isUndefined(apiProperty)) {
                 this[property] = null;
+                return;
+            }
+
+
+            // If no model is set return the raw value
+            if (modelName == null) {
+                this[property] = apiProperty;
                 return;
             }
 
