@@ -102,6 +102,10 @@
          * @returns {*}
          */
         function merge(dst, src) {
+            if (!angular.isDefined(dst) && !angular.isDefined(src)) return {};
+            if (!angular.isDefined(dst)) return src;
+            if (!angular.isDefined(src)) return dst;
+
             var h = dst.$$hashKey;
 
             if (!angular.isObject(src) && !angular.isFunction(src)) return;
