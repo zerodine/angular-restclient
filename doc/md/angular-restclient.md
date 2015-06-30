@@ -11,6 +11,7 @@
   * [endpointConfig.baseRoute()](#EndpointConfig#baseRoute)
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [endpoint.getPagination(data)](#Endpoint#getPagination)
   * [endpoint.mapResult(data)](#Endpoint#mapResult)
   * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.head(params)](#Endpoint#head)
@@ -87,6 +88,7 @@ Overwrites the baseRoute from the global configuration
 
 * [class: Endpoint](#Endpoint)
   * [new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)](#new_Endpoint)
+  * [endpoint.getPagination(data)](#Endpoint#getPagination)
   * [endpoint.mapResult(data)](#Endpoint#mapResult)
   * [endpoint.get(params)](#Endpoint#get)
   * [endpoint.head(params)](#Endpoint#head)
@@ -108,6 +110,16 @@ Class representing an Endpoint with all the functionality for receiving, saving 
 - $injector `$injector` - The Angular $injector factory  
 - $q `$q` - The Angular $q factory  
 
+<a name="Endpoint#getPagination"></a>
+##endpoint.getPagination(data)
+Extract the pagination data from the result
+
+**Params**
+
+- data `object` - Object or array of raw data  
+
+**Returns**: `object`  
+**Access**: private  
 <a name="Endpoint#mapResult"></a>
 ##endpoint.mapResult(data)
 Maps an object or array to the endpoint model

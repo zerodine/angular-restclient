@@ -215,6 +215,14 @@
         }
         Endpoint.$inject = ["endpoint", "endpointConfig", "baseRoute", "headResponseHeaderPrefix", "$resource", "$log", "$injector", "$q"];
 
+        /**
+         * Extract the pagination data from the result
+         *
+         * @private
+         * @param {object} data Object or array of raw data
+         * @return {object}
+         * @memberof Endpoint
+         */
         Endpoint.prototype.getPagination = function(data) {
             if (
                 angular.isDefined(data.count) &&
@@ -222,7 +230,6 @@
                     angular.isDefined(data.skip) &&
                     data.limit > 0
             ) {
-
                 // Calc the number of pages and generate array
                 data.pagesArray = [];
 
@@ -307,13 +314,13 @@
                 data.result.pagination = data.pagination;
                 data.result.endpoint = self;
                 data.result.next = function() {
-                    return this.endpoint.get({_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit});
+                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.previous = function() {
-                    return this.endpoint.get({_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit});
+                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.page = function(page) {
-                    return this.endpoint.get({_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit});
+                    return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 defer.resolve(data.result);
             }, function (error) {
