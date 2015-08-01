@@ -38,6 +38,7 @@ describe('EndToEnd', function() {
         api.users.get().then(function(users) {
             expect(users[0] instanceof TestModel).toBe(true);
             expect(users[0].fullname).toBe('Jack Bauer');
+            expect(users[1].fullname).toBe('Sandra Bullock');
         });
 
         $httpBackend.flush();
@@ -165,11 +166,11 @@ describe('EndToEnd', function() {
             expect(updatedUser instanceof TestModel).toBe(true);
         });
 
-        api.users.update({id: 1}, user_put).then(function(updatedUser) {
+        /*api.users.update({id: 1}, user_put).then(function(updatedUser) {
             expect(updatedUser.fullname).toBe('ElBarto Simpsons');
             expect(updatedUser instanceof TestModel).toBe(true);
         });
-
+*/
         $httpBackend.flush();
     }));
 });

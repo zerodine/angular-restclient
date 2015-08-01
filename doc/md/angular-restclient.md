@@ -17,6 +17,7 @@
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
+  * [endpoint.remove(params, model)](#Endpoint#remove)
 * [class: Model](#Model)
   * [new Model()](#new_Model)
   * [model.afterLoad()](#Model#afterLoad)
@@ -94,6 +95,7 @@ Overwrites the baseRoute from the global configuration
   * [endpoint.head(params)](#Endpoint#head)
   * [endpoint.update(params, model)](#Endpoint#update)
   * [endpoint.save(params, model)](#Endpoint#save)
+  * [endpoint.remove(params, model)](#Endpoint#remove)
 
 <a name="new_Endpoint"></a>
 ##new Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $resource, $log, $injector, $q)
@@ -156,12 +158,22 @@ Update an object
 **Params**
 
 - params `object` - The parameters that ether map in the route or get appended as GET parameters  
-- model <code>[Model](#Model)</code> - The model to be updated  
+- model `Model/array` - The model to be updated  
 
 **Returns**: `Promise.<Model,Error>`  
 <a name="Endpoint#save"></a>
 ##endpoint.save(params, model)
 Save an object
+
+**Params**
+
+- params `object` - The parameters that ether map in the route or get appended as GET parameters  
+- model <code>[Model](#Model)</code> - The model to be updated  
+
+**Returns**: `Promise.<Model,Error>`  
+<a name="Endpoint#remove"></a>
+##endpoint.remove(params, model)
+Remove an object
 
 **Params**
 

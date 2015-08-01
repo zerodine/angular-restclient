@@ -116,7 +116,7 @@
 
                 if (angular.isObject(src_new)) {
                     if (!angular.isObject(dst[key])) dst[key] = angular.isArray(src_new) ? [] : {};
-                    merge(dst[key], src_new);
+                    this(dst[key], src_new);
                 } else {
                     dst[key] = src_new;
                 }
@@ -196,6 +196,9 @@
                 },
                 head: {
                     method: 'HEAD'
+                },
+                remove: {
+                    method: 'DELETE'
                 }
             }, endpointConfig.actions));
 
@@ -242,6 +245,8 @@
                 for (var i=1; i<=pages; i++) data.pagesArray.push(i);
 
                 var currentPage = parseInt(data.skip / data.limit + 1);
+                var currentPageItemsCount = data.limit;
+                if (data.skip+1+data.limit > data.count) currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
 
                 return {
                     count: data.count,
@@ -249,7 +254,8 @@
                     skip: data.skip,
                     pagesArray: data.pagesArray,
                     pagesCount: pages,
-                    currentPage: currentPage
+                    currentPage: currentPage,
+                    currentPageItemsCount: currentPageItemsCount
                 }
             }
 
@@ -383,16 +389,28 @@
          * Update an object
          *
          * @param {object} params The parameters that ether map in the route or get appended as GET parameters
-         * @param {Model} model The model to be updated
+         * @param {Model/array} model The model to be updated
          * @return {Promise<Model|Error>}
          * @memberof Endpoint
          */
         Endpoint.prototype.update = function (params, model) {
-            // Set the action that is performed. This can be checked in the model.
-            model.__method = 'update';
 
-            // Call the _clean method of the model
-            model._clean();
+
+            if (angular.isArray(model)) {
+                var tempModels = angular.copy(model);
+                var model = [];
+                angular.forEach(tempModels, function(tempModel) {
+                    // Set the action that is performed. This can be checked in the model.
+                    tempModel.__method = 'update';
+                    tempModel._clean();
+                    model.push(tempModel);
+                })
+            } else {
+                // Set the action that is performed. This can be checked in the model.
+                model.__method = 'update';
+                // Call the _clean method of the model
+                model._clean();
+            }
 
             this.log.debug("apiFactory (" + this.endpointName + "): Model to update is:", model);
 
@@ -456,6 +474,52 @@
         Endpoint.prototype.post = Endpoint.prototype.save;
 
         /**
+         * Remove an object
+         *
+         * @param {object} params The parameters that ether map in the route or get appended as GET parameters
+         * @param {Model} model The model to be updated
+         * @return {Promise<Model|Error>}
+         * @memberof Endpoint
+         */
+        Endpoint.prototype.remove = function() {
+            // Check if only two arguments are given
+            if (angular.isUndefined(arguments[1])) {
+                model = arguments[0];
+            } else {
+                var params = arguments[0];
+                var model = arguments[1];
+            }
+
+            var defer = this.q.defer();
+
+            // Set the action that is performed. This can be checked in the model.
+            model.__method = 'remove';
+
+            // Get the id of the model
+            var paramId = {
+                id: model[model.__reference]
+            };
+
+
+
+            this.log.debug("apiFactory (" + this.endpointName + "): Model to remove is:", model);
+
+            // Use angularjs $resource to perform the delete
+            this.resource.delete(merge(paramId, params), function () {
+                defer.resolve();
+            }, function (error) {
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        };
+
+        /**
+         * This is an alias of the remove method
+         */
+        Endpoint.prototype.delete = Endpoint.prototype.remove;
+
+        /**
          * Set the base route
          * @param {string} baseRoute
          */
@@ -473,9 +537,9 @@
 
         /**
          * Add an endpoint to the endpoint array
-         * @param {Endpoint} endpoint
+         * @param {string} endpoint
          */
-        this.endpoint = function (endpoint) {
+        this.endpoint = function(endpoint) {
             var endpointConfig = new EndpointConfig();
             this.endpoints[endpoint] = endpointConfig;
             return endpointConfig;
@@ -666,10 +730,14 @@
 
             // Go thru every property of the model
             for (var property in this) {
-
                 // Ckeck if property is a method
                 if (!this.hasOwnProperty(property)) continue;
 
+                // Check if property is null
+                if (this[property] === null) {
+                    delete this[property];
+                    continue;
+                }
 
                 if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
 
