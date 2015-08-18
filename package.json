@@ -1,6 +1,6 @@
 {
   "name": "angular-restclient",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "An angularJS rest client with ORM",
   "main": "angular-restclient.js",
   "scripts": {
