@@ -166,11 +166,11 @@ describe('EndToEnd', function() {
             expect(updatedUser instanceof TestModel).toBe(true);
         });
 
-        /*api.users.update({id: 1}, user_put).then(function(updatedUser) {
+        api.users.update({id: 1}, user_put).then(function(updatedUser) {
             expect(updatedUser.fullname).toBe('ElBarto Simpsons');
             expect(updatedUser instanceof TestModel).toBe(true);
         });
-*/
+
         $httpBackend.flush();
     }));
 });

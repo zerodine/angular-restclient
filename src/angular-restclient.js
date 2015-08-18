@@ -175,23 +175,32 @@
             this.resource = $resource(baseRoute + this.endpointConfig.route, {}, merge({
                 get: {
                     method: 'GET',
-                    transformResponse: function(data) {
+                    transformResponse: function(data, headers, status) {
+                        data = angular.fromJson(data);
+                        if (status >= 400) return data;
+
                         return {
                             result: self.mapResult(angular.fromJson(data)),
-                            pagination: self.getPagination(angular.fromJson(data))
+                            pagination: self.getPagination(data)
                         };
                     }
                 },
                 save: {
                     method: 'POST',
-                    transformResponse: function(data) {
-                        return {result: self.mapResult(angular.fromJson(data))};
+                    transformResponse: function(data, headers, status) {
+                        data = angular.fromJson(data);
+                        if (status >= 400) return data;
+
+                        return {result: self.mapResult(data)};
                     }
                 },
                 update: {
                     method: 'PUT',
-                    transformResponse: function(data) {
-                        return {result: self.mapResult(angular.fromJson(data))};
+                    transformResponse: function(data, headers, status) {
+                        data = angular.fromJson(data);
+                        if (status >= 400) return data;
+
+                        return {result: self.mapResult(data)};
                     }
                 },
                 head: {
@@ -256,7 +265,7 @@
                     pagesCount: pages,
                     currentPage: currentPage,
                     currentPageItemsCount: currentPageItemsCount
-                }
+                };
             }
 
             return null;
@@ -272,6 +281,7 @@
          */
         Endpoint.prototype.mapResult = function(data) {
             var self = this;
+            var result;
             self.log.debug("apiFactory (" + self.endpointName + "): Endpoint called");
 
             // Set the name of the wrapping container
@@ -293,13 +303,13 @@
                     models.push(new model(value));
                 });
 
-                var result = models;
+                result = models;
 
             } else {
                 self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
 
                 // If only one object is given, map it to the model
-                var result = new model(data);
+                result = new model(data);
             }
 
             self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is:", result);
@@ -323,13 +333,13 @@
                 data.result.pagination = data.pagination;
                 data.result.endpoint = self;
                 data.result.next = function() {
-                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
+                    return self.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.previous = function() {
-                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
+                    return self.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.page = function(page) {
-                    return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
+                    return self.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 defer.resolve(data.result);
             }, function (error) {
@@ -361,9 +371,8 @@
                 if (angular.isDefined(self.headResponseHeaderPrefix) && self.headResponseHeaderPrefix !== '*') {
 
                     for (var header in headers) {
-
                         // Delete all headers without the given prefix
-                        if (header.toLowerCase().indexOf(self.headResponseHeaderPrefix.toLowerCase()) != 0) {
+                        if (header.toLowerCase().indexOf(self.headResponseHeaderPrefix.toLowerCase()) !== 0) {
                             delete headers[header];
                             continue;
                         }
@@ -379,7 +388,7 @@
                 // Resolve the promise
                 defer.resolve(headers);
             }, function (error) {
-                defer.reject(error)
+                defer.reject(error);
             });
 
             return defer.promise;
@@ -398,13 +407,13 @@
 
             if (angular.isArray(model)) {
                 var tempModels = angular.copy(model);
-                var model = [];
+                model = [];
                 angular.forEach(tempModels, function(tempModel) {
                     // Set the action that is performed. This can be checked in the model.
                     tempModel.__method = 'update';
                     tempModel._clean();
                     model.push(tempModel);
-                })
+                });
             } else {
                 // Set the action that is performed. This can be checked in the model.
                 model.__method = 'update';
@@ -420,7 +429,7 @@
             this.resource.update(params, model, function (data) {
                 defer.resolve(data.result);
             }, function (error) {
-                defer.reject(error)
+                defer.reject(error);
             });
 
             return defer.promise;
@@ -440,12 +449,14 @@
          * @memberof Endpoint
          */
         Endpoint.prototype.save = function () {
+            var model, params;
+
             // Check if only two arguments are given
             if (angular.isUndefined(arguments[1])) {
                 model = arguments[0];
             } else {
-                var params = arguments[0];
-                var model = arguments[1];
+                params = arguments[0];
+                model = arguments[1];
             }
 
             var defer = this.q.defer();
@@ -482,12 +493,14 @@
          * @memberof Endpoint
          */
         Endpoint.prototype.remove = function() {
+            var model, params;
+
             // Check if only two arguments are given
             if (angular.isUndefined(arguments[1])) {
                 model = arguments[0];
             } else {
-                var params = arguments[0];
-                var model = arguments[1];
+                params = arguments[0];
+                model = arguments[1];
             }
 
             var defer = this.q.defer();
@@ -641,7 +654,8 @@
 
             for (var property in this) {
                 // If property is a method, then continue
-                if (!this.hasOwnProperty(property) || ['__foreignData', '__annotation'].indexOf(property) > -1) continue;
+                if (!this.hasOwnProperty(property)) continue;
+                if (['__foreignData', '__annotation'].indexOf(property) > -1) continue;
 
                 // If annotations are given, set them
                 if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this.__annotation[property] = this[property];
@@ -796,13 +810,13 @@
             var self = this;
 
             // Check if the api property is set
-            if (angular.isUndefined(apiProperty) || apiProperty == null || apiProperty.length == 0) {
+            if (angular.isUndefined(apiProperty) || apiProperty === null || apiProperty.length === 0) {
                 self[property] = [];
                 return;
             }
 
             // If no model is set return the raw value
-            if (modelName == null) {
+            if (modelName === null) {
                 angular.forEach(apiProperty, function(value) {
                     self[property].push(value);
                 });
@@ -839,7 +853,7 @@
 
 
             // If no model is set return the raw value
-            if (modelName == null) {
+            if (modelName === null) {
                 this[property] = apiProperty;
                 return;
             }
@@ -925,6 +939,6 @@
             float: function(float) {
                 return angular.isNumber(float);
             }
-        }
+        };
     }
 })();
