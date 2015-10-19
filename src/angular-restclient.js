@@ -106,6 +106,9 @@
             if (!angular.isDefined(dst)) return src;
             if (!angular.isDefined(src)) return dst;
 
+            // Use angular merge if angular version >= 1.4
+            if (angular.isDefined(angular.merge)) return angular.merge(dst, src);
+
             var h = dst.$$hashKey;
 
             if (!angular.isObject(src) && !angular.isFunction(src)) return;
@@ -251,11 +254,25 @@
                 var pages = data.count / data.limit;
                 if (pages % 1 !== 0) pages = Math.ceil(pages);
 
-                for (var i=1; i<=pages; i++) data.pagesArray.push(i);
-
                 var currentPage = parseInt(data.skip / data.limit + 1);
                 var currentPageItemsCount = data.limit;
-                if (data.skip+1+data.limit > data.count) currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
+                if (data.skip+1+data.limit > data.count) {
+                    if (currentPage == 1) {
+                        currentPageItemsCount = data.limit;
+                    } else {
+                        currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
+                    }
+                }
+
+                var i;
+                if (currentPage <= 5) {
+                    for (i=1; i<=11; i++) data.pagesArray.push(i);
+                } else if (currentPage >= pages-5) {
+                    for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
+                } else {
+                    for (i=currentPage-5; i<=currentPage+5; i++) data.pagesArray.push(i);
+                }
+
 
                 return {
                     count: data.count,
@@ -333,13 +350,13 @@
                 data.result.pagination = data.pagination;
                 data.result.endpoint = self;
                 data.result.next = function() {
-                    return self.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
+                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.previous = function() {
-                    return self.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
+                    return this.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 data.result.page = function(page) {
-                    return self.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
+                    return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
                 };
                 defer.resolve(data.result);
             }, function (error) {
@@ -905,7 +922,8 @@
                 if (!this.hasOwnProperty(property)) continue;
 
                 if (angular.isDefined(this.__annotation[property])) {
-                    if (!Validator[this.__annotation[property].type](this[property])) return false;
+                    if (angular.isDefined(this.__annotation[property].required) && (this.__annotation[property].required && this[property] === null || this.__annotation[property].required && this[property] === '')) return false;
+                    if (!Validator[this.__annotation[property].type](this[property]) && this.__annotation[property].required) return false;
                 }
             }
 
