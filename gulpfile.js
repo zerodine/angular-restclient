@@ -7,7 +7,7 @@ var concat = require("gulp-concat");
 var uglify = require('gulp-uglify');
 var ngannotate = require('gulp-ng-annotate');
 var stripDebug = require('gulp-strip-debug');
-var karma = require('gulp-karma');
+var karma = require('karma').Server;
 
 gulp.task('js', ['test'], function () {
     gulp.src('./src/*.js')
@@ -41,23 +41,11 @@ gulp.task('doc', ['test'], function() {
     gulp.start('doc-html', 'doc-md');
 });
 
-gulp.task('test', function() {
-    return gulp.src([
-        'node_modules/angular/angular.js',
-        'node_modules/angular-mocks/angular-mocks.js',
-        'node_modules/angular-resource/angular-resource.js',
-        'src/angular-restclient.js',
-
-        'test/TestModel.js',
-        'test/**/*Spec.js'
-    ])
-        .pipe(karma({
-            configFile: 'karma.conf.js',
-            action: 'run'
-        }))
-        .on('error', function(err) {
-            throw err;
-        });
+gulp.task('test', function(done) {
+    new karma({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done).start();
 });
 
 gulp.task('build', function() {
