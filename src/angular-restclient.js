@@ -265,12 +265,16 @@
                 }
 
                 var i;
-                if (currentPage <= 5) {
-                    for (i=1; i<=11; i++) data.pagesArray.push(i);
-                } else if (currentPage >= pages-5) {
-                    for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
+                if (pages > 10) {
+                    if (currentPage <= 5) {
+                        for (i=1; i<=11; i++) data.pagesArray.push(i);
+                    } else if (currentPage >= pages-5) {
+                        for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
+                    } else {
+                        for (i=currentPage-5; i<=currentPage+5; i++) data.pagesArray.push(i);
+                    }
                 } else {
-                    for (i=currentPage-5; i<=currentPage+5; i++) data.pagesArray.push(i);
+                    for (var i=1; i<=pages; i++) data.pagesArray.push(i);
                 }
 
 
