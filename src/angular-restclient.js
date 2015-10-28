@@ -358,6 +358,7 @@
                 data.result.page = function(page) {
                     return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
                 };
+
                 defer.resolve(data.result);
             }, function (error) {
                 defer.reject(error);
