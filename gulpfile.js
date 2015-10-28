@@ -8,11 +8,25 @@ var uglify = require('gulp-uglify');
 var ngannotate = require('gulp-ng-annotate');
 var stripDebug = require('gulp-strip-debug');
 var karma = require('karma').Server;
+var iife = require('gulp-iife');
 
 gulp.task('js', ['test'], function () {
-    gulp.src('./src/*.js')
+    gulp.src([
+        'src/lib/merge.js',
+        'src/pojo/endpointInterface.js',
+        'src/pojo/endpointAbstract.js',
+        'src/pojo/endpoint.js',
+        'src/pojo/endpointFixture.js',
+        'src/pojo/endpointConfig.js',
+        'src/angular-restclient.js',
+        'src/factory/model.js',
+        'src/factory/fixture.js',
+        'src/factory/validator.js',
+        'src/provider/api.js'
+    ])
         .pipe(concat('angular-restclient.js'))
         .pipe(ngannotate())
+        .pipe(iife())
         .pipe(gulp.dest('./dist'))
         .pipe(rename({ suffix: '.min' }))
         .pipe(stripDebug())

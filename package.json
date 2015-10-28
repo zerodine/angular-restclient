@@ -33,6 +33,7 @@
     "angular-resource": "^1.4.4",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-iife": "^0.1.0",
     "gulp-jsdoc": "^0.1.4",
     "gulp-jsdoc-to-markdown": "^1.1.1",
     "gulp-ng-annotate": "^1.1.0",
