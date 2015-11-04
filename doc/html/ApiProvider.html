@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: EndpointConfig</title>
+    <title>JSDoc: Class: ApiProvider</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: EndpointConfig</h1>
+    <h1 class="page-title">Class: ApiProvider</h1>
 
     
 
@@ -27,7 +27,7 @@
 
 <header>
     <h2>
-    EndpointConfig
+    ApiProvider
     </h2>
     
 </header>
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="EndpointConfig"><span class="type-signature"></span>new EndpointConfig<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ApiProvider"><span class="type-signature"></span>new ApiProvider<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -47,7 +47,7 @@
 
     
     <div class="description">
-        This class represents one configuration for an endpoint
+        The provider to get the api
     </div>
     
 
@@ -80,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line1">line 1</a>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
@@ -120,6 +120,208 @@
 
     
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="baseRoute"><span class="type-signature"></span>baseRoute<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The base route to the backend api
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="endpoints"><span class="type-signature"></span>endpoints<span class="type-signature"> :object</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        All the endpoints
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">object</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="headResponseHeaderPrefix"><span class="type-signature"></span>headResponseHeaderPrefix<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Prefix of a header in a HEAD response
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -128,7 +330,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="actions"><span class="type-signature"></span>actions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
+    <h4 class="name" id="$get"><span class="type-signature"></span>$get<span class="signature">($injector)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -136,193 +338,7 @@
 
     
     <div class="description">
-        Define if the response from the api is going to be an array
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line53">line 53</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
-
-
-    </dd>
-</dl>
-
-        
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="baseRoute"><span class="type-signature"></span>baseRoute<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Overwrites the baseRoute from the global configuration
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line64">line 64</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
-
-
-    </dd>
-</dl>
-
-        
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="container"><span class="type-signature"></span>container<span class="signature">(container)</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Set the container that wraps the response. Default is null.
+        The factory method
     </div>
     
 
@@ -356,13 +372,13 @@
 
         <tr>
             
-                <td class="name"><code>container</code></td>
+                <td class="name"><code>$injector</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">$injector</span>
 
 
             
@@ -372,7 +388,7 @@
 
             
 
-            <td class="description last">The container defined as string</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -403,7 +419,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line42">line 42</a>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -426,28 +442,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
-
-
-    </dd>
-</dl>
-
-        
 
     
 </dd>
@@ -455,7 +449,7 @@
         
             
 <dt>
-    <h4 class="name" id="mock"><span class="type-signature"></span>mock<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
+    <h4 class="name" id="baseRoute"><span class="type-signature"></span>baseRoute<span class="signature">(baseRoute)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -463,100 +457,7 @@
 
     
     <div class="description">
-        Overwrites the mock from the global configuration
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line75">line 75</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
-
-
-    </dd>
-</dl>
-
-        
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="model"><span class="type-signature"></span>model<span class="signature">(model)</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Set the model that is used to transform the response
+        Set the base route
     </div>
     
 
@@ -590,7 +491,7 @@
 
         <tr>
             
-                <td class="name"><code>model</code></td>
+                <td class="name"><code>baseRoute</code></td>
             
 
             <td class="type">
@@ -606,7 +507,7 @@
 
             
 
-            <td class="description last">The model defined as string</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -637,7 +538,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line30">line 30</a>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -660,28 +561,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
-
-
-    </dd>
-</dl>
-
-        
 
     
 </dd>
@@ -689,7 +568,7 @@
         
             
 <dt>
-    <h4 class="name" id="route"><span class="type-signature"></span>route<span class="signature">(route)</span><span class="type-signature"> &rarr; {<a href="EndpointConfig.html">EndpointConfig</a>}</span></h4>
+    <h4 class="name" id="endpoint"><span class="type-signature"></span>endpoint<span class="signature">(endpoint)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -697,7 +576,7 @@
 
     
     <div class="description">
-        Set the route to this endpoint
+        Add an endpoint to the endpoint array
     </div>
     
 
@@ -731,7 +610,7 @@
 
         <tr>
             
-                <td class="name"><code>route</code></td>
+                <td class="name"><code>endpoint</code></td>
             
 
             <td class="type">
@@ -747,7 +626,7 @@
 
             
 
-            <td class="description last">The endpoint route defined as string</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -778,7 +657,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="endpointConfig.js.html">pojo/endpointConfig.js</a>, <a href="endpointConfig.js.html#line18">line 18</a>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -801,28 +680,125 @@
     
 
     
-    <h5>Returns:</h5>
+
     
-            
-<div class="param-desc">
-    Returns the endpoint config object
-</div>
+</dd>
 
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
         
-<span class="param-type"><a href="EndpointConfig.html">EndpointConfig</a></span>
+            
+<dt>
+    <h4 class="name" id="headResponseHeaderPrefix"><span class="type-signature"></span>headResponseHeaderPrefix<span class="signature">(headResponseHeaderPrefix)</span><span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Set the head response header prefix
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>headResponseHeaderPrefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-    </dd>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">provider/api.js</a>, <a href="api.js.html#line40">line 40</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
 </dl>
 
-        
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>

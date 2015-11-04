@@ -1,6 +1,7 @@
 ;(function() {
 "use strict";
 
+angular.module('restclient', ['ngResource']);
 /**
  * This is just a helper function because a merge is not supported by angular until version > 1.4
  *
@@ -41,35 +42,140 @@ function merge(dst, src) {
 
     return dst;
 }
+function EndpointInterface() {}
+
+EndpointInterface.prototype.get = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.post = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.delete = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.put = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.head = function() { throw 'Not Implemented'};
+angular.extend(EndpointAbstract.prototype, EndpointInterface.prototype);
+
+function EndpointAbstract() {}
+
+/**
+ * Maps an object or array to the endpoint model
+ *
+ * @private
+ * @param {object} data Object or array of raw data
+ * @return {Model|Array}
+ * @memberof EndpointAbstract
+ */
+EndpointAbstract.prototype.mapResult = function(data) {
+    var self = this;
+    var result;
+    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Endpoint called");
+
+    // Set the name of the wrapping container
+    var container = self.endpointConfig.container;
+    // Get the model object that is used to map the result
+    var model = this.injector.get(self.endpointConfig.model);
+
+    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Container set to " + container);
+
+    // Check if response is an array
+    if (angular.isArray(data) || angular.isArray(data[container])) {
+        self.log.debug("apiFactory (" + self.endpointConfig.name + "): Result is an array");
+
+        var arrayData = angular.isArray(data) ? data : data[container];
+        var models = [];
+
+        // Iterate thru every object in the response and map it to a model
+        angular.forEach(arrayData, function (value) {
+            models.push(new model(value));
+        });
+
+        result = models;
+
+    } else {
+        self.log.debug("apiFactory (" + self.endpointConfig.name + "): Result is NOT an array");
+
+        // If only one object is given, map it to the model
+        result = new model(data);
+    }
+
+    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Mapped result is:", result);
+
+    return result;
+};
+
+/**
+ * Extract the pagination data from the result
+ *
+ * @private
+ * @param {object} data Object or array of raw data
+ * @return {object}
+ * @memberof EndpointAbstract
+ */
+EndpointAbstract.prototype.getPagination = function(data) {
+    if (
+        angular.isDefined(data.count) &&
+        angular.isDefined(data.limit) &&
+        angular.isDefined(data.skip) &&
+        data.limit > 0
+    ) {
+        // Calc the number of pages and generate array
+        data.pagesArray = [];
+
+        var pages = data.count / data.limit;
+        if (pages % 1 !== 0) pages = Math.ceil(pages);
+
+        var currentPage = parseInt(data.skip / data.limit + 1);
+        var currentPageItemsCount = data.limit;
+        if (data.skip+1+data.limit > data.count) {
+            if (currentPage == 1) {
+                currentPageItemsCount = data.limit;
+            } else {
+                currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
+            }
+        }
+
+        var i;
+        if (currentPage <= 5) {
+            for (i=1; i<=11; i++) data.pagesArray.push(i);
+        } else if (currentPage >= pages-5) {
+            for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
+        } else {
+            for (i=currentPage-5; i<=currentPage+5; i++) data.pagesArray.push(i);
+        }
+
+
+        return {
+            count: data.count,
+            limit: data.limit,
+            skip: data.skip,
+            pagesArray: data.pagesArray,
+            pagesCount: pages,
+            currentPage: currentPage,
+            currentPageItemsCount: currentPageItemsCount
+        };
+    }
+
+    return null;
+};
+
+EndpointAbstract.prototype.update = function() {
+    return this.put.apply(this, arguments);
+};
+
+EndpointAbstract.prototype.save = function() {
+    return this.post.apply(this, arguments);
+};
+
+EndpointAbstract.prototype.remove = function() {
+    return this.delete.apply(this, arguments);
+};
+angular.extend(Endpoint.prototype, EndpointAbstract.prototype);
+
 /**
  * Class representing an Endpoint with all the functionality for receiving, saving and updating data from the backend
  *
- * @param {string} endpoint The name of the endpoint
  * @param {EndpointConfig} endpointConfig Config of the endpoint which was defined earlier
- * @param {string} baseRoute URL to the backend
- * @param {string} headResponseHeaderPrefix Prefix of head request header
- * @param {$resource} $resource The Angular $resource factory
- * @param {$log} $log The Angular $log factory
  * @param {$injector} $injector The Angular $injector factory
- * @param {$q} $q The Angular $q factory
  * @constructor Endpoint
  */
-function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix, $injector) {
+function Endpoint(endpointConfig, $injector) {
     var self = this;
-
-    if (!angular.isFunction(endpointConfig.baseRoute)) baseRoute = endpointConfig.baseRoute;
-
-    /**
-     * The name of the endpoint
-     * @type {string}
-     */
-    this.endpointName = endpoint;
-
-    /**
-     * Prefix of a header in a HEAD response
-     * @type {string}
-     */
-    this.headResponseHeaderPrefix = headResponseHeaderPrefix;
 
     /**
      * The EndpointConfig object defined for this endpoint
@@ -81,7 +187,7 @@ function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix,
      * An instance if the $resource factory from the angularjs library
      * @type {$resource}
      */
-    this.resource = $injector.get('$resource')(baseRoute + this.endpointConfig.route, {}, merge({
+    this.resource = $injector.get('$resource')(this.endpointConfig.baseRoute + this.endpointConfig.route, {}, merge({
         get: {
             method: 'GET',
             transformResponse: function(data, headers, status) {
@@ -140,107 +246,6 @@ function Endpoint(endpoint, endpointConfig, baseRoute, headResponseHeaderPrefix,
 }
 
 /**
- * Extract the pagination data from the result
- *
- * @private
- * @param {object} data Object or array of raw data
- * @return {object}
- * @memberof Endpoint
- */
-Endpoint.prototype.getPagination = function(data) {
-    if (
-        angular.isDefined(data.count) &&
-        angular.isDefined(data.limit) &&
-        angular.isDefined(data.skip) &&
-        data.limit > 0
-    ) {
-        // Calc the number of pages and generate array
-        data.pagesArray = [];
-
-        var pages = data.count / data.limit;
-        if (pages % 1 !== 0) pages = Math.ceil(pages);
-
-        var currentPage = parseInt(data.skip / data.limit + 1);
-        var currentPageItemsCount = data.limit;
-        if (data.skip+1+data.limit > data.count) {
-            if (currentPage == 1) {
-                currentPageItemsCount = data.limit;
-            } else {
-                currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
-            }
-        }
-
-        var i;
-        if (currentPage <= 5) {
-            for (i=1; i<=11; i++) data.pagesArray.push(i);
-        } else if (currentPage >= pages-5) {
-            for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
-        } else {
-            for (i=currentPage-5; i<=currentPage+5; i++) data.pagesArray.push(i);
-        }
-
-
-        return {
-            count: data.count,
-            limit: data.limit,
-            skip: data.skip,
-            pagesArray: data.pagesArray,
-            pagesCount: pages,
-            currentPage: currentPage,
-            currentPageItemsCount: currentPageItemsCount
-        };
-    }
-
-    return null;
-};
-
-/**
- * Maps an object or array to the endpoint model
- *
- * @private
- * @param {object} data Object or array of raw data
- * @return {Model|Array}
- * @memberof Endpoint
- */
-Endpoint.prototype.mapResult = function(data) {
-    var self = this;
-    var result;
-    self.log.debug("apiFactory (" + self.endpointName + "): Endpoint called");
-
-    // Set the name of the wrapping container
-    var container = self.endpointConfig.container;
-    // Get the model object that is used to map the result
-    var model = this.injector.get(self.endpointConfig.model);
-
-    self.log.debug("apiFactory (" + self.endpointName + "): Container set to " + container);
-
-    // Check if response is an array
-    if (angular.isArray(data) || angular.isArray(data[container])) {
-        self.log.debug("apiFactory (" + self.endpointName + "): Result is an array");
-
-        var arrayData = angular.isArray(data) ? data : data[container];
-        var models = [];
-
-        // Iterate thru every object in the response and map it to a model
-        angular.forEach(arrayData, function (value) {
-            models.push(new model(value));
-        });
-
-        result = models;
-
-    } else {
-        self.log.debug("apiFactory (" + self.endpointName + "): Result is NOT an array");
-
-        // If only one object is given, map it to the model
-        result = new model(data);
-    }
-
-    self.log.debug("apiFactory (" + self.endpointName + "): Mapped result is:", result);
-
-    return result;
-};
-
-/**
  * Call an endpoint and map the response to one or more models given in the endpoint config
  * The server response must be an object
  *
@@ -282,7 +287,7 @@ Endpoint.prototype.get = function (params) {
 Endpoint.prototype.head = function(params) {
     var self = this;
 
-    self.log.debug("apiFactory (" + self.endpointName + "): (HEAD) Endpoint called");
+    self.log.debug("apiFactory (" + self.endpointConfig.name + "): (HEAD) Endpoint called");
 
     var defer = this.q.defer();
 
@@ -291,17 +296,17 @@ Endpoint.prototype.head = function(params) {
         var headers = headersFunc();
 
         // Check if a prefix is given
-        if (angular.isDefined(self.headResponseHeaderPrefix) && self.headResponseHeaderPrefix !== '*') {
+        if (angular.isDefined(self.endpointConfig.headResponseHeaderPrefix) && self.endpointConfig.headResponseHeaderPrefix !== '*') {
 
             for (var header in headers) {
                 // Delete all headers without the given prefix
-                if (header.toLowerCase().indexOf(self.headResponseHeaderPrefix.toLowerCase()) !== 0) {
+                if (header.toLowerCase().indexOf(self.endpointConfig.headResponseHeaderPrefix.toLowerCase()) !== 0) {
                     delete headers[header];
                     continue;
                 }
 
                 // Make a alias without the prefix
-                headers[header.substr(self.headResponseHeaderPrefix.length, header.length)] = headers[header];
+                headers[header.substr(self.endpointConfig.headResponseHeaderPrefix.length, header.length)] = headers[header];
 
                 // Delete the orignial headers
                 //delete headers[header];
@@ -325,7 +330,7 @@ Endpoint.prototype.head = function(params) {
  * @return {Promise<Model|Error>}
  * @memberof Endpoint
  */
-Endpoint.prototype.update = function (params, model) {
+Endpoint.prototype.put = function (params, model) {
 
 
     if (angular.isArray(model)) {
@@ -344,7 +349,7 @@ Endpoint.prototype.update = function (params, model) {
         model._clean();
     }
 
-    this.log.debug("apiFactory (" + this.endpointName + "): Model to update is:", model);
+    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to update is:", model);
 
     var defer = this.q.defer();
 
@@ -359,11 +364,6 @@ Endpoint.prototype.update = function (params, model) {
 };
 
 /**
- * This is an alias of the update method
- */
-Endpoint.prototype.put = Endpoint.prototype.update;
-
-/**
  * Save an object
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
@@ -371,7 +371,7 @@ Endpoint.prototype.put = Endpoint.prototype.update;
  * @return {Promise<Model|Error>}
  * @memberof Endpoint
  */
-Endpoint.prototype.save = function () {
+Endpoint.prototype.post = function () {
     var model, params;
 
     // Check if only two arguments are given
@@ -390,7 +390,7 @@ Endpoint.prototype.save = function () {
     // Call the _clean method of the model
     model._clean();
 
-    this.log.debug("apiFactory (" + this.endpointName + "): Model to save is:", model);
+    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to save is:", model);
 
     // Use angularjs $resource to perform the save
     this.resource.save(params, model, function (data) {
@@ -403,11 +403,6 @@ Endpoint.prototype.save = function () {
 };
 
 /**
- * This is an alias of the save method
- */
-Endpoint.prototype.post = Endpoint.prototype.save;
-
-/**
  * Remove an object
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
@@ -415,7 +410,7 @@ Endpoint.prototype.post = Endpoint.prototype.save;
  * @return {Promise<Model|Error>}
  * @memberof Endpoint
  */
-Endpoint.prototype.remove = function() {
+Endpoint.prototype.delete = function() {
     var model, params;
 
     // Check if only two arguments are given
@@ -438,7 +433,7 @@ Endpoint.prototype.remove = function() {
 
 
 
-    this.log.debug("apiFactory (" + this.endpointName + "): Model to remove is:", model);
+    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to remove is:", model);
 
     // Use angularjs $resource to perform the delete
     this.resource.delete(merge(paramId, params), function () {
@@ -449,17 +444,140 @@ Endpoint.prototype.remove = function() {
 
     return defer.promise;
 };
+angular.extend(EndpointMock.prototype, EndpointAbstract.prototype);
 
 /**
- * This is an alias of the remove method
+ * EndpointMock provides all methods which Endpoint provides but sends the request to mocks
+ *
+ * @param endpointConfig EndpointConfig of the Endpoint
+ * @param $injector The angular $injector provider
+ * @constructor
  */
-Endpoint.prototype.delete = Endpoint.prototype.remove;
+function EndpointMock(endpointConfig, $injector) {
+    this.endpointConfig = endpointConfig;
+    this.q = $injector.get('$q');
+    this.log = $injector.get('$log');
+    this.injector = $injector;
+
+    this.mock = $injector.get(endpointConfig.mock);
+}
+
+/**
+ * Order all params according the endpoints route
+ *
+ * @param params Params as unordered object
+ * @returns {Array} Ordered according route
+ */
+EndpointMock.prototype.extractParams = function(params) {
+    var paramsOrder = [];
+    var regex = /:(\w+)/g;
+    var param = regex.exec(this.endpointConfig.route);
+    while (param != null) {
+        paramsOrder.push(param[1]);
+        param = regex.exec(this.endpointConfig.route);
+    }
+
+    var orderedParams = [];
+    angular.forEach(paramsOrder, function(param) {
+        if (angular.isObject(params) && angular.isDefined(params[param])) orderedParams.push(params[param]);
+    });
+
+    return orderedParams;
+};
+
+/**
+ * Receive the mocks content
+ *
+ * @param params Request parameter
+ * @returns {Promise<Model|Error>} Promise with models
+ */
+EndpointMock.prototype.get = function(params) {
+    var defer = this.q.defer();
+
+    var mock = new this.mock;
+    var data = mock._request('GET', this.extractParams(params));
+    var mappedResult = this.mapResult(data);
+
+    defer.resolve(mappedResult);
+
+    return defer.promise;
+};
+
+/**
+ * Save an model to a mock endpoint
+ *
+ * @returns {Promise<Model|Error>} with model
+ */
+EndpointMock.prototype.post = function() {
+    var model, params;
+    var mock = new this.mock;
+    var defer = this.q.defer();
+
+    // Check if only two arguments are given
+    if (angular.isUndefined(arguments[1])) {
+        model = arguments[0];
+    } else {
+        params = arguments[0];
+        model = arguments[1];
+    }
+
+    // Set the action that is performed. This can be checked in the model.
+    model.__method = 'save';
+
+    // Call the _clean method of the model
+    model._clean();
+
+    var data = mock._request('POST', this.extractParams(params), model);
+    var mappedResult = this.mapResult(data);
+
+    defer.resolve(mappedResult);
+
+    return defer.promise;
+};
+
+
+/**
+ * Update an existing model
+ *
+ * @param params Request parameters
+ * @param model Model to update
+ * @returns {Promise<Model|Error>} Updated model
+ */
+EndpointMock.prototype.put = function (params, model) {
+    var mock = new this.mock;
+    var defer = this.q.defer();
+
+    if (angular.isArray(model)) {
+        var tempModels = angular.copy(model);
+        model = [];
+        angular.forEach(tempModels, function(tempModel) {
+            // Set the action that is performed. This can be checked in the model.
+            tempModel.__method = 'update';
+            tempModel._clean();
+            model.push(tempModel);
+        });
+    } else {
+        // Set the action that is performed. This can be checked in the model.
+        model.__method = 'update';
+        // Call the _clean method of the model
+        model._clean();
+    }
+
+    var data = mock._request('PUT', this.extractParams(params), model);
+    var mappedResult = this.mapResult(data);
+    defer.resolve(mappedResult);
+
+    return defer.promise;
+};
 /**
  * This class represents one configuration for an endpoint
  *
  * @constructor EndpointConfig
  */
-function EndpointConfig() {}
+function EndpointConfig(endpoint) {
+    this.name = endpoint;
+    this.headResponseHeaderPrefix = null;
+}
 
 /**
  * Set the route to this endpoint
@@ -518,7 +636,17 @@ EndpointConfig.prototype.baseRoute = function(baseRoute) {
     this.baseRoute = baseRoute;
     return this;
 };
-angular.module('restclient', ['ngResource']);
+
+/**
+ * Overwrites the mock from the global configuration
+ *
+ * @return {EndpointConfig} Returns the endpoint config object
+ * @memberof EndpointConfig
+ */
+EndpointConfig.prototype.mock = function(mock) {
+    this.mock = mock;
+    return this;
+};
 angular
     .module('restclient')
     .factory('Model', ModelFactory);
@@ -852,6 +980,39 @@ function ModelFactory($log, $injector, Validator) {
 ModelFactory.$inject = ["$log", "$injector", "Validator"];
 angular
     .module('restclient')
+    .factory('Mock', MockFactory);
+
+/**
+ * The factory to get the abstract mock
+ * @constructor
+ * @ngInject
+ */
+function MockFactory() {
+    function Mock() {}
+
+    Mock.prototype.routes = function(routes) {
+        this.routeMatcher = {};
+
+        for (var route in routes) {
+            if (!routes.hasOwnProperty(route)) continue;
+
+            this.routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length]= routes[route];
+        }
+    };
+
+    Mock.prototype._request = function(method, params, body) {
+        if (angular.isDefined(this.routeMatcher[method+params.length])) {
+            var methodName = method+params.length;
+            if (angular.isDefined(body)) params.push({ body: body});
+
+            return this.routeMatcher[methodName].apply(this, params);
+        }
+    };
+
+    return Mock;
+}
+angular
+    .module('restclient')
     .factory('Validator', ValidatorFactory);
 
 function ValidatorFactory() {
@@ -928,7 +1089,7 @@ function ApiProvider() {
      * @param {string} endpoint
      */
     this.endpoint = function(endpoint) {
-        var endpointConfig = new EndpointConfig();
+        var endpointConfig = new EndpointConfig(endpoint);
         this.endpoints[endpoint] = endpointConfig;
         return endpointConfig;
     };
@@ -943,23 +1104,22 @@ function ApiProvider() {
         var api = {};
 
         // Go thru every given endpoint
-        angular.forEach(self.endpoints, function (endpointConfig, name) {
+        angular.forEach(self.endpoints, function (endpointConfig) {
 
             // Check if an container is given and if not, set it to the name of the endpoint
-            if (angular.isFunction(endpointConfig.container)) endpointConfig.container = name;
+            if (angular.isFunction(endpointConfig.container)) endpointConfig.container = endpointConfig.name;
 
             // Check if headResponseHeaderPrefix is set
             if (angular.isFunction(self.headResponseHeaderPrefix)) delete self.headResponseHeaderPrefix;
 
-            // Get an instance of the endpoint and add it to the api object
-            /*api[name] = $injector.instantiate(Endpoint, {
-             endpoint: name,
-             endpointConfig: endpointConfig,
-             baseRoute: self.baseRoute,
-             headResponseHeaderPrefix: self.headResponseHeaderPrefix
-             });*/
+            if (angular.isFunction(endpointConfig.baseRoute)) endpointConfig.baseRoute = self.baseRoute;
+            endpointConfig.headResponseHeaderPrefix = self.headResponseHeaderPrefix;
 
-            api[name] = new Endpoint(name, endpointConfig, self.baseRoute, self.headResponseHeaderPrefix, $injector)
+            if (angular.isFunction(endpointConfig.mock)) {
+                api[endpointConfig.name] = new Endpoint(endpointConfig, $injector);
+            } else {
+                api[endpointConfig.name] = new EndpointMock(endpointConfig, $injector);
+            }
         });
 
         return api;

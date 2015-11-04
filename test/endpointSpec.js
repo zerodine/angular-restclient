@@ -12,7 +12,7 @@ describe('Endpoint', function() {
     it('tests one endpoint config', inject(function($injector) {
         var api = provider.$get($injector);
 
-        expect(api.users.endpointName).toBe('users');
+        expect(api.users.endpointConfig.name).toBe('users');
         expect(api.users.endpointConfig.model).toBe('User');
     }));
 });

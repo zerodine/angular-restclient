@@ -23,16 +23,16 @@ module.exports = function (config) {
             'src/pojo/endpointInterface.js',
             'src/pojo/endpointAbstract.js',
             'src/pojo/endpoint.js',
-            'src/pojo/endpointFixture.js',
+            'src/pojo/endpointMock.js',
             'src/pojo/endpointConfig.js',
             'src/angular-restclient.js',
             'src/factory/model.js',
-            'src/factory/fixture.js',
+            'src/factory/mock.js',
             'src/factory/validator.js',
             'src/provider/api.js',
 
             'test/TestModel.js',
-            'test/TestUsersFixture.js',
+            'test/TestUsersMock.js',
             'test/**/*Spec.js'
         ],
 

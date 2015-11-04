@@ -12,15 +12,15 @@ var iife = require('gulp-iife');
 
 gulp.task('js', ['test'], function () {
     gulp.src([
+        'src/angular-restclient.js',
         'src/lib/merge.js',
         'src/pojo/endpointInterface.js',
         'src/pojo/endpointAbstract.js',
         'src/pojo/endpoint.js',
-        'src/pojo/endpointFixture.js',
+        'src/pojo/endpointMock.js',
         'src/pojo/endpointConfig.js',
-        'src/angular-restclient.js',
         'src/factory/model.js',
-        'src/factory/fixture.js',
+        'src/factory/mock.js',
         'src/factory/validator.js',
         'src/provider/api.js'
     ])
@@ -35,12 +35,12 @@ gulp.task('js', ['test'], function () {
 });
 
 gulp.task('doc-html', function () {
-    gulp.src("./src/*.js")
+    gulp.src("./src/**/*.js")
         .pipe(jsdoc('./doc/html'))
 });
 
 gulp.task("doc-md", function(){
-    return gulp.src("src/*.js")
+    return gulp.src("src/**/*.js")
         .pipe(jsdoc2md())
         .on("error", function(err){
             gutil.log(gutil.colors.red("jsdoc2md failed"), err.message)
