@@ -4,6 +4,7 @@ angular
 
 /**
  * @ngInject
+ * @class
  */
 function MockFactory() {
 

@@ -2,6 +2,7 @@
  * Used to make sure that all HTTP/1.1 methods are implemented
  *
  * @interface
+ * @class
  */
 function EndpointInterface() {}
 

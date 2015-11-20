@@ -110,21 +110,21 @@ EndpointAbstract.prototype._getPagination = function(data) {
 };
 
 /**
- * @alias put
+ * @abstract
  */
 EndpointAbstract.prototype.update = function() {
     return this.put.apply(this, arguments);
 };
 
 /**
- * @alias post
+ * @abstract
  */
 EndpointAbstract.prototype.save = function() {
     return this.post.apply(this, arguments);
 };
 
 /**
- * @alias delete
+ * @abstract
  */
 EndpointAbstract.prototype.remove = function() {
     return this.delete.apply(this, arguments);

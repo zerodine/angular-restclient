@@ -1,0 +1,106 @@
+#angular-restclient
+A work-in-progress AngularJS rest client with ORM
+
+##Install
+```sh
+$ bower install angular-restclient --save
+```
+
+##Load Module
+```js
+var app = angular.module('app', ['restclient']);
+```
+
+##Configuration
+```js
+app.config(function(apiProvider) {
+    apiProvider.baseRoute('http://localhost/api');
+
+    apiProvider.endpoint('users')
+        .route('/users/:id/:controller')
+        .model('User');
+    apiProvider.endpoint('posts')
+        .route('/posts/:id')
+        .model('Post');
+});
+```
+
+##Model example
+```js
+app.factory('User', function(Model) {
+    function User(object) {
+    
+        this.id = {
+            type: 'string',
+            save: false
+        };
+        
+        this.firstname = {
+            type: 'string'
+        };
+        
+        this.lastname = {
+            type: 'string'
+        };
+        
+        this.email = {
+            type: 'email'
+        };
+        
+        this.posts = {
+            type: 'relation',
+            relation: {
+                type: 'many',
+                model: 'Post'
+            },
+            save: false
+        };
+        
+        // Map the given object
+        this._init(object);
+    }
+
+    angular.extend(User.prototype, Model.prototype);
+
+    return User;
+});
+```
+
+##Make a call
+```js
+app.controller('Ctrl', function(api) {
+    api.users.get().then(function(data) {
+        $scope.users = data;
+    });
+});
+```
+
+##API Documentation
+###Providers
+* [ApiProvider](#ApiProvider)
+
+###Factories
+* [Model](#ModelFactory..Model)
+* [Mock](#MockFactory..Mock)
+* [Validator](#ValidatorFactory..Validator)
+
+###Classes
+* [Endpoint](#Endpoint)
+* [EndpointConfig](#EndpointConfig)
+* [EndpointMock](#EndpointMock)
+
+###Abstract Classes
+* [EndpointAbstract](#EndpointAbstract)
+
+###Interfaces
+* [EndpointInterface](#EndpointInterface)
+
+{{#class name="ApiProvider"}}{{>docs}}{{/class}}
+{{#class name="Model"}}{{>docs}}{{/class}}
+{{#class name="Mock"}}{{>docs}}{{/class}}
+{{#class name="Validator"}}{{>docs}}{{/class}}
+{{#class name="Endpoint"}}{{>docs}}{{/class}}
+{{#class name="EndpointConfig"}}{{>docs}}{{/class}}
+{{#class name="EndpointMock"}}{{>docs}}{{/class}}
+{{#class name="EndpointAbstract"}}{{>docs}}{{/class}}
+{{#class name="EndpointInterface"}}{{>docs}}{{/class}}
