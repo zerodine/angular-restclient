@@ -14,7 +14,7 @@
 
 <a name="new_ApiProvider_new"></a>
 ### new ApiProvider()
-The provider to get the api
+AngularJD provider to provide the api
 
 <a name="ApiProvider+endpoints"></a>
 ### apiProvider.endpoints : <code>object</code>

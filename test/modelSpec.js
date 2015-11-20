@@ -13,7 +13,7 @@ describe('Model', function() {
         expect(testModel.lastname).toBe('Bauer');
         expect(testModel.id).toEqual(1);
 
-        testModel._clean();
+        testModel.clean();
 
         expect(testModel.firstname).toBe('Jack_');
         expect(testModel.lastname).toBe('Bauer');
@@ -31,6 +31,6 @@ describe('Model', function() {
         expect(testModel.firstname).toBe('Jack');
         expect(testModel.lastname).toBe('Bauer');
         expect(testModel.id).toEqual(1);
-        expect(testModel.__foreignData).toBeUndefined();
+        expect(testModel._foreignData).toBeUndefined();
     }));
 });

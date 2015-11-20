@@ -4,7 +4,7 @@
 
 * [EndpointMock](#EndpointMock)
   * [new EndpointMock(endpointConfig, $injector)](#new_EndpointMock_new)
-  * [.extractParams(params)](#EndpointMock+extractParams) ⇒ <code>Array</code>
+  * [._extractParams(params)](#EndpointMock+_extractParams) ⇒ <code>Array</code>
   * [.get(params)](#EndpointMock+get) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
   * [.post()](#EndpointMock+post) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
   * [.put(params, model)](#EndpointMock+put) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
@@ -19,12 +19,13 @@ EndpointMock provides all methods which Endpoint provides but sends the request 
 | endpointConfig | EndpointConfig of the Endpoint |
 | $injector | The angular $injector provider |
 
-<a name="EndpointMock+extractParams"></a>
-### endpointMock.extractParams(params) ⇒ <code>Array</code>
+<a name="EndpointMock+_extractParams"></a>
+### endpointMock._extractParams(params) ⇒ <code>Array</code>
 Order all params according the endpoints route
 
 **Kind**: instance method of <code>[EndpointMock](#EndpointMock)</code>  
 **Returns**: <code>Array</code> - Ordered according route  
+**Access:** protected  
 
 | Param | Description |
 | --- | --- |

@@ -4,6 +4,8 @@
 
 * [EndpointConfig](#EndpointConfig)
   * [new EndpointConfig()](#new_EndpointConfig_new)
+  * [.name](#EndpointConfig+name) : <code>string</code>
+  * [.headResponseHeaderPrefix](#EndpointConfig+headResponseHeaderPrefix) : <code>string</code>
   * [.route(route)](#EndpointConfig+route) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
   * [.model(model)](#EndpointConfig+model) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
   * [.container(container)](#EndpointConfig+container) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
@@ -13,8 +15,18 @@
 
 <a name="new_EndpointConfig_new"></a>
 ### new EndpointConfig()
-This class represents one configuration for an endpoint
+This class represents one configuration for an endpoint.
 
+<a name="EndpointConfig+name"></a>
+### endpointConfig.name : <code>string</code>
+Name of the endpoint
+
+**Kind**: instance property of <code>[EndpointConfig](#EndpointConfig)</code>  
+<a name="EndpointConfig+headResponseHeaderPrefix"></a>
+### endpointConfig.headResponseHeaderPrefix : <code>string</code>
+Prefix of any custom headers
+
+**Kind**: instance property of <code>[EndpointConfig](#EndpointConfig)</code>  
 <a name="EndpointConfig+route"></a>
 ### endpointConfig.route(route) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
 Set the route to this endpoint

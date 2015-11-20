@@ -22,16 +22,16 @@
                 };
 
                 // Map the given object
-                this.init(object);
+                this._init(object);
             }
 
             angular.extend(TestModel.prototype, Model.prototype);
 
-            TestModel.prototype.afterLoad = function() {
-                this.fullname = this.__foreignData['firstname'] + ' ' + this.__foreignData['lastname'];
+            TestModel.prototype._afterLoad = function() {
+                this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
             };
 
-            TestModel.prototype.beforeSave = function() {
+            TestModel.prototype._beforeSave = function() {
                 this.firstname = this.firstname + '_';
             };
 

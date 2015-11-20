@@ -57,7 +57,7 @@ app.factory('User', function(Model) {
         };
         
         // Map the given object
-        this.init(object);
+        this._init(object);
     }
 
     angular.extend(User.prototype, Model.prototype);

@@ -1,90 +1,149 @@
-## Classes
-<dl>
-<dt><a href="#ModelFactory">ModelFactory</a></dt>
-<dd></dd>
-<dt><a href="#Model">Model</a></dt>
-<dd></dd>
-</dl>
 <a name="ModelFactory"></a>
-## ModelFactory
-**Kind**: global class  
+## ModelFactory()
+**Kind**: global function  
 **Nginject**:   
 
-* [ModelFactory](#ModelFactory)
-  * [new ModelFactory()](#new_ModelFactory_new)
-  * [.__foreignData](#ModelFactory+__foreignData) : <code>object</code>
-  * [.__annotation](#ModelFactory+__annotation) : <code>object</code>
+* [ModelFactory()](#ModelFactory)
+  * [~Model](#ModelFactory..Model)
+    * [new Model()](#new_ModelFactory..Model_new)
+    * [._foreignData](#ModelFactory..Model+_foreignData) : <code>object</code>
+    * [.reference](#ModelFactory..Model+reference) : <code>string</code>
+    * [.clean()](#ModelFactory..Model+clean)
+    * [._afterLoad()](#ModelFactory..Model+_afterLoad)
+    * [._beforeSave()](#ModelFactory..Model+_beforeSave)
+    * [._init(object)](#ModelFactory..Model+_init)
+    * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
+    * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
+    * [._referenceOnly(models)](#ModelFactory..Model+_referenceOnly)
+    * [.isValid()](#ModelFactory..Model+isValid)
 
-<a name="new_ModelFactory_new"></a>
-### new ModelFactory()
-The factory to get the abstract model
+<a name="ModelFactory..Model"></a>
+### ModelFactory~Model
+**Kind**: inner class of <code>[ModelFactory](#ModelFactory)</code>  
 
-<a name="ModelFactory+__foreignData"></a>
-### modelFactory.__foreignData : <code>object</code>
-The __foreignData variable holds the original object as it was injected.
-This gets deleted after the model is fully initialized.
+* [~Model](#ModelFactory..Model)
+  * [new Model()](#new_ModelFactory..Model_new)
+  * [._foreignData](#ModelFactory..Model+_foreignData) : <code>object</code>
+  * [.reference](#ModelFactory..Model+reference) : <code>string</code>
+  * [.clean()](#ModelFactory..Model+clean)
+  * [._afterLoad()](#ModelFactory..Model+_afterLoad)
+  * [._beforeSave()](#ModelFactory..Model+_beforeSave)
+  * [._init(object)](#ModelFactory..Model+_init)
+  * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
+  * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
+  * [._referenceOnly(models)](#ModelFactory..Model+_referenceOnly)
+  * [.isValid()](#ModelFactory..Model+isValid)
 
-**Kind**: instance property of <code>[ModelFactory](#ModelFactory)</code>  
-<a name="ModelFactory+__annotation"></a>
-### modelFactory.__annotation : <code>object</code>
-Holds the annotation of every property of a model.
-This object gets deleted when the model is sent to the backend.
-
-**Kind**: instance property of <code>[ModelFactory](#ModelFactory)</code>  
-<a name="Model"></a>
-## Model
-**Kind**: global class  
-
-* [Model](#Model)
-  * [new Model()](#new_Model_new)
-  * [.afterLoad()](#Model+afterLoad)
-  * [.beforeSave()](#Model+beforeSave)
-  * [.init(object)](#Model+init)
-  * ~~[.callBeforeSave(models)](#Model+callBeforeSave)~~
-  * [.isValid()](#Model+isValid)
-
-<a name="new_Model_new"></a>
-### new Model()
+<a name="new_ModelFactory..Model_new"></a>
+#### new Model()
 Abstract model class
 
-<a name="Model+afterLoad"></a>
-### model.afterLoad()
+<a name="ModelFactory..Model+_foreignData"></a>
+#### model._foreignData : <code>object</code>
+Holds the original object as it was injected.
+This gets deleted after the model is fully initialized.
+
+**Kind**: instance property of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
+**Example**  
+```js
+ConcreteModel.prototype._afterLoad = function() {
+     this.full_name = this._foreignData['first_name'] + ' ' + this._foreignData['last_name'];
+};
+```
+<a name="ModelFactory..Model+reference"></a>
+#### model.reference : <code>string</code>
+The reference is used to get the identifier of a model
+
+**Kind**: instance property of <code>[Model](#ModelFactory..Model)</code>  
+**Example**  
+```js
+ConcreteModel.prototype.reference = 'identifier';
+```
+<a name="ModelFactory..Model+clean"></a>
+#### model.clean()
+This method gets called by the endpoint before the model is sent to the backend.
+It removes all decorator methods and attributes from a model so its clean to be sent.
+
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+<a name="ModelFactory..Model+_afterLoad"></a>
+#### model._afterLoad()
 This method gets called after the response was transformed into te model.
 It's helpful when you want to remap attributes or make some changed.
 To use it, just override it in the concrete model.
 
-**Kind**: instance method of <code>[Model](#Model)</code>  
-<a name="Model+beforeSave"></a>
-### model.beforeSave()
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
+**Example**  
+```js
+ConcreteModel.prototype._afterLoad = function() {
+     this.activation_token = this.activation_token.toUpperCase();
+};
+```
+<a name="ModelFactory..Model+_beforeSave"></a>
+#### model._beforeSave()
 This method gets called before a model gets sent to the backend.
 It's helpful when you want to remap attributes or make some changed.
 To use it, just override it in the concrete model.
 
-**Kind**: instance method of <code>[Model](#Model)</code>  
-<a name="Model+init"></a>
-### model.init(object)
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
+**Example**  
+```js
+ConcreteModel.prototype._beforeSave = function() {
+     this.activation_token = this.activation_token.toLowerCase();
+};
+```
+<a name="ModelFactory..Model+_init"></a>
+#### model._init(object)
 Every model must call this method in it's constructor. It in charge of mapping the given object to the model.
 
-**Kind**: instance method of <code>[Model](#Model)</code>  
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| object | <code>object</code> | The given object. This can come ether from the backend or created manualy |
+| object | <code>object</code> | The given object. This can come ether from the backend or created manually. |
 
-<a name="Model+callBeforeSave"></a>
-### ~~model.callBeforeSave(models)~~
-***Deprecated***
+<a name="ModelFactory..Model+_mapArray"></a>
+#### model._mapArray(property, apiProperty, modelName)
+Maps an array of models to a property.
 
-This method can be used to call the beforeSave method on a related model.
-
-**Kind**: instance method of <code>[Model](#Model)</code>  
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| models | <code>Model/array</code> | Can ether be a model or an array of models |
+| property | <code>string</code> | The property which should be mapped |
+| apiProperty | <code>array</code> | Foreign property as it comes from the backend |
+| modelName | <code>string</code> | Name of the model which is used for the mapping |
 
-<a name="Model+isValid"></a>
-### model.isValid()
-Validate the properties of the model
+<a name="ModelFactory..Model+_mapProperty"></a>
+#### model._mapProperty(property, apiProperty, modelName)
+Maps a model to an property.
 
-**Kind**: instance method of <code>[Model](#Model)</code>  
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| property | <code>string</code> | The property which should be mapped |
+| apiProperty | <code>string</code> | Foreign property as it comes from the api |
+| modelName | <code>string</code> | Name of the model which is used for the matching |
+
+<a name="ModelFactory..Model+_referenceOnly"></a>
+#### model._referenceOnly(models)
+Returns only the reference of a related model.
+
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+**Access:** protected  
+
+| Param | Type |
+| --- | --- |
+| models | <code>Model/array.&lt;Model&gt;</code> | 
+
+<a name="ModelFactory..Model+isValid"></a>
+#### model.isValid()
+Validates the properties of the model.
+
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  

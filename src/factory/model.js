@@ -3,8 +3,6 @@ angular
     .factory('Model', ModelFactory);
 
 /**
- * The factory to get the abstract model
- * @constructor
  * @ngInject
  */
 function ModelFactory($log, $injector, Validator) {
@@ -12,66 +10,149 @@ function ModelFactory($log, $injector, Validator) {
     /**
      * Abstract model class
      *
-     * @constructor Model
+     * @class
      */
     function Model() {
 
         /**
-         * The __foreignData variable holds the original object as it was injected.
+         * Holds the original object as it was injected.
          * This gets deleted after the model is fully initialized.
+         *
          * @type {object}
+         * @protected
+         * @example
+         * ConcreteModel.prototype._afterLoad = function() {
+         *      this.full_name = this._foreignData['first_name'] + ' ' + this._foreignData['last_name'];
+         * };
          */
-        this.__foreignData = {};
+        this._foreignData = {};
 
         /**
          * Holds the annotation of every property of a model.
          * This object gets deleted when the model is sent to the backend.
+         *
          * @type {object}
+         * @private
          */
-        this.__annotation = {};
+        this._annotation = {};
     }
+
+    /**
+     * The reference is used to get the identifier of a model
+     * @type {string}
+     * @example
+     * ConcreteModel.prototype.reference = 'identifier';
+     */
+    Model.prototype.reference = 'id';
+
+    /**
+     * This method gets called by the endpoint before the model is sent to the backend.
+     * It removes all decorator methods and attributes from a model so its clean to be sent.
+     */
+    Model.prototype.clean = function() {
+        // Call the beforeSave method on the model
+        this._beforeSave();
+
+        // Go thru every property of the model
+        for (var property in this) {
+            // Ckeck if property is a method
+            if (!this.hasOwnProperty(property)) continue;
+
+            // Check if property is null
+            if (this[property] === null) {
+                delete this[property];
+                continue;
+            }
+
+            if (angular.isDefined(this._annotation[property]) && angular.isDefined(this._annotation[property].save)) {
+
+                // Check if property should be deleted before model is saved
+                if (!this._annotation[property].save) {
+                    delete this[property];
+                    continue;
+                }
+
+                // Check if property should only be a reference to another model
+                if (this._annotation[property].save == 'reference') {
+                    this._referenceOnly(this[property]);
+                    continue;
+                }
+            }
+
+            if (angular.isDefined(this._annotation[property]) && angular.isDefined(this._annotation[property].type)) {
+                // If property is a relation then call the clean method of related models
+                if (this._annotation[property].type == 'relation' && this[property] !== null) {
+
+                    if (!angular.isDefined(this._annotation[property].relation.type)) continue;
+
+                    if (this._annotation[property].relation.type == 'one') {
+
+                        // Call the clean method on the related model
+                        this[property].clean();
+                        continue;
+                    }
+
+                    if (this._annotation[property].relation.type == 'many') {
+                        angular.forEach(this[property], function(model) {
+
+                            // Call the clean method on the related model
+                            model.clean();
+                        });
+                    }
+                }
+            }
+        }
+
+        // Delete this two properties before model gets saved
+        delete this.__method;
+        delete this._annotation;
+    };
 
     /**
      * This method gets called after the response was transformed into te model.
      * It's helpful when you want to remap attributes or make some changed.
      * To use it, just override it in the concrete model.
      *
-     * @memberof Model
+     * @protected
+     * @example
+     * ConcreteModel.prototype._afterLoad = function() {
+     *      this.activation_token = this.activation_token.toUpperCase();
+     * };
      */
-    Model.prototype.afterLoad = function() {
-        return true;
-    };
+    Model.prototype._afterLoad = function() {};
 
     /**
      * This method gets called before a model gets sent to the backend.
      * It's helpful when you want to remap attributes or make some changed.
      * To use it, just override it in the concrete model.
      *
-     * @memberof Model
+     * @protected
+     * @example
+     * ConcreteModel.prototype._beforeSave = function() {
+     *      this.activation_token = this.activation_token.toLowerCase();
+     * };
      */
-    Model.prototype.beforeSave = function() {
-        return true;
-    };
+    Model.prototype._beforeSave = function() {};
 
     /**
      * Every model must call this method in it's constructor. It in charge of mapping the given object to the model.
      *
-     * @param {object} object The given object. This can come ether from the backend or created manualy
-     * @memberof Model
+     * @param {object} object The given object. This can come ether from the backend or created manually.
+     * @protected
      */
-    Model.prototype.init = function(object) {
-        this.__foreignData = object;
-        this.__annotation = {};
+    Model.prototype._init = function(object) {
+        this._foreignData = object;
+        this._annotation = {};
 
-        $log.debug("Model (" + this.constructor.name + "): Original response object is:", this.__foreignData);
+        $log.debug("Model (" + this.constructor.name + "): Original response object is:", this._foreignData);
 
         for (var property in this) {
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
-            if (['__foreignData', '__annotation'].indexOf(property) > -1) continue;
+            if (['_foreignData', '_annotation'].indexOf(property) > -1) continue;
 
             // If annotations are given, set them
-            if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this.__annotation[property] = this[property];
+            if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this._annotation[property] = this[property];
 
             // If no object is given, stop here
             if (angular.isUndefined(object)) continue;
@@ -86,138 +167,38 @@ function ModelFactory($log, $injector, Validator) {
             this[property] = object[property];
 
             // Check if the property is a relation
-            if (angular.isDefined(this.__annotation[property]) && this.__annotation[property].type == 'relation') {
-                var relation = this.__annotation[property].relation;
+            if (angular.isDefined(this._annotation[property]) && this._annotation[property].type == 'relation') {
+                var relation = this._annotation[property].relation;
 
                 // Check if a foreign field is set and if not, set it to the name of the property
                 if (angular.isUndefined(relation.foreignField)) relation.foreignField = property;
 
                 // If the foreign field can not be found, continue
-                if (angular.isUndefined(this.__foreignData[relation.foreignField])) continue;
+                if (angular.isUndefined(this._foreignData[relation.foreignField])) continue;
 
                 // If the foreign field is null, set the property to null
-                if (this.__foreignData[relation.foreignField] === null) {
+                if (this._foreignData[relation.foreignField] === null) {
                     this[property] = null;
                     continue;
                 }
 
                 // Check which relation typ is defined and map the data
-                if (relation.type == 'many') this._mapArray(property, this.__foreignData[relation.foreignField], relation.model);
-                if (relation.type == 'one') this._mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
+                if (relation.type == 'many') this._mapArray(property, this._foreignData[relation.foreignField], relation.model);
+                if (relation.type == 'one') this._mapProperty(property, this._foreignData[relation.foreignField], relation.model);
             }
         }
 
-        this.afterLoad();
-        delete this.__foreignData;
+        this._afterLoad();
+        delete this._foreignData;
     };
 
     /**
-     * This method can be used to call the beforeSave method on a related model.
+     * Maps an array of models to a property.
      *
-     * @param {Model/array} models Can ether be a model or an array of models
-     * @memberof Model
-     * @deprecated The beforeSave method is called automatically when a save call is performed
-     */
-    Model.prototype.callBeforeSave = function(models) {
-
-        // Check if models is an array
-        if (angular.isArray(models)) {
-
-            // Go thru every model
-            angular.forEach(models, function(model) {
-
-                // Call the _clean method on the related model
-                model._clean();
-            });
-        }
-
-        // Check if models is an array
-        if (angular.isObject(models) && !angular.isArray(models)) {
-
-            // Call the _clean method on the related model
-            models._clean();
-        }
-    };
-
-    /**
-     * The __reference is used to get the identifier of a model
-     * @type {string}
-     */
-    Model.prototype.__reference = 'id';
-
-    /**
-     * This method gets called bei the api before a model is sent to the backend.
-     *
-     * @private
-     * @memberof Model
-     */
-    Model.prototype._clean = function() {
-        // Call the beforeSave method on the model
-        this.beforeSave();
-
-        // Go thru every property of the model
-        for (var property in this) {
-            // Ckeck if property is a method
-            if (!this.hasOwnProperty(property)) continue;
-
-            // Check if property is null
-            if (this[property] === null) {
-                delete this[property];
-                continue;
-            }
-
-            if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
-
-                // Check if property should be deleted before model is saved
-                if (!this.__annotation[property].save) {
-                    delete this[property];
-                    continue;
-                }
-
-                // Check if property should only be a reference to another model
-                if (this.__annotation[property].save == 'reference') {
-                    this._referenceOnly(this[property]);
-                    continue;
-                }
-            }
-
-            if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].type)) {
-                // If property is a relation then call the _clean method of related models
-                if (this.__annotation[property].type == 'relation' && this[property] !== null) {
-
-                    if (!angular.isDefined(this.__annotation[property].relation.type)) continue;
-
-                    if (this.__annotation[property].relation.type == 'one') {
-
-                        // Call the _clean method on the related model
-                        this[property]._clean();
-                        continue;
-                    }
-
-                    if (this.__annotation[property].relation.type == 'many') {
-                        angular.forEach(this[property], function(model) {
-
-                            // Call the _clean method on the related model
-                            model._clean();
-                        });
-                    }
-                }
-            }
-        }
-
-        // Delete this two properties before model gets saved
-        delete this.__method;
-        delete this.__annotation;
-    };
-
-    /**
-     * Maps an array of models to an property
-     *
-     * @private
+     * @protected
      * @param {string} property The property which should be mapped
-     * @param {string} apiProperty Foreign property as it comes from the api
-     * @param {string} modelName Name of the model which is used for the matching
-     * @memberof Model
+     * @param {array} apiProperty Foreign property as it comes from the backend
+     * @param {string} modelName Name of the model which is used for the mapping
      */
     Model.prototype._mapArray = function(property, apiProperty, modelName) {
         var self = this;
@@ -248,13 +229,12 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Maps an array of models to an property
+     * Maps a model to an property.
      *
-     * @private
+     * @protected
      * @param {string} property The property which should be mapped
      * @param {string} apiProperty Foreign property as it comes from the api
      * @param {string} modelName Name of the model which is used for the matching
-     * @memberof Model
      */
     Model.prototype._mapProperty = function(property, apiProperty, modelName) {
 
@@ -279,11 +259,10 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Returns only the reference of a related model
+     * Returns only the reference of a related model.
      *
-     * @private
-     * @param {Model/array} models
-     * @memberof Model
+     * @protected
+     * @param {Model/array<Model>} models
      */
     Model.prototype._referenceOnly = function(models) {
 
@@ -299,7 +278,7 @@ function ModelFactory($log, $injector, Validator) {
             // Go thru all properties an delete all that are not the identifier
             for (var property in models) {
                 if(models.hasOwnProperty(property)) {
-                    if (property != models.__reference) {
+                    if (property != models.reference) {
                         delete models[property];
                     }
                 }
@@ -308,18 +287,16 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Validate the properties of the model
-     *
-     * @memberof Model
+     * Validates the properties of the model.
      */
     Model.prototype.isValid = function() {
         for (var property in this) {
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
 
-            if (angular.isDefined(this.__annotation[property])) {
-                if (angular.isDefined(this.__annotation[property].required) && (this.__annotation[property].required && this[property] === null || this.__annotation[property].required && this[property] === '')) return false;
-                if (!Validator[this.__annotation[property].type](this[property]) && this.__annotation[property].required) return false;
+            if (angular.isDefined(this._annotation[property])) {
+                if (angular.isDefined(this._annotation[property].required) && (this._annotation[property].required && this[property] === null || this._annotation[property].required && this[property] === '')) return false;
+                if (!Validator[this._annotation[property].type](this[property]) && this._annotation[property].required) return false;
             }
         }
 

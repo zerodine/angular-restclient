@@ -5,7 +5,7 @@ angular.extend(Endpoint.prototype, EndpointAbstract.prototype);
  *
  * @param {EndpointConfig} endpointConfig Config of the endpoint which was defined earlier
  * @param {$injector} $injector The Angular $injector factory
- * @constructor Endpoint
+ * @class
  */
 function Endpoint(endpointConfig, $injector) {
     var self = this;
@@ -13,14 +13,16 @@ function Endpoint(endpointConfig, $injector) {
     /**
      * The EndpointConfig object defined for this endpoint
      * @type {EndpointConfig}
+     * @protected
      */
-    this.endpointConfig = endpointConfig;
+    this._endpointConfig = endpointConfig;
 
     /**
      * An instance if the $resource factory from the angularjs library
      * @type {$resource}
+     * @protected
      */
-    this.resource = $injector.get('$resource')(this.endpointConfig.baseRoute + this.endpointConfig.route, {}, merge({
+    this._resource = $injector.get('$resource')(this._endpointConfig.baseRoute + this._endpointConfig.route, {}, merge({
         get: {
             method: 'GET',
             transformResponse: function(data, headers, status) {
@@ -28,8 +30,8 @@ function Endpoint(endpointConfig, $injector) {
                 if (status >= 400) return data;
 
                 return {
-                    result: self.mapResult(angular.fromJson(data)),
-                    pagination: self.getPagination(data)
+                    result: self._mapResult(angular.fromJson(data)),
+                    pagination: self._getPagination(data)
                 };
             }
         },
@@ -39,7 +41,7 @@ function Endpoint(endpointConfig, $injector) {
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
-                return {result: self.mapResult(data)};
+                return {result: self._mapResult(data)};
             }
         },
         update: {
@@ -48,7 +50,7 @@ function Endpoint(endpointConfig, $injector) {
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
-                return {result: self.mapResult(data)};
+                return {result: self._mapResult(data)};
             }
         },
         head: {
@@ -62,35 +64,37 @@ function Endpoint(endpointConfig, $injector) {
     /**
      * An instance if the $log factory from the angularjs library
      * @type {$log}
+     * @protected
      */
-    this.log = $injector.get('$log');
+    this._log = $injector.get('$log');
 
     /**
      * An instance if the $injector factory from the angularjs library
      * @type {$injector}
+     * @protected
      */
-    this.injector = $injector;
+    this._injector = $injector;
 
     /**
      * An instance if the $q factory from the angularjs library
      * @type {$q}
+     * @protected
      */
-    this.q = $injector.get('$q');
+    this._q = $injector.get('$q');
 }
 
 /**
- * Call an endpoint and map the response to one or more models given in the endpoint config
- * The server response must be an object
+ * Call an endpoint and map the response to one or more models given in the endpoint config.
+ * The server response must be an object.
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.get = function (params) {
     var self = this;
-    var defer = self.q.defer();
+    var defer = self._q.defer();
 
-    this.resource.get(params, function(data) {
+    this._resource.get(params, function(data) {
         data.result.pagination = data.pagination;
         data.result.endpoint = self;
         data.result.next = function() {
@@ -111,35 +115,34 @@ Endpoint.prototype.get = function (params) {
 };
 
 /**
- * Call an endpoint with the HEAD method
+ * Call an endpoint with the HEAD method.
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
  * @return {Promise<object|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.head = function(params) {
     var self = this;
 
-    self.log.debug("apiFactory (" + self.endpointConfig.name + "): (HEAD) Endpoint called");
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): (HEAD) Endpoint called");
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Call the given endpoint and get the promise
-    this.resource.head(params, function(data, headersFunc) {
+    this._resource.head(params, function(data, headersFunc) {
         var headers = headersFunc();
 
         // Check if a prefix is given
-        if (angular.isDefined(self.endpointConfig.headResponseHeaderPrefix) && self.endpointConfig.headResponseHeaderPrefix !== '*') {
+        if (angular.isDefined(self._endpointConfig.headResponseHeaderPrefix) && self._endpointConfig.headResponseHeaderPrefix !== '*') {
 
             for (var header in headers) {
                 // Delete all headers without the given prefix
-                if (header.toLowerCase().indexOf(self.endpointConfig.headResponseHeaderPrefix.toLowerCase()) !== 0) {
+                if (header.toLowerCase().indexOf(self._endpointConfig.headResponseHeaderPrefix.toLowerCase()) !== 0) {
                     delete headers[header];
                     continue;
                 }
 
                 // Make a alias without the prefix
-                headers[header.substr(self.endpointConfig.headResponseHeaderPrefix.length, header.length)] = headers[header];
+                headers[header.substr(self._endpointConfig.headResponseHeaderPrefix.length, header.length)] = headers[header];
 
                 // Delete the orignial headers
                 //delete headers[header];
@@ -156,12 +159,11 @@ Endpoint.prototype.head = function(params) {
 };
 
 /**
- * Update an object
+ * Update an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model/array} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model/array} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.put = function (params, model) {
 
@@ -172,22 +174,22 @@ Endpoint.prototype.put = function (params, model) {
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
             tempModel.__method = 'update';
-            tempModel._clean();
+            tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
         model.__method = 'update';
-        // Call the _clean method of the model
-        model._clean();
+        // Call the clean method of the model
+        model.clean();
     }
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to update is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to update is:", model);
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Use angularjs $resource to perform the update
-    this.resource.update(params, model, function (data) {
+    this._resource.update(params, model, function (data) {
         defer.resolve(data.result);
     }, function (error) {
         defer.reject(error);
@@ -197,12 +199,11 @@ Endpoint.prototype.put = function (params, model) {
 };
 
 /**
- * Save an object
+ * Save an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.post = function () {
     var model, params;
@@ -215,18 +216,18 @@ Endpoint.prototype.post = function () {
         model = arguments[1];
     }
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'save';
 
-    // Call the _clean method of the model
-    model._clean();
+    // Call the clean method of the model
+    model.clean();
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to save is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to save is:", model);
 
     // Use angularjs $resource to perform the save
-    this.resource.save(params, model, function (data) {
+    this._resource.save(params, model, function (data) {
         defer.resolve(data.result);
     }, function (error) {
         defer.reject(error);
@@ -236,12 +237,11 @@ Endpoint.prototype.post = function () {
 };
 
 /**
- * Remove an object
+ * Remove an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.delete = function() {
     var model, params;
@@ -254,22 +254,22 @@ Endpoint.prototype.delete = function() {
         model = arguments[1];
     }
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'remove';
 
     // Get the id of the model
     var paramId = {
-        id: model[model.__reference]
+        id: model[model.reference]
     };
 
 
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to remove is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to remove is:", model);
 
     // Use angularjs $resource to perform the delete
-    this.resource.delete(merge(paramId, params), function () {
+    this._resource.delete(merge(paramId, params), function () {
         defer.resolve();
     }, function (error) {
         defer.reject(error);

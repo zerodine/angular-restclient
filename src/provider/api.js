@@ -3,30 +3,36 @@ angular
     .provider('api', ApiProvider);
 
 /**
- * The provider to get the api
- * @constructor
+ * AngularJD provider to provide the api
+ *
+ * @class
  */
 function ApiProvider() {
+
     /**
      * All the endpoints
+     *
      * @type {object}
      */
     this.endpoints = {};
 
     /**
      * The base route to the backend api
+     *
      * @type {string}
      */
     this.baseRoute = "";
 
     /**
      * Prefix of a header in a HEAD response
+     *
      * @type {string}
      */
     this.headResponseHeaderPrefix = "";
 
     /**
      * Set the base route
+     *
      * @param {string} baseRoute
      */
     this.baseRoute = function(baseRoute) {
@@ -35,6 +41,7 @@ function ApiProvider() {
 
     /**
      * Set the head response header prefix
+     *
      * @param {string} headResponseHeaderPrefix
      */
     this.headResponseHeaderPrefix = function(headResponseHeaderPrefix) {
@@ -43,6 +50,7 @@ function ApiProvider() {
 
     /**
      * Add an endpoint to the endpoint array
+     *
      * @param {string} endpoint
      */
     this.endpoint = function(endpoint) {
@@ -53,6 +61,7 @@ function ApiProvider() {
 
     /**
      * The factory method
+     *
      * @param {$injector} $injector
      * @ngInject
      */
