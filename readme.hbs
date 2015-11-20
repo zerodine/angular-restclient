@@ -1,4 +1,5 @@
 [![npm version](https://badge.fury.io/js/angular-restclient.svg)](https://badge.fury.io/js/angular-restclient)
+[![Build Status](https://travis-ci.org/zerodine/angular-restclient.svg?branch=master)](https://travis-ci.org/zerodine/angular-restclient)
 
 #angular-restclient
 A work-in-progress AngularJS rest client with ORM

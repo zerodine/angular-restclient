@@ -3,12 +3,12 @@
 
 angular.module('restclient', ['ngResource']);
 /**
- * This is just a helper function because a merge is not supported by angular until version > 1.4
+ * This is just a helper function because merge is not supported by angular until version > 1.4.
  *
  * @deprecated Will be supported by angular with version > 1.4
- * @param dst
- * @param src
- * @returns {*}
+ * @param {object} dst
+ * @param {object} src
+ * @returns {object}
  */
 function merge(dst, src) {
     if (!angular.isDefined(dst) && !angular.isDefined(src)) return {};
@@ -42,40 +42,71 @@ function merge(dst, src) {
 
     return dst;
 }
+/**
+ * Used to make sure that all HTTP/1.1 methods are implemented
+ *
+ * @interface
+ * @class
+ */
 function EndpointInterface() {}
 
+/**
+ * HTTP/1.1 GET method
+ */
 EndpointInterface.prototype.get = function() { throw 'Not Implemented'};
+
+/**
+ * HTTP/1.1 POST method
+ */
 EndpointInterface.prototype.post = function() { throw 'Not Implemented'};
+
+/**
+ * HTTP/1.1 DELETE method
+ */
 EndpointInterface.prototype.delete = function() { throw 'Not Implemented'};
+
+/**
+ * HTTP/1.1 PUT method
+ */
 EndpointInterface.prototype.put = function() { throw 'Not Implemented'};
+
+/**
+ * HTTP/1.1 HEAD method
+ */
 EndpointInterface.prototype.head = function() { throw 'Not Implemented'};
 angular.extend(EndpointAbstract.prototype, EndpointInterface.prototype);
 
+/**
+ * Abstract Endpoint class with all helper methods
+ *
+ * @class
+ * @implements {EndpointInterface}
+ */
 function EndpointAbstract() {}
 
 /**
  * Maps an object or array to the endpoint model
  *
- * @private
+ * @protected
  * @param {object} data Object or array of raw data
  * @return {Model|Array}
- * @memberof EndpointAbstract
+ * @abstract
  */
-EndpointAbstract.prototype.mapResult = function(data) {
+EndpointAbstract.prototype._mapResult = function(data) {
     var self = this;
     var result;
-    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Endpoint called");
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Endpoint called");
 
     // Set the name of the wrapping container
-    var container = self.endpointConfig.container;
+    var container = self._endpointConfig.container;
     // Get the model object that is used to map the result
-    var model = this.injector.get(self.endpointConfig.model);
+    var model = this._injector.get(self._endpointConfig.model);
 
-    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Container set to " + container);
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Container set to " + container);
 
     // Check if response is an array
     if (angular.isArray(data) || angular.isArray(data[container])) {
-        self.log.debug("apiFactory (" + self.endpointConfig.name + "): Result is an array");
+        self._log.debug("apiFactory (" + self._endpointConfig.name + "): Result is an array");
 
         var arrayData = angular.isArray(data) ? data : data[container];
         var models = [];
@@ -88,13 +119,13 @@ EndpointAbstract.prototype.mapResult = function(data) {
         result = models;
 
     } else {
-        self.log.debug("apiFactory (" + self.endpointConfig.name + "): Result is NOT an array");
+        self._log.debug("apiFactory (" + self._endpointConfig.name + "): Result is NOT an array");
 
         // If only one object is given, map it to the model
         result = new model(data);
     }
 
-    self.log.debug("apiFactory (" + self.endpointConfig.name + "): Mapped result is:", result);
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Mapped result is:", result);
 
     return result;
 };
@@ -102,12 +133,12 @@ EndpointAbstract.prototype.mapResult = function(data) {
 /**
  * Extract the pagination data from the result
  *
- * @private
+ * @protected
  * @param {object} data Object or array of raw data
  * @return {object}
- * @memberof EndpointAbstract
+ * @abstract
  */
-EndpointAbstract.prototype.getPagination = function(data) {
+EndpointAbstract.prototype._getPagination = function(data) {
     if (
         angular.isDefined(data.count) &&
         angular.isDefined(data.limit) &&
@@ -154,14 +185,23 @@ EndpointAbstract.prototype.getPagination = function(data) {
     return null;
 };
 
+/**
+ * @abstract
+ */
 EndpointAbstract.prototype.update = function() {
     return this.put.apply(this, arguments);
 };
 
+/**
+ * @abstract
+ */
 EndpointAbstract.prototype.save = function() {
     return this.post.apply(this, arguments);
 };
 
+/**
+ * @abstract
+ */
 EndpointAbstract.prototype.remove = function() {
     return this.delete.apply(this, arguments);
 };
@@ -172,7 +212,7 @@ angular.extend(Endpoint.prototype, EndpointAbstract.prototype);
  *
  * @param {EndpointConfig} endpointConfig Config of the endpoint which was defined earlier
  * @param {$injector} $injector The Angular $injector factory
- * @constructor Endpoint
+ * @class
  */
 function Endpoint(endpointConfig, $injector) {
     var self = this;
@@ -180,14 +220,16 @@ function Endpoint(endpointConfig, $injector) {
     /**
      * The EndpointConfig object defined for this endpoint
      * @type {EndpointConfig}
+     * @protected
      */
-    this.endpointConfig = endpointConfig;
+    this._endpointConfig = endpointConfig;
 
     /**
      * An instance if the $resource factory from the angularjs library
      * @type {$resource}
+     * @protected
      */
-    this.resource = $injector.get('$resource')(this.endpointConfig.baseRoute + this.endpointConfig.route, {}, merge({
+    this._resource = $injector.get('$resource')(this._endpointConfig.baseRoute + this._endpointConfig.route, {}, merge({
         get: {
             method: 'GET',
             transformResponse: function(data, headers, status) {
@@ -195,8 +237,8 @@ function Endpoint(endpointConfig, $injector) {
                 if (status >= 400) return data;
 
                 return {
-                    result: self.mapResult(angular.fromJson(data)),
-                    pagination: self.getPagination(data)
+                    result: self._mapResult(angular.fromJson(data)),
+                    pagination: self._getPagination(data)
                 };
             }
         },
@@ -206,7 +248,7 @@ function Endpoint(endpointConfig, $injector) {
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
-                return {result: self.mapResult(data)};
+                return {result: self._mapResult(data)};
             }
         },
         update: {
@@ -215,7 +257,7 @@ function Endpoint(endpointConfig, $injector) {
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
-                return {result: self.mapResult(data)};
+                return {result: self._mapResult(data)};
             }
         },
         head: {
@@ -229,35 +271,37 @@ function Endpoint(endpointConfig, $injector) {
     /**
      * An instance if the $log factory from the angularjs library
      * @type {$log}
+     * @protected
      */
-    this.log = $injector.get('$log');
+    this._log = $injector.get('$log');
 
     /**
      * An instance if the $injector factory from the angularjs library
      * @type {$injector}
+     * @protected
      */
-    this.injector = $injector;
+    this._injector = $injector;
 
     /**
      * An instance if the $q factory from the angularjs library
      * @type {$q}
+     * @protected
      */
-    this.q = $injector.get('$q');
+    this._q = $injector.get('$q');
 }
 
 /**
- * Call an endpoint and map the response to one or more models given in the endpoint config
- * The server response must be an object
+ * Call an endpoint and map the response to one or more models given in the endpoint config.
+ * The server response must be an object.
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.get = function (params) {
     var self = this;
-    var defer = self.q.defer();
+    var defer = self._q.defer();
 
-    this.resource.get(params, function(data) {
+    this._resource.get(params, function(data) {
         data.result.pagination = data.pagination;
         data.result.endpoint = self;
         data.result.next = function() {
@@ -278,35 +322,34 @@ Endpoint.prototype.get = function (params) {
 };
 
 /**
- * Call an endpoint with the HEAD method
+ * Call an endpoint with the HEAD method.
  *
  * @param {object} params The parameters that ether map in the route or get appended as GET parameters
  * @return {Promise<object|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.head = function(params) {
     var self = this;
 
-    self.log.debug("apiFactory (" + self.endpointConfig.name + "): (HEAD) Endpoint called");
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): (HEAD) Endpoint called");
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Call the given endpoint and get the promise
-    this.resource.head(params, function(data, headersFunc) {
+    this._resource.head(params, function(data, headersFunc) {
         var headers = headersFunc();
 
         // Check if a prefix is given
-        if (angular.isDefined(self.endpointConfig.headResponseHeaderPrefix) && self.endpointConfig.headResponseHeaderPrefix !== '*') {
+        if (angular.isDefined(self._endpointConfig.headResponseHeaderPrefix) && self._endpointConfig.headResponseHeaderPrefix !== '*') {
 
             for (var header in headers) {
                 // Delete all headers without the given prefix
-                if (header.toLowerCase().indexOf(self.endpointConfig.headResponseHeaderPrefix.toLowerCase()) !== 0) {
+                if (header.toLowerCase().indexOf(self._endpointConfig.headResponseHeaderPrefix.toLowerCase()) !== 0) {
                     delete headers[header];
                     continue;
                 }
 
                 // Make a alias without the prefix
-                headers[header.substr(self.endpointConfig.headResponseHeaderPrefix.length, header.length)] = headers[header];
+                headers[header.substr(self._endpointConfig.headResponseHeaderPrefix.length, header.length)] = headers[header];
 
                 // Delete the orignial headers
                 //delete headers[header];
@@ -323,12 +366,11 @@ Endpoint.prototype.head = function(params) {
 };
 
 /**
- * Update an object
+ * Update an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model/array} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model/array} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.put = function (params, model) {
 
@@ -339,22 +381,22 @@ Endpoint.prototype.put = function (params, model) {
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
             tempModel.__method = 'update';
-            tempModel._clean();
+            tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
         model.__method = 'update';
-        // Call the _clean method of the model
-        model._clean();
+        // Call the clean method of the model
+        model.clean();
     }
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to update is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to update is:", model);
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Use angularjs $resource to perform the update
-    this.resource.update(params, model, function (data) {
+    this._resource.update(params, model, function (data) {
         defer.resolve(data.result);
     }, function (error) {
         defer.reject(error);
@@ -364,12 +406,11 @@ Endpoint.prototype.put = function (params, model) {
 };
 
 /**
- * Save an object
+ * Save an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.post = function () {
     var model, params;
@@ -382,18 +423,18 @@ Endpoint.prototype.post = function () {
         model = arguments[1];
     }
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'save';
 
-    // Call the _clean method of the model
-    model._clean();
+    // Call the clean method of the model
+    model.clean();
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to save is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to save is:", model);
 
     // Use angularjs $resource to perform the save
-    this.resource.save(params, model, function (data) {
+    this._resource.save(params, model, function (data) {
         defer.resolve(data.result);
     }, function (error) {
         defer.reject(error);
@@ -403,12 +444,11 @@ Endpoint.prototype.post = function () {
 };
 
 /**
- * Remove an object
+ * Remove an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters
- * @param {Model} model The model to be updated
+ * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
+ * @param {Model} model The model to be updated.
  * @return {Promise<Model|Error>}
- * @memberof Endpoint
  */
 Endpoint.prototype.delete = function() {
     var model, params;
@@ -421,22 +461,22 @@ Endpoint.prototype.delete = function() {
         model = arguments[1];
     }
 
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'remove';
 
     // Get the id of the model
     var paramId = {
-        id: model[model.__reference]
+        id: model[model.reference]
     };
 
 
 
-    this.log.debug("apiFactory (" + this.endpointConfig.name + "): Model to remove is:", model);
+    this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to remove is:", model);
 
     // Use angularjs $resource to perform the delete
-    this.resource.delete(merge(paramId, params), function () {
+    this._resource.delete(merge(paramId, params), function () {
         defer.resolve();
     }, function (error) {
         defer.reject(error);
@@ -451,13 +491,13 @@ angular.extend(EndpointMock.prototype, EndpointAbstract.prototype);
  *
  * @param endpointConfig EndpointConfig of the Endpoint
  * @param $injector The angular $injector provider
- * @constructor
+ * @class
  */
 function EndpointMock(endpointConfig, $injector) {
-    this.endpointConfig = endpointConfig;
-    this.q = $injector.get('$q');
-    this.log = $injector.get('$log');
-    this.injector = $injector;
+    this._endpointConfig = endpointConfig;
+    this._q = $injector.get('$q');
+    this._log = $injector.get('$log');
+    this._injector = $injector;
 
     this.mock = $injector.get(endpointConfig.mock);
 }
@@ -467,14 +507,15 @@ function EndpointMock(endpointConfig, $injector) {
  *
  * @param params Params as unordered object
  * @returns {Array} Ordered according route
+ * @protected
  */
-EndpointMock.prototype.extractParams = function(params) {
+EndpointMock.prototype._extractParams = function(params) {
     var paramsOrder = [];
     var regex = /:(\w+)/g;
-    var param = regex.exec(this.endpointConfig.route);
+    var param = regex.exec(this._endpointConfig.route);
     while (param != null) {
         paramsOrder.push(param[1]);
-        param = regex.exec(this.endpointConfig.route);
+        param = regex.exec(this._endpointConfig.route);
     }
 
     var orderedParams = [];
@@ -492,11 +533,11 @@ EndpointMock.prototype.extractParams = function(params) {
  * @returns {Promise<Model|Error>} Promise with models
  */
 EndpointMock.prototype.get = function(params) {
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     var mock = new this.mock;
-    var data = mock._request('GET', this.extractParams(params));
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('GET', this._extractParams(params));
+    var mappedResult = this._mapResult(data);
 
     defer.resolve(mappedResult);
 
@@ -511,7 +552,7 @@ EndpointMock.prototype.get = function(params) {
 EndpointMock.prototype.post = function() {
     var model, params;
     var mock = new this.mock;
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Check if only two arguments are given
     if (angular.isUndefined(arguments[1])) {
@@ -524,11 +565,11 @@ EndpointMock.prototype.post = function() {
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'save';
 
-    // Call the _clean method of the model
-    model._clean();
+    // Call the clean method of the model
+    model.clean();
 
-    var data = mock._request('POST', this.extractParams(params), model);
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('POST', this._extractParams(params), model);
+    var mappedResult = this._mapResult(data);
 
     defer.resolve(mappedResult);
 
@@ -545,7 +586,7 @@ EndpointMock.prototype.post = function() {
  */
 EndpointMock.prototype.put = function (params, model) {
     var mock = new this.mock;
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     if (angular.isArray(model)) {
         var tempModels = angular.copy(model);
@@ -553,29 +594,41 @@ EndpointMock.prototype.put = function (params, model) {
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
             tempModel.__method = 'update';
-            tempModel._clean();
+            tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
         model.__method = 'update';
-        // Call the _clean method of the model
-        model._clean();
+        // Call the clean method of the model
+        model.clean();
     }
 
-    var data = mock._request('PUT', this.extractParams(params), model);
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('PUT', this._extractParams(params), model);
+    var mappedResult = this._mapResult(data);
     defer.resolve(mappedResult);
 
     return defer.promise;
 };
 /**
- * This class represents one configuration for an endpoint
+ * This class represents one configuration for an endpoint.
  *
- * @constructor EndpointConfig
+ * @class
  */
-function EndpointConfig(endpoint) {
-    this.name = endpoint;
+function EndpointConfig(endpointName) {
+
+    /**
+     * Name of the endpoint
+     *
+     * @type {string}
+     */
+    this.name = endpointName;
+
+    /**
+     * Prefix of any custom headers
+     *
+     * @type {string}
+     */
     this.headResponseHeaderPrefix = null;
 }
 
@@ -584,7 +637,6 @@ function EndpointConfig(endpoint) {
  *
  * @param {string} route The endpoint route defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.route = function(route) {
     this.route = route;
@@ -596,7 +648,6 @@ EndpointConfig.prototype.route = function(route) {
  *
  * @param {string} model The model defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.model = function(model) {
     this.model = model;
@@ -608,7 +659,6 @@ EndpointConfig.prototype.model = function(model) {
  *
  * @param {string} container The container defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.container = function(container) {
     this.container = container;
@@ -619,7 +669,6 @@ EndpointConfig.prototype.container = function(container) {
  * Define if the response from the api is going to be an array
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.actions = function(actions) {
     this.actions = actions;
@@ -630,7 +679,6 @@ EndpointConfig.prototype.actions = function(actions) {
  * Overwrites the baseRoute from the global configuration
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.baseRoute = function(baseRoute) {
     this.baseRoute = baseRoute;
@@ -641,7 +689,6 @@ EndpointConfig.prototype.baseRoute = function(baseRoute) {
  * Overwrites the mock from the global configuration
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.mock = function(mock) {
     this.mock = mock;
@@ -652,75 +699,157 @@ angular
     .factory('Model', ModelFactory);
 
 /**
- * The factory to get the abstract model
- * @constructor
  * @ngInject
+ * @class
  */
 function ModelFactory($log, $injector, Validator) {
 
     /**
      * Abstract model class
      *
-     * @constructor Model
+     * @class
      */
     function Model() {
 
         /**
-         * The __foreignData variable holds the original object as it was injected.
+         * Holds the original object as it was injected.
          * This gets deleted after the model is fully initialized.
+         *
          * @type {object}
+         * @protected
+         * @example
+         * ConcreteModel.prototype._afterLoad = function() {
+         *      this.full_name = this._foreignData['first_name'] + ' ' + this._foreignData['last_name'];
+         * };
          */
-        this.__foreignData = {};
+        this._foreignData = {};
 
         /**
          * Holds the annotation of every property of a model.
          * This object gets deleted when the model is sent to the backend.
+         *
          * @type {object}
+         * @private
          */
-        this.__annotation = {};
+        this._annotation = {};
     }
+
+    /**
+     * The reference is used to get the identifier of a model
+     * @type {string}
+     * @example
+     * ConcreteModel.prototype.reference = 'identifier';
+     */
+    Model.prototype.reference = 'id';
+
+    /**
+     * This method gets called by the endpoint before the model is sent to the backend.
+     * It removes all decorator methods and attributes from a model so its clean to be sent.
+     */
+    Model.prototype.clean = function() {
+        // Call the beforeSave method on the model
+        this._beforeSave();
+
+        // Go thru every property of the model
+        for (var property in this) {
+            // Ckeck if property is a method
+            if (!this.hasOwnProperty(property)) continue;
+
+            // Check if property is null
+            if (this[property] === null) {
+                delete this[property];
+                continue;
+            }
+
+            if (angular.isDefined(this._annotation[property]) && angular.isDefined(this._annotation[property].save)) {
+
+                // Check if property should be deleted before model is saved
+                if (!this._annotation[property].save) {
+                    delete this[property];
+                    continue;
+                }
+
+                // Check if property should only be a reference to another model
+                if (this._annotation[property].save == 'reference') {
+                    this._referenceOnly(this[property]);
+                    continue;
+                }
+            }
+
+            if (angular.isDefined(this._annotation[property]) && angular.isDefined(this._annotation[property].type)) {
+                // If property is a relation then call the clean method of related models
+                if (this._annotation[property].type == 'relation' && this[property] !== null) {
+
+                    if (!angular.isDefined(this._annotation[property].relation.type)) continue;
+
+                    if (this._annotation[property].relation.type == 'one') {
+
+                        // Call the clean method on the related model
+                        this[property].clean();
+                        continue;
+                    }
+
+                    if (this._annotation[property].relation.type == 'many') {
+                        angular.forEach(this[property], function(model) {
+
+                            // Call the clean method on the related model
+                            model.clean();
+                        });
+                    }
+                }
+            }
+        }
+
+        // Delete this two properties before model gets saved
+        delete this.__method;
+        delete this._annotation;
+    };
 
     /**
      * This method gets called after the response was transformed into te model.
      * It's helpful when you want to remap attributes or make some changed.
      * To use it, just override it in the concrete model.
      *
-     * @memberof Model
+     * @protected
+     * @example
+     * ConcreteModel.prototype._afterLoad = function() {
+     *      this.activation_token = this.activation_token.toUpperCase();
+     * };
      */
-    Model.prototype.afterLoad = function() {
-        return true;
-    };
+    Model.prototype._afterLoad = function() {};
 
     /**
      * This method gets called before a model gets sent to the backend.
      * It's helpful when you want to remap attributes or make some changed.
      * To use it, just override it in the concrete model.
      *
-     * @memberof Model
+     * @protected
+     * @example
+     * ConcreteModel.prototype._beforeSave = function() {
+     *      this.activation_token = this.activation_token.toLowerCase();
+     * };
      */
-    Model.prototype.beforeSave = function() {
-        return true;
-    };
+    Model.prototype._beforeSave = function() {};
 
     /**
      * Every model must call this method in it's constructor. It in charge of mapping the given object to the model.
      *
-     * @param {object} object The given object. This can come ether from the backend or created manualy
-     * @memberof Model
+     * @param {object} object The given object. This can come ether from the backend or created manually.
+     * @protected
      */
-    Model.prototype.init = function(object) {
-        this.__foreignData = object;
-        this.__annotation = {};
+    Model.prototype._init = function(object) {
+        this._foreignData = object;
+        this._annotation = {};
 
-        $log.debug("Model (" + this.constructor.name + "): Original response object is:", this.__foreignData);
+        $log.debug("Model (" + this.constructor.name + "): Original response object is:", this._foreignData);
 
         for (var property in this) {
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
-            if (['__foreignData', '__annotation'].indexOf(property) > -1) continue;
+            if (['_foreignData', '_annotation'].indexOf(property) > -1) continue;
 
             // If annotations are given, set them
-            if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this.__annotation[property] = this[property];
+            if (angular.isObject(this[property]) && angular.isDefined(this[property].type)) this._annotation[property] = this[property];
 
             // If no object is given, stop here
             if (angular.isUndefined(object)) continue;
@@ -735,138 +864,38 @@ function ModelFactory($log, $injector, Validator) {
             this[property] = object[property];
 
             // Check if the property is a relation
-            if (angular.isDefined(this.__annotation[property]) && this.__annotation[property].type == 'relation') {
-                var relation = this.__annotation[property].relation;
+            if (angular.isDefined(this._annotation[property]) && this._annotation[property].type == 'relation') {
+                var relation = this._annotation[property].relation;
 
                 // Check if a foreign field is set and if not, set it to the name of the property
                 if (angular.isUndefined(relation.foreignField)) relation.foreignField = property;
 
                 // If the foreign field can not be found, continue
-                if (angular.isUndefined(this.__foreignData[relation.foreignField])) continue;
+                if (angular.isUndefined(this._foreignData[relation.foreignField])) continue;
 
                 // If the foreign field is null, set the property to null
-                if (this.__foreignData[relation.foreignField] === null) {
+                if (this._foreignData[relation.foreignField] === null) {
                     this[property] = null;
                     continue;
                 }
 
                 // Check which relation typ is defined and map the data
-                if (relation.type == 'many') this._mapArray(property, this.__foreignData[relation.foreignField], relation.model);
-                if (relation.type == 'one') this._mapProperty(property, this.__foreignData[relation.foreignField], relation.model);
+                if (relation.type == 'many') this._mapArray(property, this._foreignData[relation.foreignField], relation.model);
+                if (relation.type == 'one') this._mapProperty(property, this._foreignData[relation.foreignField], relation.model);
             }
         }
 
-        this.afterLoad();
-        delete this.__foreignData;
+        this._afterLoad();
+        delete this._foreignData;
     };
 
     /**
-     * This method can be used to call the beforeSave method on a related model.
+     * Maps an array of models to a property.
      *
-     * @param {Model/array} models Can ether be a model or an array of models
-     * @memberof Model
-     * @deprecated The beforeSave method is called automatically when a save call is performed
-     */
-    Model.prototype.callBeforeSave = function(models) {
-
-        // Check if models is an array
-        if (angular.isArray(models)) {
-
-            // Go thru every model
-            angular.forEach(models, function(model) {
-
-                // Call the _clean method on the related model
-                model._clean();
-            });
-        }
-
-        // Check if models is an array
-        if (angular.isObject(models) && !angular.isArray(models)) {
-
-            // Call the _clean method on the related model
-            models._clean();
-        }
-    };
-
-    /**
-     * The __reference is used to get the identifier of a model
-     * @type {string}
-     */
-    Model.prototype.__reference = 'id';
-
-    /**
-     * This method gets called bei the api before a model is sent to the backend.
-     *
-     * @private
-     * @memberof Model
-     */
-    Model.prototype._clean = function() {
-        // Call the beforeSave method on the model
-        this.beforeSave();
-
-        // Go thru every property of the model
-        for (var property in this) {
-            // Ckeck if property is a method
-            if (!this.hasOwnProperty(property)) continue;
-
-            // Check if property is null
-            if (this[property] === null) {
-                delete this[property];
-                continue;
-            }
-
-            if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].save)) {
-
-                // Check if property should be deleted before model is saved
-                if (!this.__annotation[property].save) {
-                    delete this[property];
-                    continue;
-                }
-
-                // Check if property should only be a reference to another model
-                if (this.__annotation[property].save == 'reference') {
-                    this._referenceOnly(this[property]);
-                    continue;
-                }
-            }
-
-            if (angular.isDefined(this.__annotation[property]) && angular.isDefined(this.__annotation[property].type)) {
-                // If property is a relation then call the _clean method of related models
-                if (this.__annotation[property].type == 'relation' && this[property] !== null) {
-
-                    if (!angular.isDefined(this.__annotation[property].relation.type)) continue;
-
-                    if (this.__annotation[property].relation.type == 'one') {
-
-                        // Call the _clean method on the related model
-                        this[property]._clean();
-                        continue;
-                    }
-
-                    if (this.__annotation[property].relation.type == 'many') {
-                        angular.forEach(this[property], function(model) {
-
-                            // Call the _clean method on the related model
-                            model._clean();
-                        });
-                    }
-                }
-            }
-        }
-
-        // Delete this two properties before model gets saved
-        delete this.__method;
-        delete this.__annotation;
-    };
-
-    /**
-     * Maps an array of models to an property
-     *
-     * @private
+     * @protected
      * @param {string} property The property which should be mapped
-     * @param {string} apiProperty Foreign property as it comes from the api
-     * @param {string} modelName Name of the model which is used for the matching
-     * @memberof Model
+     * @param {array} apiProperty Foreign property as it comes from the backend
+     * @param {string} modelName Name of the model which is used for the mapping
      */
     Model.prototype._mapArray = function(property, apiProperty, modelName) {
         var self = this;
@@ -897,13 +926,12 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Maps an array of models to an property
+     * Maps a model to an property.
      *
-     * @private
+     * @protected
      * @param {string} property The property which should be mapped
      * @param {string} apiProperty Foreign property as it comes from the api
      * @param {string} modelName Name of the model which is used for the matching
-     * @memberof Model
      */
     Model.prototype._mapProperty = function(property, apiProperty, modelName) {
 
@@ -928,11 +956,10 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Returns only the reference of a related model
+     * Returns only the reference of a related model.
      *
-     * @private
-     * @param {Model/array} models
-     * @memberof Model
+     * @protected
+     * @param {Model/array<Model>} models
      */
     Model.prototype._referenceOnly = function(models) {
 
@@ -948,7 +975,7 @@ function ModelFactory($log, $injector, Validator) {
             // Go thru all properties an delete all that are not the identifier
             for (var property in models) {
                 if(models.hasOwnProperty(property)) {
-                    if (property != models.__reference) {
+                    if (property != models.reference) {
                         delete models[property];
                     }
                 }
@@ -957,18 +984,16 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Validate the properties of the model
-     *
-     * @memberof Model
+     * Validates the properties of the model.
      */
     Model.prototype.isValid = function() {
         for (var property in this) {
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
 
-            if (angular.isDefined(this.__annotation[property])) {
-                if (angular.isDefined(this.__annotation[property].required) && (this.__annotation[property].required && this[property] === null || this.__annotation[property].required && this[property] === '')) return false;
-                if (!Validator[this.__annotation[property].type](this[property]) && this.__annotation[property].required) return false;
+            if (angular.isDefined(this._annotation[property])) {
+                if (angular.isDefined(this._annotation[property].required) && (this._annotation[property].required && this[property] === null || this._annotation[property].required && this[property] === '')) return false;
+                if (!Validator[this._annotation[property].type](this[property]) && this._annotation[property].required) return false;
             }
         }
 
@@ -983,27 +1008,59 @@ angular
     .factory('Mock', MockFactory);
 
 /**
- * The factory to get the abstract mock
- * @constructor
  * @ngInject
+ * @class
  */
 function MockFactory() {
-    function Mock() {}
 
-    Mock.prototype.routes = function(routes) {
+    /**
+     * Abstract mock object in order to mock backend data.
+     *
+     * @class
+     */
+    function Mock() {
+    }
+
+    /**
+     * Creates a object representing all the defined routes for a specific mock. Implemented in the constructor of the concrete mock.
+     *
+     * @param {object} routes All route definition for this mock
+     * @protected
+     * @abstract
+     * @example
+     * function TestUsersMock() {
+     *      this.routes({
+     *          '[GET]/': this.get,
+     *          '[GET]/:id': this.getUser,
+     *          '[POST]/': this.postUser,
+     *          '[POST]/:id/:controller': this.postUserCompany,
+     *          '[PUT]/:id': this.putUser
+     *      })
+     * }
+     */
+    Mock.prototype.routes = function (routes) {
         this.routeMatcher = {};
 
         for (var route in routes) {
             if (!routes.hasOwnProperty(route)) continue;
 
-            this.routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length]= routes[route];
+            this.routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
         }
     };
 
-    Mock.prototype._request = function(method, params, body) {
-        if (angular.isDefined(this.routeMatcher[method+params.length])) {
-            var methodName = method+params.length;
-            if (angular.isDefined(body)) params.push({ body: body});
+    /**
+     * Will be called from the endpoint to actually request the mock.
+     *
+     * @param {string} method The HTTP method as found in the HTTP/1.1 description
+     * @param {object} params All parameters as defined in the route object. Parameters not defined in the route configuration will be requested as query parameters.
+     * @param {string} body The HTTP body as described in HTTP/1.1
+     * @abstract
+     * @returns {*} Defined in the concret mock
+     */
+    Mock.prototype.request = function (method, params, body) {
+        if (angular.isDefined(this.routeMatcher[method + params.length])) {
+            var methodName = method + params.length;
+            if (angular.isDefined(body)) params.push({body: body});
 
             return this.routeMatcher[methodName].apply(this, params);
         }
@@ -1015,61 +1072,128 @@ angular
     .module('restclient')
     .factory('Validator', ValidatorFactory);
 
+/**
+ * @ngInject
+ * @class
+ */
 function ValidatorFactory() {
-    return {
-        string: function(string) {
-            return angular.isString(string);
-        },
-        int: function(int) {
-            return angular.isNumber(int);
-        },
-        email: function(email) {
-            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(email);
-        },
-        relation: function(relation) {
-            return true;
-        },
-        boolean: function(boolean) {
-            return true;
-        },
-        date: function(date) {
-            return angular.isDate(date);
-        },
-        float: function(float) {
-            return angular.isNumber(float);
-        }
+
+    /**
+     * Helper class to validate a model
+     *
+     * @class
+     */
+    function Validator() {
+    }
+
+    /**
+     * Checks if the given parameter is a string
+     *
+     * @param string
+     * @returns {boolean}
+     */
+    Validator.prototype.string = function (string) {
+        return angular.isString(string);
     };
+
+    /**
+     * Checks if the given parameter is a string
+     *
+     * @param int
+     * @returns {boolean}
+     */
+    Validator.prototype.int = function (int) {
+        return angular.isNumber(int);
+    };
+
+    /**
+     * Checks if the given parameter is a email
+     *
+     * @param email
+     * @returns {boolean}
+     */
+    Validator.prototype.email = function (email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+    /**
+     * Checks if the given parameter is a relation
+     *
+     * @param relation
+     * @returns {boolean}
+     */
+    Validator.prototype.relation = function (relation) {
+        return true;
+    };
+
+    /**
+     * Checks if the given parameter is a boolean
+     *
+     * @param boolean
+     * @returns {boolean}
+     */
+    Validator.prototype.boolean = function (boolean) {
+        return true;
+    };
+
+    /**
+     * Checks if the given parameter is a date
+     *
+     * @param date
+     * @returns {boolean}
+     */
+    Validator.prototype.date = function (date) {
+        return angular.isDate(date);
+    };
+
+    /**
+     * Checks if the given parameter is a float
+     *
+     * @param float
+     * @returns {boolean}
+     */
+    Validator.prototype.float = function (float) {
+        return angular.isNumber(float);
+    };
+
+    return Validator;
 }
 angular
     .module('restclient')
     .provider('api', ApiProvider);
 
 /**
- * The provider to get the api
- * @constructor
+ * AngularJD provider to provide the api
+ *
+ * @class
  */
 function ApiProvider() {
+
     /**
      * All the endpoints
+     *
      * @type {object}
      */
     this.endpoints = {};
 
     /**
      * The base route to the backend api
+     *
      * @type {string}
      */
     this.baseRoute = "";
 
     /**
      * Prefix of a header in a HEAD response
+     *
      * @type {string}
      */
     this.headResponseHeaderPrefix = "";
 
     /**
      * Set the base route
+     *
      * @param {string} baseRoute
      */
     this.baseRoute = function(baseRoute) {
@@ -1078,6 +1202,7 @@ function ApiProvider() {
 
     /**
      * Set the head response header prefix
+     *
      * @param {string} headResponseHeaderPrefix
      */
     this.headResponseHeaderPrefix = function(headResponseHeaderPrefix) {
@@ -1086,6 +1211,7 @@ function ApiProvider() {
 
     /**
      * Add an endpoint to the endpoint array
+     *
      * @param {string} endpoint
      */
     this.endpoint = function(endpoint) {
@@ -1096,6 +1222,7 @@ function ApiProvider() {
 
     /**
      * The factory method
+     *
      * @param {$injector} $injector
      * @ngInject
      */
