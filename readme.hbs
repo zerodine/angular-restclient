@@ -1,3 +1,4 @@
+[![Bower version](https://badge.fury.io/bo/angular-restclient.svg)](https://badge.fury.io/bo/angular-restclient)
 [![npm version](https://badge.fury.io/js/angular-restclient.svg)](https://badge.fury.io/js/angular-restclient)
 [![Build Status](https://travis-ci.org/zerodine/angular-restclient.svg?branch=master)](https://travis-ci.org/zerodine/angular-restclient)
 
