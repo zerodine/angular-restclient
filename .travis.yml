@@ -7,3 +7,4 @@ branches:
 before_script:
   - npm install -g gulp
 script: gulp
+sudo: false
