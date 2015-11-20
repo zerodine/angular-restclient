@@ -52,5 +52,9 @@ gulp.task('test', function(done) {
 });
 
 gulp.task('build', function() {
-    gulp.start('test', 'js', 'doc')
+    gulp.start('test', 'js', 'doc');
+});
+
+gulp.task('default', function() {
+    gulp.start('build');
 });
