@@ -12,6 +12,38 @@ function MockFactory() {
      * Abstract mock object in order to mock backend data.
      *
      * @class
+     * @example
+     * angular.module('UsersMock', [])
+     *  .factory('UsersMock', function(Mock) {
+     *       angular.extend(UsersMock.prototype, Mock.prototype);
+     *
+     *       function TestUsersMock() {
+     *           // Define routes for this mock with a reference to a method
+     *           this.routes({
+     *               '[GET]/': this.get
+     *           })
+     *       }
+     *
+     *       UsersMock.prototype.get = function() {
+     *           return {
+     *               users: [
+     *                   {
+     *                       id: 1,
+     *                       firstname: 'Jack',
+     *                       lastname: 'Bauer'
+     *                   },
+     *                   {
+     *                       id: 2,
+     *                       firstname: 'Sandra',
+     *                       lastname: 'Bullock'
+     *                   }
+     *               ]
+     *           }
+     *       };
+     *
+     *       return UsersMock;
+     *  }
+     * )
      */
     function Mock() {
     }

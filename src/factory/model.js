@@ -12,6 +12,46 @@ function ModelFactory($log, $injector, Validator) {
      * Abstract model class
      *
      * @class
+     * @example
+     * angular.module('UserModel', [])
+     *  .factory('UserModel', function(Model) {
+     *
+     *      angular.extend(UserModel.prototype, Model.prototype);
+     *
+     *       function UserModel(object) {
+     *
+     *           this.id = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           this.firstname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.lastname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.fullname = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           // Map the given object
+     *           this._init(object);
+     *       }
+     *
+     *       UserModel.prototype._afterLoad = function() {
+     *           this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+     *       };
+     *
+     *       UserModel.prototype._beforeSave = function() {
+     *           this.firstname = this.firstname + '_';
+     *       };
+     *
+     *       return UserModel;
+     *  })
      */
     function Model() {
 

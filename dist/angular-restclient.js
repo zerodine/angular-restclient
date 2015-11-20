@@ -708,6 +708,46 @@ function ModelFactory($log, $injector, Validator) {
      * Abstract model class
      *
      * @class
+     * @example
+     * angular.module('UserModel', [])
+     *  .factory('UserModel', function(Model) {
+     *
+     *      angular.extend(UserModel.prototype, Model.prototype);
+     *
+     *       function UserModel(object) {
+     *
+     *           this.id = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           this.firstname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.lastname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.fullname = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           // Map the given object
+     *           this._init(object);
+     *       }
+     *
+     *       UserModel.prototype._afterLoad = function() {
+     *           this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+     *       };
+     *
+     *       UserModel.prototype._beforeSave = function() {
+     *           this.firstname = this.firstname + '_';
+     *       };
+     *
+     *       return UserModel;
+     *  })
      */
     function Model() {
 
@@ -1017,6 +1057,38 @@ function MockFactory() {
      * Abstract mock object in order to mock backend data.
      *
      * @class
+     * @example
+     * angular.module('UsersMock', [])
+     *  .factory('UsersMock', function(Mock) {
+     *       angular.extend(UsersMock.prototype, Mock.prototype);
+     *
+     *       function TestUsersMock() {
+     *           // Define routes for this mock with a reference to a method
+     *           this.routes({
+     *               '[GET]/': this.get
+     *           })
+     *       }
+     *
+     *       UsersMock.prototype.get = function() {
+     *           return {
+     *               users: [
+     *                   {
+     *                       id: 1,
+     *                       firstname: 'Jack',
+     *                       lastname: 'Bauer'
+     *                   },
+     *                   {
+     *                       id: 2,
+     *                       firstname: 'Sandra',
+     *                       lastname: 'Bullock'
+     *                   }
+     *               ]
+     *           }
+     *       };
+     *
+     *       return UsersMock;
+     *  }
+     * )
      */
     function Mock() {
     }

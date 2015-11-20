@@ -195,6 +195,48 @@ The factory method
 ### new Model()
 Abstract model class
 
+**Example**  
+```js
+angular.module('UserModel', [])
+ .factory('UserModel', function(Model) {
+
+     angular.extend(UserModel.prototype, Model.prototype);
+
+      function UserModel(object) {
+
+          this.id = {
+              type: 'string',
+              save: false
+          };
+
+          this.firstname = {
+              type: 'string'
+          };
+
+          this.lastname = {
+              type: 'string'
+          };
+
+          this.fullname = {
+              type: 'string',
+              save: false
+          };
+
+          // Map the given object
+          this._init(object);
+      }
+
+      UserModel.prototype._afterLoad = function() {
+          this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+      };
+
+      UserModel.prototype._beforeSave = function() {
+          this.firstname = this.firstname + '_';
+      };
+
+      return UserModel;
+ })
+```
 <a name="ModelFactory..Model+_foreignData"></a>
 ### model._foreignData : <code>object</code>
 Holds the original object as it was injected.
@@ -318,6 +360,40 @@ Validates the properties of the model.
 ### new Mock()
 Abstract mock object in order to mock backend data.
 
+**Example**  
+```js
+angular.module('UsersMock', [])
+ .factory('UsersMock', function(Mock) {
+      angular.extend(UsersMock.prototype, Mock.prototype);
+
+      function TestUsersMock() {
+          // Define routes for this mock with a reference to a method
+          this.routes({
+              '[GET]/': this.get
+          })
+      }
+
+      UsersMock.prototype.get = function() {
+          return {
+              users: [
+                  {
+                      id: 1,
+                      firstname: 'Jack',
+                      lastname: 'Bauer'
+                  },
+                  {
+                      id: 2,
+                      firstname: 'Sandra',
+                      lastname: 'Bullock'
+                  }
+              ]
+          }
+      };
+
+      return UsersMock;
+ }
+)
+```
 <a name="MockFactory..Mock+routes"></a>
 ### *mock.routes(routes)*
 Creates a object representing all the defined routes for a specific mock. Implemented in the constructor of the concrete mock.
