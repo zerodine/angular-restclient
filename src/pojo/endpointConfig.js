@@ -1,10 +1,22 @@
 /**
- * This class represents one configuration for an endpoint
+ * This class represents one configuration for an endpoint.
  *
- * @constructor EndpointConfig
+ * @class
  */
-function EndpointConfig(endpoint) {
-    this.name = endpoint;
+function EndpointConfig(endpointName) {
+
+    /**
+     * Name of the endpoint
+     *
+     * @type {string}
+     */
+    this.name = endpointName;
+
+    /**
+     * Prefix of any custom headers
+     *
+     * @type {string}
+     */
     this.headResponseHeaderPrefix = null;
 }
 
@@ -13,7 +25,6 @@ function EndpointConfig(endpoint) {
  *
  * @param {string} route The endpoint route defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.route = function(route) {
     this.route = route;
@@ -25,7 +36,6 @@ EndpointConfig.prototype.route = function(route) {
  *
  * @param {string} model The model defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.model = function(model) {
     this.model = model;
@@ -37,7 +47,6 @@ EndpointConfig.prototype.model = function(model) {
  *
  * @param {string} container The container defined as string
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.container = function(container) {
     this.container = container;
@@ -48,7 +57,6 @@ EndpointConfig.prototype.container = function(container) {
  * Define if the response from the api is going to be an array
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.actions = function(actions) {
     this.actions = actions;
@@ -59,7 +67,6 @@ EndpointConfig.prototype.actions = function(actions) {
  * Overwrites the baseRoute from the global configuration
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.baseRoute = function(baseRoute) {
     this.baseRoute = baseRoute;
@@ -70,7 +77,6 @@ EndpointConfig.prototype.baseRoute = function(baseRoute) {
  * Overwrites the mock from the global configuration
  *
  * @return {EndpointConfig} Returns the endpoint config object
- * @memberof EndpointConfig
  */
 EndpointConfig.prototype.mock = function(mock) {
     this.mock = mock;

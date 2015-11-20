@@ -13,7 +13,7 @@ describe('Mapping', function() {
     it('tests the object mapping process', inject(function($injector) {
         var api = provider.$get($injector);
 
-        var testModel = api.users.mapResult({
+        var testModel = api.users._mapResult({
             id: 1,
             firstname: 'Jack',
             lastname: 'Bauer',
@@ -28,7 +28,7 @@ describe('Mapping', function() {
     it('tests after load method', inject(function($injector) {
         var api = provider.$get($injector);
 
-        var testModel = api.users.mapResult({
+        var testModel = api.users._mapResult({
             id: 1,
             firstname: 'Jack',
             lastname: 'Bauer'
@@ -40,7 +40,7 @@ describe('Mapping', function() {
     it('tests the array mapping process', inject(function($injector) {
         var api = provider.$get($injector);
 
-        var testModels = api.users.mapResult({
+        var testModels = api.users._mapResult({
             users: [
                 {
                     id: 1,

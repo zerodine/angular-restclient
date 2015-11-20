@@ -1,10 +1,10 @@
 /**
- * This is just a helper function because a merge is not supported by angular until version > 1.4
+ * This is just a helper function because merge is not supported by angular until version > 1.4.
  *
  * @deprecated Will be supported by angular with version > 1.4
- * @param dst
- * @param src
- * @returns {*}
+ * @param {object} dst
+ * @param {object} src
+ * @returns {object}
  */
 function merge(dst, src) {
     if (!angular.isDefined(dst) && !angular.isDefined(src)) return {};

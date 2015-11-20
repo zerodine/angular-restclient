@@ -5,13 +5,13 @@ angular.extend(EndpointMock.prototype, EndpointAbstract.prototype);
  *
  * @param endpointConfig EndpointConfig of the Endpoint
  * @param $injector The angular $injector provider
- * @constructor
+ * @class
  */
 function EndpointMock(endpointConfig, $injector) {
-    this.endpointConfig = endpointConfig;
-    this.q = $injector.get('$q');
-    this.log = $injector.get('$log');
-    this.injector = $injector;
+    this._endpointConfig = endpointConfig;
+    this._q = $injector.get('$q');
+    this._log = $injector.get('$log');
+    this._injector = $injector;
 
     this.mock = $injector.get(endpointConfig.mock);
 }
@@ -21,14 +21,15 @@ function EndpointMock(endpointConfig, $injector) {
  *
  * @param params Params as unordered object
  * @returns {Array} Ordered according route
+ * @protected
  */
-EndpointMock.prototype.extractParams = function(params) {
+EndpointMock.prototype._extractParams = function(params) {
     var paramsOrder = [];
     var regex = /:(\w+)/g;
-    var param = regex.exec(this.endpointConfig.route);
+    var param = regex.exec(this._endpointConfig.route);
     while (param != null) {
         paramsOrder.push(param[1]);
-        param = regex.exec(this.endpointConfig.route);
+        param = regex.exec(this._endpointConfig.route);
     }
 
     var orderedParams = [];
@@ -46,11 +47,11 @@ EndpointMock.prototype.extractParams = function(params) {
  * @returns {Promise<Model|Error>} Promise with models
  */
 EndpointMock.prototype.get = function(params) {
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     var mock = new this.mock;
-    var data = mock._request('GET', this.extractParams(params));
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('GET', this._extractParams(params));
+    var mappedResult = this._mapResult(data);
 
     defer.resolve(mappedResult);
 
@@ -65,7 +66,7 @@ EndpointMock.prototype.get = function(params) {
 EndpointMock.prototype.post = function() {
     var model, params;
     var mock = new this.mock;
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     // Check if only two arguments are given
     if (angular.isUndefined(arguments[1])) {
@@ -78,11 +79,11 @@ EndpointMock.prototype.post = function() {
     // Set the action that is performed. This can be checked in the model.
     model.__method = 'save';
 
-    // Call the _clean method of the model
-    model._clean();
+    // Call the clean method of the model
+    model.clean();
 
-    var data = mock._request('POST', this.extractParams(params), model);
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('POST', this._extractParams(params), model);
+    var mappedResult = this._mapResult(data);
 
     defer.resolve(mappedResult);
 
@@ -99,7 +100,7 @@ EndpointMock.prototype.post = function() {
  */
 EndpointMock.prototype.put = function (params, model) {
     var mock = new this.mock;
-    var defer = this.q.defer();
+    var defer = this._q.defer();
 
     if (angular.isArray(model)) {
         var tempModels = angular.copy(model);
@@ -107,18 +108,18 @@ EndpointMock.prototype.put = function (params, model) {
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
             tempModel.__method = 'update';
-            tempModel._clean();
+            tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
         model.__method = 'update';
-        // Call the _clean method of the model
-        model._clean();
+        // Call the clean method of the model
+        model.clean();
     }
 
-    var data = mock._request('PUT', this.extractParams(params), model);
-    var mappedResult = this.mapResult(data);
+    var data = mock.request('PUT', this._extractParams(params), model);
+    var mappedResult = this._mapResult(data);
     defer.resolve(mappedResult);
 
     return defer.promise;
