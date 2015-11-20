@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/angular-restclient.svg)](https://badge.fury.io/js/angular-restclient)
+
 #angular-restclient
 A work-in-progress AngularJS rest client with ORM
 
