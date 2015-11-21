@@ -1246,8 +1246,9 @@ function ApiProvider() {
      * All the endpoints
      *
      * @type {object}
+     * @protected
      */
-    this.endpoints = {};
+    this._endpoints = {};
 
     /**
      * The base route to the backend api
@@ -1285,10 +1286,11 @@ function ApiProvider() {
      * Add an endpoint to the endpoint array
      *
      * @param {string} endpoint
+     * @return {EndpointConfig}
      */
     this.endpoint = function(endpoint) {
         var endpointConfig = new EndpointConfig(endpoint);
-        this.endpoints[endpoint] = endpointConfig;
+        this._endpoints[endpoint] = endpointConfig;
         return endpointConfig;
     };
 
@@ -1303,7 +1305,7 @@ function ApiProvider() {
         var api = {};
 
         // Go thru every given endpoint
-        angular.forEach(self.endpoints, function (endpointConfig) {
+        angular.forEach(self._endpoints, function (endpointConfig) {
 
             // Check if an container is given and if not, set it to the name of the endpoint
             if (angular.isFunction(endpointConfig.container)) endpointConfig.container = endpointConfig.name;
