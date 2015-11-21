@@ -708,6 +708,46 @@ function ModelFactory($log, $injector, Validator) {
      * Abstract model class
      *
      * @class
+     * @example
+     * angular.module('UserModel', [])
+     *  .factory('UserModel', function(Model) {
+     *
+     *      angular.extend(UserModel.prototype, Model.prototype);
+     *
+     *       function UserModel(object) {
+     *
+     *           this.id = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           this.firstname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.lastname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.fullname = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           // Map the given object
+     *           this._init(object);
+     *       }
+     *
+     *       UserModel.prototype._afterLoad = function() {
+     *           this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+     *       };
+     *
+     *       UserModel.prototype._beforeSave = function() {
+     *           this.firstname = this.firstname + '_';
+     *       };
+     *
+     *       return UserModel;
+     *  })
      */
     function Model() {
 
@@ -1017,6 +1057,38 @@ function MockFactory() {
      * Abstract mock object in order to mock backend data.
      *
      * @class
+     * @example
+     * angular.module('UsersMock', [])
+     *  .factory('UsersMock', function(Mock) {
+     *       angular.extend(UsersMock.prototype, Mock.prototype);
+     *
+     *       function TestUsersMock() {
+     *           // Define routes for this mock with a reference to a method
+     *           this.routes({
+     *               '[GET]/': this.get
+     *           })
+     *       }
+     *
+     *       UsersMock.prototype.get = function() {
+     *           return {
+     *               users: [
+     *                   {
+     *                       id: 1,
+     *                       firstname: 'Jack',
+     *                       lastname: 'Bauer'
+     *                   },
+     *                   {
+     *                       id: 2,
+     *                       firstname: 'Sandra',
+     *                       lastname: 'Bullock'
+     *                   }
+     *               ]
+     *           }
+     *       };
+     *
+     *       return UsersMock;
+     *  }
+     * )
      */
     function Mock() {
     }
@@ -1174,8 +1246,9 @@ function ApiProvider() {
      * All the endpoints
      *
      * @type {object}
+     * @protected
      */
-    this.endpoints = {};
+    this._endpoints = {};
 
     /**
      * The base route to the backend api
@@ -1213,10 +1286,11 @@ function ApiProvider() {
      * Add an endpoint to the endpoint array
      *
      * @param {string} endpoint
+     * @return {EndpointConfig}
      */
     this.endpoint = function(endpoint) {
         var endpointConfig = new EndpointConfig(endpoint);
-        this.endpoints[endpoint] = endpointConfig;
+        this._endpoints[endpoint] = endpointConfig;
         return endpointConfig;
     };
 
@@ -1231,7 +1305,7 @@ function ApiProvider() {
         var api = {};
 
         // Go thru every given endpoint
-        angular.forEach(self.endpoints, function (endpointConfig) {
+        angular.forEach(self._endpoints, function (endpointConfig) {
 
             // Check if an container is given and if not, set it to the name of the endpoint
             if (angular.isFunction(endpointConfig.container)) endpointConfig.container = endpointConfig.name;

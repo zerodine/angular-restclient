@@ -3,19 +3,49 @@
 [![Build Status](https://travis-ci.org/zerodine/angular-restclient.svg?branch=master)](https://travis-ci.org/zerodine/angular-restclient)
 
 #angular-restclient
-A work-in-progress AngularJS rest client with ORM
+Angular-restclient is a angular module to help you simplify any REST-based WebApp. It abstracts a RESTful (json) backend and gives you a extra layer. With that it's super easy to do any HTTP requests as GET, POST, PUT, DELETE and so on.
 
-##Install
+##Features
+* Configure all endpoints individually
+* Models gives you a whole new flexibility
+* Mocks let you develop even when the backend is not fully ready yet
+* Simple syntax
+* Fully promise based architecture
+
+##Getting started
+###Requirements
+* angular > 1.2.x
+* angular-resource > 1.2.x
+
+###Install
+You can ether use bower, npm or git-clone to install angular-restclient. We recommend bower.
+
+####bower
 ```sh
 $ bower install angular-restclient --save
 ```
 
-##Load Module
-```js
-var app = angular.module('app', ['restclient']);
+####npm
+```sh
+$ npm install angular-restclient --save
 ```
 
-##Configuration
+###HTML
+Load angular-resource.js and angular-restclient.js into your HTML page:
+```html
+<script src="../bower_components/angular/angular[.min].js"></script>
+<script src="../bower_components/angular-resource/angular-resource[.min].js"></script>
+<script src="../bower_components/angular-restclient/dist/angular-restclient[.min].js"></script>
+```
+
+###Load Module
+Make your application module depend on the restclient module:
+```js
+var app = angular.module('myApp', ['ngResource', 'restclient']);
+```
+
+###Sample Configuration
+The configuration is super simple. This is a sample configuration. We define a baseRoute to the backend with two endpoints users and posts.
 ```js
 app.config(function(apiProvider) {
     apiProvider.baseRoute('http://localhost/api');
@@ -29,7 +59,8 @@ app.config(function(apiProvider) {
 });
 ```
 
-##Model example
+###Model example
+Every endpoint must have a model defined. At first this seems like a lot of work but its worth it. This extra layer gives you a lot of flexibility. For example: When you have to manipulate the RESTful data you can do it once in the model and access it throughout your whole application. Here is a example of a user model:
 ```js
 app.factory('User', function(Model) {
     function User(object) {
@@ -70,11 +101,27 @@ app.factory('User', function(Model) {
 });
 ```
 
-##Make a call
+###Make a call
+Last we make a call to the backend.
+
+####Get all users
 ```js
 app.controller('Ctrl', function(api) {
-    api.users.get().then(function(data) {
-        $scope.users = data;
+    api.users.get().then(function(users) {
+        $scope.users = users;
+    }, function(error) {
+        // error handling
+    });
+});
+```
+
+####Get specific user
+```js
+app.controller('Ctrl', function(api) {
+    api.users.get({id: 1}).then(function(user) {
+        $scope.users = user;
+    }, function(error) {
+        // error handling
     });
 });
 ```
@@ -105,23 +152,24 @@ app.controller('Ctrl', function(api) {
 
 * [ApiProvider](#ApiProvider)
   * [new ApiProvider()](#new_ApiProvider_new)
-  * [.endpoints](#ApiProvider+endpoints) : <code>object</code>
+  * [._endpoints](#ApiProvider+_endpoints) : <code>object</code>
   * [.baseRoute](#ApiProvider+baseRoute) : <code>string</code>
   * [.headResponseHeaderPrefix](#ApiProvider+headResponseHeaderPrefix) : <code>string</code>
   * [.baseRoute(baseRoute)](#ApiProvider+baseRoute)
   * [.headResponseHeaderPrefix(headResponseHeaderPrefix)](#ApiProvider+headResponseHeaderPrefix)
-  * [.endpoint(endpoint)](#ApiProvider+endpoint)
+  * [.endpoint(endpoint)](#ApiProvider+endpoint) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
   * [.$get($injector)](#ApiProvider+$get)
 
 <a name="new_ApiProvider_new"></a>
 ### new ApiProvider()
 AngularJD provider to provide the api
 
-<a name="ApiProvider+endpoints"></a>
-### apiProvider.endpoints : <code>object</code>
+<a name="ApiProvider+_endpoints"></a>
+### apiProvider._endpoints : <code>object</code>
 All the endpoints
 
 **Kind**: instance property of <code>[ApiProvider](#ApiProvider)</code>  
+**Access:** protected  
 <a name="ApiProvider+baseRoute"></a>
 ### apiProvider.baseRoute : <code>string</code>
 The base route to the backend api
@@ -153,7 +201,7 @@ Set the head response header prefix
 | headResponseHeaderPrefix | <code>string</code> | 
 
 <a name="ApiProvider+endpoint"></a>
-### apiProvider.endpoint(endpoint)
+### apiProvider.endpoint(endpoint) ⇒ <code>[EndpointConfig](#EndpointConfig)</code>
 Add an endpoint to the endpoint array
 
 **Kind**: instance method of <code>[ApiProvider](#ApiProvider)</code>  
@@ -195,6 +243,48 @@ The factory method
 ### new Model()
 Abstract model class
 
+**Example**  
+```js
+angular.module('UserModel', [])
+ .factory('UserModel', function(Model) {
+
+     angular.extend(UserModel.prototype, Model.prototype);
+
+      function UserModel(object) {
+
+          this.id = {
+              type: 'string',
+              save: false
+          };
+
+          this.firstname = {
+              type: 'string'
+          };
+
+          this.lastname = {
+              type: 'string'
+          };
+
+          this.fullname = {
+              type: 'string',
+              save: false
+          };
+
+          // Map the given object
+          this._init(object);
+      }
+
+      UserModel.prototype._afterLoad = function() {
+          this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+      };
+
+      UserModel.prototype._beforeSave = function() {
+          this.firstname = this.firstname + '_';
+      };
+
+      return UserModel;
+ })
+```
 <a name="ModelFactory..Model+_foreignData"></a>
 ### model._foreignData : <code>object</code>
 Holds the original object as it was injected.
@@ -318,6 +408,40 @@ Validates the properties of the model.
 ### new Mock()
 Abstract mock object in order to mock backend data.
 
+**Example**  
+```js
+angular.module('UsersMock', [])
+ .factory('UsersMock', function(Mock) {
+      angular.extend(UsersMock.prototype, Mock.prototype);
+
+      function TestUsersMock() {
+          // Define routes for this mock with a reference to a method
+          this.routes({
+              '[GET]/': this.get
+          })
+      }
+
+      UsersMock.prototype.get = function() {
+          return {
+              users: [
+                  {
+                      id: 1,
+                      firstname: 'Jack',
+                      lastname: 'Bauer'
+                  },
+                  {
+                      id: 2,
+                      firstname: 'Sandra',
+                      lastname: 'Bullock'
+                  }
+              ]
+          }
+      };
+
+      return UsersMock;
+ }
+)
+```
 <a name="MockFactory..Mock+routes"></a>
 ### *mock.routes(routes)*
 Creates a object representing all the defined routes for a specific mock. Implemented in the constructor of the concrete mock.
@@ -790,4 +914,3 @@ HTTP/1.1 PUT method
 HTTP/1.1 HEAD method
 
 **Kind**: instance method of <code>[EndpointInterface](#EndpointInterface)</code>  
-
