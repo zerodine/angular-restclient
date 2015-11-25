@@ -1027,13 +1027,15 @@ function ModelFactory($log, $injector, Validator) {
      * Validates the properties of the model.
      */
     Model.prototype.isValid = function() {
+        var validator = new Validator();
+
         for (var property in this) {
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
 
             if (angular.isDefined(this._annotation[property])) {
                 if (angular.isDefined(this._annotation[property].required) && (this._annotation[property].required && this[property] === null || this._annotation[property].required && this[property] === '')) return false;
-                if (!Validator[this._annotation[property].type](this[property]) && this._annotation[property].required) return false;
+                if (!validator[this._annotation[property].type](this[property]) && this._annotation[property].required) return false;
             }
         }
 
