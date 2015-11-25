@@ -1,10 +1,10 @@
 (function() {
-    angular.module('TestUsersMock', [])
-        .factory('TestUsersMock', function(Mock) {
-            angular.extend(TestUsersMock.prototype, Mock.prototype);
+    angular.module('UsersMock', [])
+        .factory('UsersMock', function(Mock) {
+            angular.extend(UsersMock.prototype, Mock.prototype);
 
-            function TestUsersMock() {
-                this.routes({
+            function UsersMock() {
+                this._routes({
                     '[GET]/': this.get,
                     '[GET]/:id': this.getUser,
                     '[POST]/': this.postUser,
@@ -13,7 +13,7 @@
                 })
             }
 
-            TestUsersMock.prototype.get = function() {
+            UsersMock.prototype.get = function() {
                 return {
                     users: [
                         {
@@ -30,7 +30,7 @@
                 }
             };
 
-            TestUsersMock.prototype.getUser = function(id) {
+            UsersMock.prototype.getUser = function(id) {
                 var users = {
                     1: {
                         id: 1,
@@ -47,21 +47,21 @@
                 return users[id];
             };
 
-            TestUsersMock.prototype.postUser = function(request) {
-                request.body.id = 3;
+            UsersMock.prototype.postUser = function(request) {
+                request.body.id = 1;
                 return request.body;
             };
 
-            TestUsersMock.prototype.postUserCompany = function(id, controller, request) {
+            UsersMock.prototype.postUserCompany = function(id, controller, request) {
                 request.body.id = id;
                 return request.body;
             };
 
-            TestUsersMock.prototype.putUser = function(id, request) {
+            UsersMock.prototype.putUser = function(id, request) {
                 request.body.id = id;
                 return request.body;
             };
 
-            return TestUsersMock;
+            return UsersMock;
         })
 })();

@@ -46,6 +46,13 @@ function MockFactory() {
      * )
      */
     function Mock() {
+        /**
+         * This object represents all the routes of a mock and is used to match a request to a given method
+         *
+         * @type {object}
+         * @private
+         */
+        this._routeMatcher = {};
     }
 
     /**
@@ -65,13 +72,13 @@ function MockFactory() {
      *      })
      * }
      */
-    Mock.prototype.routes = function (routes) {
-        this.routeMatcher = {};
+    Mock.prototype._routes = function (routes) {
+        this._routeMatcher = {};
 
         for (var route in routes) {
             if (!routes.hasOwnProperty(route)) continue;
 
-            this.routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
+            this._routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
         }
     };
 
@@ -85,11 +92,13 @@ function MockFactory() {
      * @returns {*} Defined in the concret mock
      */
     Mock.prototype.request = function (method, params, body) {
-        if (angular.isDefined(this.routeMatcher[method + params.length])) {
+        if (!angular.isDefined(params)) params = [];
+
+        if (angular.isDefined(this._routeMatcher[method + params.length])) {
             var methodName = method + params.length;
             if (angular.isDefined(body)) params.push({body: body});
 
-            return this.routeMatcher[methodName].apply(this, params);
+            return this._routeMatcher[methodName].apply(this, params);
         }
     };
 

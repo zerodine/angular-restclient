@@ -173,13 +173,13 @@ Endpoint.prototype.put = function (params, model) {
         model = [];
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
-            tempModel.__method = 'update';
+            tempModel._method = 'update';
             tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
-        model.__method = 'update';
+        model._method = 'update';
         // Call the clean method of the model
         model.clean();
     }
@@ -219,7 +219,7 @@ Endpoint.prototype.post = function () {
     var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
-    model.__method = 'save';
+    model._method = 'save';
 
     // Call the clean method of the model
     model.clean();
@@ -257,7 +257,7 @@ Endpoint.prototype.delete = function() {
     var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
-    model.__method = 'remove';
+    model._method = 'remove';
 
     // Get the id of the model
     var paramId = {

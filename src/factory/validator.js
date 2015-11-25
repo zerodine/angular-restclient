@@ -54,7 +54,7 @@ function ValidatorFactory() {
      * @returns {boolean}
      */
     Validator.prototype.relation = function (relation) {
-        return true;
+        return (angular.isArray(relation) || angular.isObject(relation));
     };
 
     /**
@@ -64,7 +64,12 @@ function ValidatorFactory() {
      * @returns {boolean}
      */
     Validator.prototype.boolean = function (boolean) {
-        return true;
+        if (!angular.isDefined(boolean) ||
+            boolean == null ||
+            !angular.isDefined(boolean.constructor)) {
+            return false;
+        }
+        return (boolean.constructor === Boolean)
     };
 
     /**

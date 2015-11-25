@@ -86,7 +86,9 @@ EndpointAbstract.prototype._getPagination = function(data) {
         }
 
         var i;
-        if (currentPage <= 5) {
+        if (pages < 11) {
+            for (i=1; i<=pages; i++) data.pagesArray.push(i);
+        } else if (currentPage <= 5) {
             for (i=1; i<=11; i++) data.pagesArray.push(i);
         } else if (currentPage >= pages-5) {
             for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);

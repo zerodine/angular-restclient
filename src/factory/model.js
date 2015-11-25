@@ -76,6 +76,15 @@ function ModelFactory($log, $injector, Validator) {
          * @private
          */
         this._annotation = {};
+
+        /**
+         * When a endpoint gets called this variable saves the method [update, save, remove]
+         * This object gets deleted when the model is sent to the backend.
+         *
+         * @type {string}
+         * @private
+         */
+        this._method = null;
     }
 
     /**
@@ -145,7 +154,7 @@ function ModelFactory($log, $injector, Validator) {
         }
 
         // Delete this two properties before model gets saved
-        delete this.__method;
+        delete this._method;
         delete this._annotation;
     };
 

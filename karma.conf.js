@@ -31,9 +31,11 @@ module.exports = function (config) {
             'src/factory/validator.js',
             'src/provider/api.js',
 
-            'test/TestModel.js',
-            'test/TestUsersMock.js',
-            'test/**/*Spec.js'
+            'test/models/user.js',
+            'test/models/company.js',
+            'test/models/role.js',
+            'test/mocks/users.js',
+            'test/*Spec.js'
         ],
 
 
@@ -49,7 +51,8 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        //reporters: ['progress'],
+        reporters: ['verbose'],
 
 
         // web server port
