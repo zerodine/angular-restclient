@@ -1,6 +1,6 @@
 {
   "name": "angular-restclient",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "An angularJS rest client with ORM",
   "main": "angular-restclient.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "angular": "^1.4.4",
     "angular-mocks": "^1.4.4",
     "angular-resource": "^1.4.4",
+    "del": "^2.1.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
     "gulp-iife": "^0.1.0",

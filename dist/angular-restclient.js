@@ -53,27 +53,27 @@ function EndpointInterface() {}
 /**
  * HTTP/1.1 GET method
  */
-EndpointInterface.prototype.get = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.get = function() { throw new Error('Not Implemented')};
 
 /**
  * HTTP/1.1 POST method
  */
-EndpointInterface.prototype.post = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.post = function() { throw new Error('Not Implemented')};
 
 /**
  * HTTP/1.1 DELETE method
  */
-EndpointInterface.prototype.delete = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.delete = function() { throw new Error('Not Implemented')};
 
 /**
  * HTTP/1.1 PUT method
  */
-EndpointInterface.prototype.put = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.put = function() { throw new Error('Not Implemented')};
 
 /**
  * HTTP/1.1 HEAD method
  */
-EndpointInterface.prototype.head = function() { throw 'Not Implemented'};
+EndpointInterface.prototype.head = function() { throw new Error('Not Implemented')};
 angular.extend(EndpointAbstract.prototype, EndpointInterface.prototype);
 
 /**
@@ -162,7 +162,9 @@ EndpointAbstract.prototype._getPagination = function(data) {
         }
 
         var i;
-        if (currentPage <= 5) {
+        if (pages < 11) {
+            for (i=1; i<=pages; i++) data.pagesArray.push(i);
+        } else if (currentPage <= 5) {
             for (i=1; i<=11; i++) data.pagesArray.push(i);
         } else if (currentPage >= pages-5) {
             for (i=pages-11; i<=pages; i++) data.pagesArray.push(i);
@@ -380,13 +382,13 @@ Endpoint.prototype.put = function (params, model) {
         model = [];
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
-            tempModel.__method = 'update';
+            tempModel._method = 'update';
             tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
-        model.__method = 'update';
+        model._method = 'update';
         // Call the clean method of the model
         model.clean();
     }
@@ -426,7 +428,7 @@ Endpoint.prototype.post = function () {
     var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
-    model.__method = 'save';
+    model._method = 'save';
 
     // Call the clean method of the model
     model.clean();
@@ -464,7 +466,7 @@ Endpoint.prototype.delete = function() {
     var defer = this._q.defer();
 
     // Set the action that is performed. This can be checked in the model.
-    model.__method = 'remove';
+    model._method = 'remove';
 
     // Get the id of the model
     var paramId = {
@@ -563,7 +565,7 @@ EndpointMock.prototype.post = function() {
     }
 
     // Set the action that is performed. This can be checked in the model.
-    model.__method = 'save';
+    model._method = 'save';
 
     // Call the clean method of the model
     model.clean();
@@ -593,13 +595,13 @@ EndpointMock.prototype.put = function (params, model) {
         model = [];
         angular.forEach(tempModels, function(tempModel) {
             // Set the action that is performed. This can be checked in the model.
-            tempModel.__method = 'update';
+            tempModel._method = 'update';
             tempModel.clean();
             model.push(tempModel);
         });
     } else {
         // Set the action that is performed. This can be checked in the model.
-        model.__method = 'update';
+        model._method = 'update';
         // Call the clean method of the model
         model.clean();
     }
@@ -772,6 +774,15 @@ function ModelFactory($log, $injector, Validator) {
          * @private
          */
         this._annotation = {};
+
+        /**
+         * When a endpoint gets called this variable saves the method [update, save, remove]
+         * This object gets deleted when the model is sent to the backend.
+         *
+         * @type {string}
+         * @private
+         */
+        this._method = null;
     }
 
     /**
@@ -841,7 +852,7 @@ function ModelFactory($log, $injector, Validator) {
         }
 
         // Delete this two properties before model gets saved
-        delete this.__method;
+        delete this._method;
         delete this._annotation;
     };
 
@@ -1093,6 +1104,13 @@ function MockFactory() {
      * )
      */
     function Mock() {
+        /**
+         * This object represents all the routes of a mock and is used to match a request to a given method
+         *
+         * @type {object}
+         * @private
+         */
+        this._routeMatcher = {};
     }
 
     /**
@@ -1112,13 +1130,13 @@ function MockFactory() {
      *      })
      * }
      */
-    Mock.prototype.routes = function (routes) {
-        this.routeMatcher = {};
+    Mock.prototype._routes = function (routes) {
+        this._routeMatcher = {};
 
         for (var route in routes) {
             if (!routes.hasOwnProperty(route)) continue;
 
-            this.routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
+            this._routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
         }
     };
 
@@ -1132,11 +1150,13 @@ function MockFactory() {
      * @returns {*} Defined in the concret mock
      */
     Mock.prototype.request = function (method, params, body) {
-        if (angular.isDefined(this.routeMatcher[method + params.length])) {
+        if (!angular.isDefined(params)) params = [];
+
+        if (angular.isDefined(this._routeMatcher[method + params.length])) {
             var methodName = method + params.length;
             if (angular.isDefined(body)) params.push({body: body});
 
-            return this.routeMatcher[methodName].apply(this, params);
+            return this._routeMatcher[methodName].apply(this, params);
         }
     };
 
@@ -1198,7 +1218,7 @@ function ValidatorFactory() {
      * @returns {boolean}
      */
     Validator.prototype.relation = function (relation) {
-        return true;
+        return (angular.isArray(relation) || angular.isObject(relation));
     };
 
     /**
@@ -1208,7 +1228,12 @@ function ValidatorFactory() {
      * @returns {boolean}
      */
     Validator.prototype.boolean = function (boolean) {
-        return true;
+        if (!angular.isDefined(boolean) ||
+            boolean == null ||
+            !angular.isDefined(boolean.constructor)) {
+            return false;
+        }
+        return (boolean.constructor === Boolean)
     };
 
     /**

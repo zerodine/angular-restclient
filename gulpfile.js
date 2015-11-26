@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var del = require('del');
 var gutil = require("gulp-util");
 var jsdoc2md = require("gulp-jsdoc-to-markdown");
 var rename = require("gulp-rename");
@@ -10,7 +11,7 @@ var karma = require('karma').Server;
 var iife = require('gulp-iife');
 var fs = require("fs");
 
-gulp.task('js', ['test'], function () {
+gulp.task('js', ['test', 'clean'], function () {
     gulp.src([
         'src/angular-restclient.js',
         'src/lib/merge.js',
@@ -34,14 +35,18 @@ gulp.task('js', ['test'], function () {
         .pipe(gulp.dest('./dist'))
 });
 
-gulp.task("doc", function() {
+gulp.task('doc', ['clean'], function() {
     return gulp.src("src/**/*.js")
-        .pipe(concat("README.md"))
-        .pipe(jsdoc2md({ template: fs.readFileSync("./readme.hbs", "utf8") }))
+        //.pipe(concat("README.md"))
+        //.pipe(jsdoc2md({ template: fs.readFileSync("./readme.hbs", "utf8") }))
+        .pipe(jsdoc2md())
         .on("error", function(err){
             gutil.log("jsdoc2md failed:", err.message);
         })
-        .pipe(gulp.dest("."));
+        .pipe(rename(function(path){
+            path.extname = ".md";
+        }))
+        .pipe(gulp.dest("doc"));
 });
 
 gulp.task('test', function(done) {
@@ -52,7 +57,14 @@ gulp.task('test', function(done) {
 });
 
 gulp.task('build', function() {
-    gulp.start('test', 'js', 'doc');
+    gulp.start('clean', 'test', 'js', 'doc');
+});
+
+gulp.task('clean', function () {
+    return del([
+        'dist/',
+        'doc/'
+    ]);
 });
 
 gulp.task('default', function() {
