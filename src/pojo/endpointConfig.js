@@ -18,6 +18,8 @@ function EndpointConfig(endpointName) {
      * @type {string}
      */
     this.headResponseHeaderPrefix = null;
+
+    this.cache = false;
 }
 
 /**

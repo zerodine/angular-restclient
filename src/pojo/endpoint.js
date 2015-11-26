@@ -81,6 +81,8 @@ function Endpoint(endpointConfig, $injector) {
      * @protected
      */
     this._q = $injector.get('$q');
+
+    this._cache = new Cache();
 }
 
 /**
@@ -94,6 +96,16 @@ Endpoint.prototype.get = function (params) {
     var self = this;
     var defer = self._q.defer();
 
+    if (self._endpointConfig.cache) {
+        var cacheKey = md5(self._endpointConfig.route + JSON.stringify(params));
+        var cachedResponse = self._cache.get(cacheKey);
+        if (cachedResponse) {
+            cachedResponse.value.cached = true;
+            defer.resolve(cachedResponse.value);
+            return defer.promise;
+        }
+    }
+
     this._resource.get(params, function(data) {
         data.result.pagination = data.pagination;
         data.result.endpoint = self;
@@ -106,6 +118,10 @@ Endpoint.prototype.get = function (params) {
         data.result.page = function(page) {
             return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
         };
+
+        if (self._endpointConfig.cache) {
+            self._cache.set(cacheKey, data.result);
+        }
         defer.resolve(data.result);
     }, function (error) {
         defer.reject(error);

@@ -24,6 +24,8 @@ function ApiProvider() {
      */
     this.baseRoute = "";
 
+    this.cache = false;
+
     /**
      * Prefix of a header in a HEAD response
      *
@@ -38,6 +40,10 @@ function ApiProvider() {
      */
     this.baseRoute = function(baseRoute) {
         this.baseRoute = baseRoute;
+    };
+
+    this.cache = function(cache) {
+        this.cache = cache;
     };
 
     /**
@@ -71,8 +77,12 @@ function ApiProvider() {
         var self = this;
         var api = {};
 
+        if (angular.isFunction(self.cache)) self.cache = false;
+
         // Go thru every given endpoint
         angular.forEach(self._endpoints, function (endpointConfig) {
+
+            endpointConfig.cache = self.cache;
 
             // Check if an container is given and if not, set it to the name of the endpoint
             if (angular.isFunction(endpointConfig.container)) endpointConfig.container = endpointConfig.name;

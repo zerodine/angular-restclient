@@ -14,6 +14,8 @@ gulp.task('js', ['test'], function () {
     gulp.src([
         'src/angular-restclient.js',
         'src/lib/merge.js',
+        'src/lib/md5.js',
+        'src/pojo/cache.js',
         'src/pojo/endpointInterface.js',
         'src/pojo/endpointAbstract.js',
         'src/pojo/endpoint.js',
