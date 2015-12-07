@@ -70,7 +70,7 @@ Creates a object representing all the defined routes for a specific mock. Implem
 **Example**  
 ```js
 function TestUsersMock() {
-     this.routes({
+     this._routes({
          '[GET]/': this.get,
          '[GET]/:id': this.getUser,
          '[POST]/': this.postUser,

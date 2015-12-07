@@ -6,11 +6,12 @@
 * [ModelFactory](#ModelFactory)
   * [~Model](#ModelFactory..Model)
     * [new Model()](#new_ModelFactory..Model_new)
-    * [._foreignData](#ModelFactory..Model+_foreignData) : <code>object</code>
     * [.reference](#ModelFactory..Model+reference) : <code>string</code>
-    * [.clean()](#ModelFactory..Model+clean)
-    * [._afterLoad()](#ModelFactory..Model+_afterLoad)
-    * [._beforeSave()](#ModelFactory..Model+_beforeSave)
+    * [.METHOD_SAVE](#ModelFactory..Model+METHOD_SAVE) : <code>string</code>
+    * [.METHOD_UPDATE](#ModelFactory..Model+METHOD_UPDATE) : <code>string</code>
+    * [.clean(method, parent)](#ModelFactory..Model+clean)
+    * [._afterLoad(foreignData)](#ModelFactory..Model+_afterLoad)
+    * [._beforeSave(method, parent)](#ModelFactory..Model+_beforeSave)
     * [._init(object)](#ModelFactory..Model+_init)
     * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
     * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
@@ -23,11 +24,12 @@
 
 * [~Model](#ModelFactory..Model)
   * [new Model()](#new_ModelFactory..Model_new)
-  * [._foreignData](#ModelFactory..Model+_foreignData) : <code>object</code>
   * [.reference](#ModelFactory..Model+reference) : <code>string</code>
-  * [.clean()](#ModelFactory..Model+clean)
-  * [._afterLoad()](#ModelFactory..Model+_afterLoad)
-  * [._beforeSave()](#ModelFactory..Model+_beforeSave)
+  * [.METHOD_SAVE](#ModelFactory..Model+METHOD_SAVE) : <code>string</code>
+  * [.METHOD_UPDATE](#ModelFactory..Model+METHOD_UPDATE) : <code>string</code>
+  * [.clean(method, parent)](#ModelFactory..Model+clean)
+  * [._afterLoad(foreignData)](#ModelFactory..Model+_afterLoad)
+  * [._beforeSave(method, parent)](#ModelFactory..Model+_beforeSave)
   * [._init(object)](#ModelFactory..Model+_init)
   * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
   * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
@@ -69,8 +71,8 @@ angular.module('UserModel', [])
           this._init(object);
       }
 
-      UserModel.prototype._afterLoad = function() {
-          this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
+      UserModel.prototype._afterLoad = function(foreignData) {
+          this.fullname = foreignData['firstname'] + ' ' + foreignData['lastname'];
       };
 
       UserModel.prototype._beforeSave = function() {
@@ -79,19 +81,6 @@ angular.module('UserModel', [])
 
       return UserModel;
  })
-```
-<a name="ModelFactory..Model+_foreignData"></a>
-#### model._foreignData : <code>object</code>
-Holds the original object as it was injected.
-This gets deleted after the model is fully initialized.
-
-**Kind**: instance property of <code>[Model](#ModelFactory..Model)</code>  
-**Access:** protected  
-**Example**  
-```js
-ConcreteModel.prototype._afterLoad = function() {
-     this.full_name = this._foreignData['first_name'] + ' ' + this._foreignData['last_name'];
-};
 ```
 <a name="ModelFactory..Model+reference"></a>
 #### model.reference : <code>string</code>
@@ -102,37 +91,64 @@ The reference is used to get the identifier of a model
 ```js
 ConcreteModel.prototype.reference = 'identifier';
 ```
+<a name="ModelFactory..Model+METHOD_SAVE"></a>
+#### model.METHOD_SAVE : <code>string</code>
+Constant to define the performed method on a model
+
+**Kind**: instance constant of <code>[Model](#ModelFactory..Model)</code>  
+<a name="ModelFactory..Model+METHOD_UPDATE"></a>
+#### model.METHOD_UPDATE : <code>string</code>
+Constant to define the performed method on a model
+
+**Kind**: instance constant of <code>[Model](#ModelFactory..Model)</code>  
 <a name="ModelFactory..Model+clean"></a>
-#### model.clean()
+#### model.clean(method, parent)
 This method gets called by the endpoint before the model is sent to the backend.
 It removes all decorator methods and attributes from a model so its clean to be sent.
 
 **Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | Provides the method that is performed on this model |
+| parent | <code>boolean</code> | Defines if the clean was called by a parent model |
+
 <a name="ModelFactory..Model+_afterLoad"></a>
-#### model._afterLoad()
+#### model._afterLoad(foreignData)
 This method gets called after the response was transformed into te model.
 It's helpful when you want to remap attributes or make some changed.
 To use it, just override it in the concrete model.
 
 **Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
 **Access:** protected  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| foreignData | <code>object</code> | Provides the foreign data in order to perform custom mapping after the model was loaded |
+
 **Example**  
 ```js
-ConcreteModel.prototype._afterLoad = function() {
+ConcreteModel.prototype._afterLoad = function(foreignData) {
      this.activation_token = this.activation_token.toUpperCase();
 };
 ```
 <a name="ModelFactory..Model+_beforeSave"></a>
-#### model._beforeSave()
+#### model._beforeSave(method, parent)
 This method gets called before a model gets sent to the backend.
 It's helpful when you want to remap attributes or make some changed.
 To use it, just override it in the concrete model.
 
 **Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
 **Access:** protected  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | Provides the method that is performed on this model |
+| parent | <code>boolean</code> | Defines if the clean was called by a parent model |
+
 **Example**  
 ```js
-ConcreteModel.prototype._beforeSave = function() {
+ConcreteModel.prototype._beforeSave = function(method, parent) {
      this.activation_token = this.activation_token.toLowerCase();
 };
 ```
