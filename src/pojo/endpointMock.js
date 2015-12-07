@@ -27,7 +27,7 @@ EndpointMock.prototype._extractParams = function(params) {
     var paramsOrder = [];
     var regex = /:(\w+)/g;
     var param = regex.exec(this._endpointConfig.route);
-    while (param != null) {
+    while (param !== null) {
         paramsOrder.push(param[1]);
         param = regex.exec(this._endpointConfig.route);
     }
@@ -49,7 +49,7 @@ EndpointMock.prototype._extractParams = function(params) {
 EndpointMock.prototype.get = function(params) {
     var defer = this._q.defer();
 
-    var mock = new this.mock;
+    var mock = new this.mock();
     var data = mock.request('GET', this._extractParams(params));
     var mappedResult = this._mapResult(data);
 
@@ -65,7 +65,7 @@ EndpointMock.prototype.get = function(params) {
  */
 EndpointMock.prototype.post = function() {
     var model, params;
-    var mock = new this.mock;
+    var mock = new this.mock();
     var defer = this._q.defer();
 
     // Check if only two arguments are given
@@ -99,7 +99,7 @@ EndpointMock.prototype.post = function() {
  * @returns {Promise<Model|Error>} Updated model
  */
 EndpointMock.prototype.put = function (params, model) {
-    var mock = new this.mock;
+    var mock = new this.mock();
     var defer = this._q.defer();
 
     if (angular.isArray(model)) {

@@ -21,11 +21,6 @@
                     save: false
                 };
 
-                this.method = {
-                    type: 'string',
-                    save: false
-                };
-
                 this.company = {
                     type: 'relation',
                     relation: {
@@ -49,9 +44,8 @@
 
             angular.extend(UserModel.prototype, Model.prototype);
 
-            UserModel.prototype._afterLoad = function() {
-                this.fullname = this._foreignData['firstname'] + ' ' + this._foreignData['lastname'];
-                this.method = this._method;
+            UserModel.prototype._afterLoad = function(foreignData) {
+                this.fullname = foreignData['firstname'] + ' ' + foreignData['lastname'];
             };
 
             UserModel.prototype._beforeSave = function() {

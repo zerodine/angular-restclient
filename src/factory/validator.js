@@ -65,11 +65,11 @@ function ValidatorFactory() {
      */
     Validator.prototype.boolean = function (boolean) {
         if (!angular.isDefined(boolean) ||
-            boolean == null ||
+            boolean === null ||
             !angular.isDefined(boolean.constructor)) {
             return false;
         }
-        return (boolean.constructor === Boolean)
+        return (boolean.constructor === Boolean);
     };
 
     /**

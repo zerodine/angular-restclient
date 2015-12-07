@@ -12,6 +12,14 @@
                     type: 'string'
                 };
 
+                this.location = {
+                    type: 'relation',
+                    relation: {
+                        type: 'one',
+                        model: 'LocationModel'
+                    }
+                };
+
                 // Map the given object
                 this._init(object);
             }

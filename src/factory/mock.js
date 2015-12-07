@@ -63,7 +63,7 @@ function MockFactory() {
      * @abstract
      * @example
      * function TestUsersMock() {
-     *      this.routes({
+     *      this._routes({
      *          '[GET]/': this.get,
      *          '[GET]/:id': this.getUser,
      *          '[POST]/': this.postUser,
