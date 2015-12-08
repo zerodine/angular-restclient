@@ -354,11 +354,56 @@ function ModelFactory($log, $injector, Validator) {
 
             if (angular.isDefined(this._annotation[property])) {
                 if (angular.isDefined(this._annotation[property].required) && (this._annotation[property].required && this[property] === null || this._annotation[property].required && this[property] === '')) return false;
-                if (!validator[this._annotation[property].type](this[property]) && this._annotation[property].required) return false;
+                if (!validator[this._annotation[property].type](this[property])) return false;
             }
         }
 
         return true;
+    };
+
+    Model.prototype.validate = function() {
+        var validator = new Validator();
+        var valid = true;
+        var errors = {};
+
+        for (var property in this) {
+            // If property is a method, then continue
+            if (!this.hasOwnProperty(property)) continue;
+
+            if (angular.isDefined(this._annotation[property])) {
+                if (
+                    angular.isDefined(this._annotation[property].required) &&
+                    (
+                        this._annotation[property].required && this[property] === null ||
+                        this._annotation[property].required && this[property] === ''
+                    )
+                ) {
+                    valid = false;
+                    errors[property] = 'required';
+                }
+                else if (!angular.isDefined(this._annotation[property].required) && this[property] === null) {
+                    // Not required and null
+                }
+                else if (this._annotation[property].type == 'relation' && this._annotation[property].relation.type == 'one') {
+
+                    if (!this[property].validate().valid) {
+                        valid = false;
+                        errors[property] = this[property].validate().errors;
+                    }
+                }
+                else {
+                   if(!validator[this._annotation[property].type](this[property])) {
+                       valid = false;
+                       errors[property] = 'format_error_' + this._annotation[property].type;
+                   }
+                }
+            }
+        }
+
+        return {
+            valid: valid,
+            errors: errors
+        }
     };
 
     return Model;

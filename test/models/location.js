@@ -12,6 +12,11 @@
                     type: 'string'
                 };
 
+                this.computed_name = {
+                    type: 'string',
+                    save: false
+                };
+
                 // Map the given object
                 this._init(object);
             }

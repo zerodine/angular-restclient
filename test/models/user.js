@@ -4,7 +4,7 @@
             function UserModel(object) {
 
                 this.id = {
-                    type: 'string',
+                    type: 'int',
                     save: false
                 };
 
@@ -17,6 +17,16 @@
                 };
 
                 this.fullname = {
+                    type: 'string',
+                    save: false
+                };
+
+                this.email = {
+                    type: 'email',
+                    required: true
+                };
+
+                this.computed_name = {
                     type: 'string',
                     save: false
                 };
