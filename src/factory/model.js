@@ -119,6 +119,21 @@ function ModelFactory($log, $injector, Validator) {
                 continue;
             }
 
+            if (angular.isDefined(self._annotation[property]) && angular.isDefined(self._annotation[property].save)) {
+
+                // Check if property should be deleted before model is saved
+                if (!self._annotation[property].save) {
+                    delete self[property];
+                    continue;
+                }
+
+                // Check if property should only be a reference to another model
+                if (self._annotation[property].save == 'reference') {
+                    self._referenceOnly(self[property]);
+                    continue;
+                }
+            }
+
             if (angular.isDefined(self._annotation[property]) && angular.isDefined(self._annotation[property].type)) {
                 // If property is a relation then call the clean method of related models
                 if (self._annotation[property].type == 'relation' && self[property] !== null) {
@@ -138,22 +153,10 @@ function ModelFactory($log, $injector, Validator) {
                             // Call the clean method on the related model
                             model.clean(method, true);
                         });
-                        continue;
+
+                        // not needed
+                        // continue;
                     }
-                }
-            }
-
-            if (angular.isDefined(self._annotation[property]) && angular.isDefined(self._annotation[property].save)) {
-
-                // Check if property should be deleted before model is saved
-                if (!self._annotation[property].save) {
-                    delete self[property];
-                    continue;
-                }
-
-                // Check if property should only be a reference to another model
-                if (self._annotation[property].save == 'reference') {
-                    self._referenceOnly(self[property]);
                 }
             }
         }
