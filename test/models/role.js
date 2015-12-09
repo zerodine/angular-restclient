@@ -4,12 +4,13 @@
             function RoleModel(object) {
 
                 this.id = {
-                    type: 'string',
+                    type: 'int',
                     save: false
                 };
 
                 this.name = {
-                    type: 'string'
+                    type: 'string',
+                    required: true
                 };
 
                 // Map the given object

@@ -14,7 +14,8 @@ describe('model', function() {
             company: {
                 id: 1,
                 name: 'ACME'
-            }
+            },
+            computed_name: 'JackACME'
         });
 
         // Before clean
@@ -22,6 +23,7 @@ describe('model', function() {
         expect(user.company._annotation).toBeDefined();
         expect(user.lastname).toBeNull();
         expect(user.fullname).toBe('Jack null');
+        expect(user.computed_name).toBe('JackACME');
         expect(user.id).toBe(1);
 
         user.clean();
@@ -31,6 +33,7 @@ describe('model', function() {
         expect(user.company._annotation).not.toBeDefined();
         expect(user.lastname).not.toBeDefined();
         expect(user.fullname).not.toBeDefined();
+        expect(user.computed_name).not.toBeDefined();
         expect(user.id).not.toBeDefined();
 
         var user2 = new UserModel({
@@ -40,9 +43,11 @@ describe('model', function() {
             company: {
                 id: 1,
                 name: 'ACME',
+                computed_name: 'ACME',
                 location: {
                     id: 1,
-                    city: 'Springfield'
+                    city: 'Springfield',
+                    computed_name: 'Springfield'
                 }
             }
         });
@@ -59,6 +64,8 @@ describe('model', function() {
         expect(user2.company.id).toBe(1);
         expect(user2.company.location.id).toBe(1);
         expect(user2.company.location.city).toBe('Springfield');
+        expect(user2.company.location.computed_name).toBe('Springfield');
+        expect(user2.company.computed_name).toBe('ACME');
 
         user2.clean();
 
@@ -70,8 +77,10 @@ describe('model', function() {
         expect(user2.id).not.toBeDefined();
         expect(user2.company.id).not.toBeDefined();
         expect(user2.company.location.city).toBe('Springfield');
+        expect(user2.company.location.computed_name).not.toBeDefined();
         expect(user2.company.location.id).not.toBeDefined();
         expect(user2.company.location._annotation).not.toBeDefined();
+        expect(user2.company.computed_name).not.toBeDefined();
     }));
 
     it('_afterLoad', inject(function(UserModel) {
@@ -229,7 +238,7 @@ describe('model', function() {
             lastname: null
         });
 
-        expect(user._annotation.id.type).toBe('string');
+        expect(user._annotation.id.type).toBe('int');
         expect(user._annotation.id.save).toBeFalsy();
 
         expect(user._annotation.company.type).toBe('relation');
@@ -340,5 +349,182 @@ describe('model', function() {
         expect(user.roles[0].id).toBe(1);
         expect(user.roles[1].name).not.toBeDefined();
         expect(user.roles[1].id).toBe(2);
+    }));
+
+    it('validate', inject(function(UserModel) {
+
+        // Email required and false format
+        var user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: '',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+        });
+
+        // Email required
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+        });
+
+        // valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'jack@bauer.tld'
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeTruthy();
+        });
+
+        // Relation company is not valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: ''
+            }
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+            expect(errors.company.name).toBe('required');
+            expect(errors.company.id).not.toBeDefined();
+        });
+
+        // Relation many
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            roles: [
+                {
+                    id: 1,
+                    name: 'Admin'
+                },
+                {
+                    id: 2
+                },
+                {
+                    id: 3,
+                    name: 'User'
+                }
+            ]
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+            expect(errors.roles[1].name).toBe('required');
+            expect(errors.roles[0]).not.toBeDefined();
+            expect(errors.roles[2]).not.toBeDefined();
+        });
+
+        // Valid with relations
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'jack@bauer.tld',
+            company: {
+                id: 1,
+                name: 'ACME'
+            },
+            roles: [
+                {
+                    id: 1,
+                    name: 'Admin'
+                },
+                {
+                    id: 2,
+                    name: 'User'
+                }
+            ]
+        });
+
+        user.validate(function(valid) {
+            expect(valid).toBeTruthy();
+        });
+    }));
+
+    it('isValid', inject(function(UserModel) {
+
+        // Email required and false format
+        var user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: '',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
+
+        // Email required
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
+
+        // valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'jack@bauer.tld'
+        });
+
+        expect(user.isValid()).toBeTruthy();
+
+        // Relation company is not valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: ''
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
     }));
 });

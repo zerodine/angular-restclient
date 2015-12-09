@@ -4,12 +4,18 @@
             function CompanyModel(object) {
 
                 this.id = {
-                    type: 'string',
+                    type: 'int',
                     save: false
                 };
 
                 this.name = {
-                    type: 'string'
+                    type: 'string',
+                    required: true
+                };
+
+                this.computed_name = {
+                    type: 'string',
+                    save: false
                 };
 
                 this.location = {
