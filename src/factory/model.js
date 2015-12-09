@@ -343,34 +343,24 @@ function ModelFactory($log, $injector, Validator) {
     };
 
     /**
-     * Validates the properties of the model.
+     * Validates the model and provides the result as an callback
+     *
+     * @param {function} result Callback that provides the boolean "valid" and object "errors"
      */
-    Model.prototype.isValid = function() {
-        var validator = new Validator();
-
-        for (var property in this) {
-            // If property is a method, then continue
-            if (!this.hasOwnProperty(property)) continue;
-
-            if (angular.isDefined(this._annotation[property])) {
-                if (angular.isDefined(this._annotation[property].required) && (this._annotation[property].required && this[property] === null || this._annotation[property].required && this[property] === '')) return false;
-                if (!validator[this._annotation[property].type](this[property])) return false;
-            }
-        }
-
-        return true;
-    };
-
-    Model.prototype.validate = function() {
+    Model.prototype.validate = function(result) {
         var validator = new Validator();
         var valid = true;
         var errors = {};
 
         for (var property in this) {
+
             // If property is a method, then continue
             if (!this.hasOwnProperty(property)) continue;
 
+            // First check if model is annotated
             if (angular.isDefined(this._annotation[property])) {
+
+                // Required
                 if (
                     angular.isDefined(this._annotation[property].required) &&
                     (
@@ -381,16 +371,36 @@ function ModelFactory($log, $injector, Validator) {
                     valid = false;
                     errors[property] = 'required';
                 }
-                else if (!angular.isDefined(this._annotation[property].required) && this[property] === null) {
-                    // Not required and null
-                }
+
+                // Not Required and Not Null
+                else if (!angular.isDefined(this._annotation[property].required) && this[property] === null) {}
+
+                // Relation One
                 else if (this._annotation[property].type == 'relation' && this._annotation[property].relation.type == 'one') {
 
-                    if (!this[property].validate().valid) {
-                        valid = false;
-                        errors[property] = this[property].validate().errors;
-                    }
+                    this[property].validate(function(model_valid, model_errors) {
+                        if (!model_valid) {
+                            valid = false;
+                            errors[property] = model_errors;
+                        }
+                    });
                 }
+
+                // Relation Many
+                else if (this._annotation[property].type == 'relation' && this._annotation[property].relation.type == 'many') {
+                    angular.forEach(this[property], function(model, key) {
+
+                        model.validate(function(model_valid, model_errors) {
+                            if (!model_valid) {
+                                valid = false;
+                                if (!angular.isArray(errors[property])) errors[property] = [];
+                                errors[property][key] = model_errors;
+                            }
+                        });
+                    });
+                }
+
+                // Format
                 else {
                    if(!validator[this._annotation[property].type](this[property])) {
                        valid = false;
@@ -400,10 +410,21 @@ function ModelFactory($log, $injector, Validator) {
             }
         }
 
-        return {
-            valid: valid,
-            errors: errors
-        }
+        if (angular.isFunction(result)) result(valid, errors);
+    };
+
+    /**
+     * Validates the properties of the model.
+     *
+     * @return {boolean}
+     */
+    Model.prototype.isValid = function() {
+        var valid = false;
+        this.validate(function(model_valid) {
+            valid = model_valid;
+        });
+
+        return valid;
     };
 
     return Model;

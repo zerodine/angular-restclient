@@ -365,9 +365,11 @@ describe('model', function() {
             }
         });
 
-        expect(user.validate().valid).toBeFalsy();
-        expect(user.validate().errors.email).toBe('required');
-        expect(user.validate().errors.email).not.toBe('format_error_email');
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+        });
 
         // Email required
         user = new UserModel({
@@ -380,9 +382,11 @@ describe('model', function() {
             }
         });
 
-        expect(user.validate().valid).toBeFalsy();
-        expect(user.validate().errors.email).toBe('required');
-        expect(user.validate().errors.email).not.toBe('format_error_email');
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+        });
 
         // valid
         user = new UserModel({
@@ -392,8 +396,9 @@ describe('model', function() {
             email: 'jack@bauer.tld'
         });
 
-        expect(user.validate().valid).toBeTruthy();
-        console.log(user.validate().errors);
+        user.validate(function(valid, errors) {
+            expect(valid).toBeTruthy();
+        });
 
         // Relation company is not valid
         user = new UserModel({
@@ -406,10 +411,120 @@ describe('model', function() {
             }
         });
 
-        expect(user.validate().valid).toBeFalsy();
-        expect(user.validate().errors.email).toBe('required');
-        expect(user.validate().errors.email).not.toBe('format_error_email');
-        expect(user.validate().errors.company.name).toBe('required');
-        expect(user.validate().errors.company.id).not.toBeDefined();
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+            expect(errors.company.name).toBe('required');
+            expect(errors.company.id).not.toBeDefined();
+        });
+
+        // Relation many
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            roles: [
+                {
+                    id: 1,
+                    name: 'Admin'
+                },
+                {
+                    id: 2
+                },
+                {
+                    id: 3,
+                    name: 'User'
+                }
+            ]
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).toBe('required');
+            expect(errors.email).not.toBe('format_error_email');
+            expect(errors.roles[1].name).toBe('required');
+            expect(errors.roles[0]).not.toBeDefined();
+            expect(errors.roles[2]).not.toBeDefined();
+        });
+
+        // Valid with relations
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'jack@bauer.tld',
+            company: {
+                id: 1,
+                name: 'ACME'
+            },
+            roles: [
+                {
+                    id: 1,
+                    name: 'Admin'
+                },
+                {
+                    id: 2,
+                    name: 'User'
+                }
+            ]
+        });
+
+        user.validate(function(valid) {
+            expect(valid).toBeTruthy();
+        });
+    }));
+
+    it('isValid', inject(function(UserModel) {
+
+        // Email required and false format
+        var user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: '',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
+
+        // Email required
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
+
+        // valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'jack@bauer.tld'
+        });
+
+        expect(user.isValid()).toBeTruthy();
+
+        // Relation company is not valid
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            company: {
+                id: 1,
+                name: ''
+            }
+        });
+
+        expect(user.isValid()).toBeFalsy();
     }));
 });
