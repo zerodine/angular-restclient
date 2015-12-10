@@ -167,6 +167,7 @@ Endpoint.prototype.head = function(params) {
  */
 Endpoint.prototype.put = function (params, model) {
 
+    var defer = this._q.defer();
 
     if (angular.isArray(model)) {
         var tempModels = angular.copy(model);
@@ -181,8 +182,6 @@ Endpoint.prototype.put = function (params, model) {
     }
 
     this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to update is:", model);
-
-    var defer = this._q.defer();
 
     // Use angularjs $resource to perform the update
     this._resource.update(params, model, function (data) {

@@ -11,7 +11,7 @@ var karma = require('karma').Server;
 var iife = require('gulp-iife');
 var fs = require("fs");
 
-gulp.task('js', ['test', 'clean'], function () {
+gulp.task('js', function () {
     gulp.src([
         'src/angular-restclient.js',
         'src/lib/merge.js',

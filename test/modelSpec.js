@@ -371,6 +371,24 @@ describe('model', function() {
             expect(errors.email).not.toBe('format_error_email');
         });
 
+        // Email false format
+        user = new UserModel({
+            id: 1,
+            firstname: 'Jack',
+            lastname: 'Bauer',
+            email: 'blubb@',
+            company: {
+                id: 1,
+                name: 'ACME'
+            }
+        });
+
+        user.validate(function(valid, errors) {
+            expect(valid).toBeFalsy();
+            expect(errors.email).not.toBe('required');
+            expect(errors.email).toBe('format_error_email');
+        });
+
         // Email required
         user = new UserModel({
             id: 1,

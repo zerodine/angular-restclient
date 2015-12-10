@@ -16,7 +16,8 @@
     * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
     * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
     * [._referenceOnly(models)](#ModelFactory..Model+_referenceOnly)
-    * [.isValid()](#ModelFactory..Model+isValid)
+    * [.validate(result)](#ModelFactory..Model+validate)
+    * [.isValid()](#ModelFactory..Model+isValid) ⇒ <code>boolean</code>
 
 <a name="ModelFactory..Model"></a>
 ### ModelFactory~Model
@@ -34,7 +35,8 @@
   * [._mapArray(property, apiProperty, modelName)](#ModelFactory..Model+_mapArray)
   * [._mapProperty(property, apiProperty, modelName)](#ModelFactory..Model+_mapProperty)
   * [._referenceOnly(models)](#ModelFactory..Model+_referenceOnly)
-  * [.isValid()](#ModelFactory..Model+isValid)
+  * [.validate(result)](#ModelFactory..Model+validate)
+  * [.isValid()](#ModelFactory..Model+isValid) ⇒ <code>boolean</code>
 
 <a name="new_ModelFactory..Model_new"></a>
 #### new Model()
@@ -200,8 +202,18 @@ Returns only the reference of a related model.
 | --- | --- |
 | models | <code>Model/array.&lt;Model&gt;</code> | 
 
+<a name="ModelFactory..Model+validate"></a>
+#### model.validate(result)
+Validates the model and provides the result as an callback
+
+**Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| result | <code>function</code> | Callback that provides the boolean "valid" and object "errors" |
+
 <a name="ModelFactory..Model+isValid"></a>
-#### model.isValid()
+#### model.isValid() ⇒ <code>boolean</code>
 Validates the properties of the model.
 
 **Kind**: instance method of <code>[Model](#ModelFactory..Model)</code>  
