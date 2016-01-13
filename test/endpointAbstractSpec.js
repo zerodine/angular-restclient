@@ -247,12 +247,26 @@ describe('endpointAbstract', function() {
         $httpBackend.flush();
     }));
 
-    it('remove', inject(function($injector, UserModel) {
-        $httpBackend.whenDELETE('/users').respond(200);
+    it('remove with id', inject(function($injector) {
+        $httpBackend.whenDELETE('/users/1').respond(200);
 
         var api = provider.$get($injector);
 
         api.users.remove({id: 1}).then(function() {
+            expect(true).toBeTruthy;
+        }, function() {
+            expect(true).toBeFalsy();
+        });
+
+        $httpBackend.flush();
+    }));
+
+    it('remove with model', inject(function($injector, UserModel) {
+        $httpBackend.whenDELETE('/users/1').respond(200);
+
+        var api = provider.$get($injector);
+
+        api.users.remove(new UserModel({id: 1})).then(function() {
             expect(true).toBeTruthy;
         }, function() {
             expect(true).toBeFalsy();
