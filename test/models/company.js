@@ -26,6 +26,18 @@
                     }
                 };
 
+                this.users = {
+                    type: 'relation',
+                    relation: {
+                        type: 'many',
+                        model: 'UserModel'
+                    },
+                    save: {
+                        post: false,
+                        put: 'reference'
+                    }
+                };
+
                 // Map the given object
                 this._init(object);
             }

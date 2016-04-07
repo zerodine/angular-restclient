@@ -79,6 +79,7 @@ function ModelFactory($log, $injector, Validator) {
      * @constant
      */
     Model.prototype.METHOD_SAVE = 'save';
+    Model.prototype.METHOD_POST = 'save';
 
     /**
      * Constant to define the performed method on a model
@@ -87,6 +88,7 @@ function ModelFactory($log, $injector, Validator) {
      * @constant
      */
     Model.prototype.METHOD_UPDATE = 'update';
+    Model.prototype.METHOD_PUT = 'update';
 
     /**
      * This method gets called by the endpoint before the model is sent to the backend.
@@ -125,6 +127,12 @@ function ModelFactory($log, $injector, Validator) {
                 if (!self._annotation[property].save) {
                     delete self[property];
                     continue;
+                }
+
+                // Check if save annotation is a object
+                if (angular.isObject(self._annotation[property].save)) {
+                    if (method == self.METHOD_POST) self._annotation[property].save = self._annotation[property].save.post;
+                    if (method == self.METHOD_PUT) self._annotation[property].save = self._annotation[property].save.put;
                 }
 
                 // Check if property should only be a reference to another model

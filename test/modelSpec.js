@@ -6,7 +6,7 @@ describe('model', function() {
     beforeEach(module('LocationModel'));
     beforeEach(module('RoleModel'));
 
-    it('clean', inject(function(UserModel) {
+    it('clean', inject(function(UserModel, CompanyModel) {
         var user = new UserModel({
             id: 1,
             firstname: 'Jack',
@@ -81,6 +81,92 @@ describe('model', function() {
         expect(user2.company.location.id).not.toBeDefined();
         expect(user2.company.location._annotation).not.toBeDefined();
         expect(user2.company.computed_name).not.toBeDefined();
+
+        var company1 = new CompanyModel({
+            id: 1,
+            name: 'ACME',
+            users: [
+                {
+                    firstname: 'Bart',
+                    lastname: 'Simpsons'
+                },
+                {
+                    firstname: 'Marge',
+                    lastname: 'Simpsons'
+                }
+            ]
+        });
+
+        // Before clean
+        expect(company1._annotation).toBeDefined();
+        expect(company1.users[0]._annotation).toBeDefined();
+        expect(company1.users[0].firstname).toBe('Bart');
+        expect(company1.users[0].lastname).toBe('Simpsons');
+        expect(company1.users[0].fullname).toBe('Bart Simpsons');
+        expect(company1.users[1]._annotation).toBeDefined();
+        expect(company1.users[1].firstname).toBe('Marge');
+        expect(company1.users[1].lastname).toBe('Simpsons');
+        expect(company1.users[1].fullname).toBe('Marge Simpsons');
+        expect(company1.id).toBe(1);
+
+        company1.clean(company1.METHOD_SAVE);
+
+        // After clean
+        expect(company1._annotation).not.toBeDefined();
+        expect(company1.users._annotation).not.toBeDefined();
+        expect(company1.users[0].id).not.toBeDefined();
+        expect(company1.users[0].firstname).toBe('Bart_');
+        expect(company1.users[0].lastname).toBe('Simpsons');
+        expect(company1.users[0].fullname).not.toBeDefined();
+        expect(company1.users[1].id).not.toBeDefined();
+        expect(company1.users[1].firstname).toBe('Marge_');
+        expect(company1.users[1].lastname).toBe('Simpsons');
+        expect(company1.users[1].fullname).not.toBeDefined();
+        expect(company1.id).not.toBeDefined();
+
+        var company2 = new CompanyModel({
+            id: 1,
+            name: 'ACME',
+            users: [
+                {
+                    id: 1,
+                    firstname: 'Bart',
+                    lastname: 'Simpsons'
+                },
+                {
+                    id: 2,
+                    firstname: 'Marge',
+                    lastname: 'Simpsons'
+                }
+            ]
+        });
+
+        // Before clean
+        expect(company2._annotation).toBeDefined();
+        expect(company2.users[0]._annotation).toBeDefined();
+        expect(company2.users[0].firstname).toBe('Bart');
+        expect(company2.users[0].lastname).toBe('Simpsons');
+        expect(company2.users[0].fullname).toBe('Bart Simpsons');
+        expect(company2.users[1]._annotation).toBeDefined();
+        expect(company2.users[1].firstname).toBe('Marge');
+        expect(company2.users[1].lastname).toBe('Simpsons');
+        expect(company2.users[1].fullname).toBe('Marge Simpsons');
+        expect(company2.id).toBe(1);
+
+        company2.clean(company2.METHOD_UPDATE);
+
+        // After clean
+        expect(company2._annotation).not.toBeDefined();
+        expect(company2.users._annotation).not.toBeDefined();
+        expect(company2.users[0].id).toBe(1);
+        expect(company2.users[0].firstname).not.toBeDefined();
+        expect(company2.users[0].lastname).not.toBeDefined();
+        expect(company2.users[0].fullname).not.toBeDefined();
+        expect(company2.users[1].id).toBe(2);
+        expect(company2.users[1].firstname).not.toBeDefined();
+        expect(company2.users[1].lastname).not.toBeDefined();
+        expect(company2.users[1].fullname).not.toBeDefined();
+        expect(company2.id).not.toBeDefined();
     }));
 
     it('_afterLoad', inject(function(UserModel) {
