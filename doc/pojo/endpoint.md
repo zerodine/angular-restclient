@@ -13,7 +13,7 @@
   * [.head(params)](#Endpoint+head) ⇒ <code>Promise.&lt;(object\|Error)&gt;</code>
   * [.put(params, model)](#Endpoint+put) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
   * [.post(params, model)](#Endpoint+post) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
-  * [.delete(params, model)](#Endpoint+delete) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
+  * [.delete(params)](#Endpoint+delete) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
 
 <a name="new_Endpoint_new"></a>
 ### new Endpoint(endpointConfig, $injector)
@@ -99,13 +99,12 @@ Save an object.
 | model | <code>Model</code> | The model to be updated. |
 
 <a name="Endpoint+delete"></a>
-### endpoint.delete(params, model) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
+### endpoint.delete(params) ⇒ <code>Promise.&lt;(Model\|Error)&gt;</code>
 Remove an object.
 
 **Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| params | <code>object</code> | The parameters that ether map in the route or get appended as GET parameters. |
-| model | <code>Model</code> | The model to be updated. |
+| params | <code>object</code> &#124; <code>Model</code> | The parameters that ether map in the route or get appended as GET parameters. |
 

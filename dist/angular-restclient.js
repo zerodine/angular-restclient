@@ -440,34 +440,23 @@ Endpoint.prototype.post = function () {
 /**
  * Remove an object.
  *
- * @param {object} params The parameters that ether map in the route or get appended as GET parameters.
- * @param {Model} model The model to be updated.
+ * @param {object|Model} params The parameters that ether map in the route or get appended as GET parameters.
  * @return {Promise<Model|Error>}
  */
-Endpoint.prototype.delete = function() {
-    var model, params;
-
-    // Check if only two arguments are given
-    if (angular.isUndefined(arguments[1])) {
-        model = arguments[0];
-    } else {
-        params = arguments[0];
-        model = arguments[1];
-    }
-
+Endpoint.prototype.delete = function(params) {
     var defer = this._q.defer();
 
-    // Get the id of the model
-    var paramId = {
-        id: model[model.reference]
-    };
-
-
+    if (typeof params._init == 'function') {
+        var model = params;
+        params = {
+            id: model[model.reference]
+        }
+    }
 
     this._log.debug("apiFactory (" + this._endpointConfig.name + "): Model to remove is:", model);
 
     // Use angularjs $resource to perform the delete
-    this._resource.delete(merge(paramId, params), function () {
+    this._resource.delete(params, function () {
         defer.resolve();
     }, function (error) {
         defer.reject(error);
@@ -766,6 +755,7 @@ function ModelFactory($log, $injector, Validator) {
      * @constant
      */
     Model.prototype.METHOD_SAVE = 'save';
+    Model.prototype.METHOD_POST = 'save';
 
     /**
      * Constant to define the performed method on a model
@@ -774,6 +764,7 @@ function ModelFactory($log, $injector, Validator) {
      * @constant
      */
     Model.prototype.METHOD_UPDATE = 'update';
+    Model.prototype.METHOD_PUT = 'update';
 
     /**
      * This method gets called by the endpoint before the model is sent to the backend.
@@ -812,6 +803,12 @@ function ModelFactory($log, $injector, Validator) {
                 if (!self._annotation[property].save) {
                     delete self[property];
                     continue;
+                }
+
+                // Check if save annotation is a object
+                if (angular.isObject(self._annotation[property].save)) {
+                    if (method == self.METHOD_POST) self._annotation[property].save = self._annotation[property].save.post;
+                    if (method == self.METHOD_PUT) self._annotation[property].save = self._annotation[property].save.put;
                 }
 
                 // Check if property should only be a reference to another model
