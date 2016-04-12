@@ -1,7 +1,7 @@
 ;(function() {
 "use strict";
 
-angular.module('restclient', ['ngResource']);
+ModelFactory.$inject = ["$log", "$injector", "Validator"];angular.module('restclient', ['ngResource']);
 /**
  * This is just a helper function because merge is not supported by angular until version > 1.4.
  *
@@ -799,16 +799,16 @@ function ModelFactory($log, $injector, Validator) {
 
             if (angular.isDefined(self._annotation[property]) && angular.isDefined(self._annotation[property].save)) {
 
-                // Check if property should be deleted before model is saved
-                if (!self._annotation[property].save) {
-                    delete self[property];
-                    continue;
-                }
-
                 // Check if save annotation is a object
                 if (angular.isObject(self._annotation[property].save)) {
                     if (method == self.METHOD_POST) self._annotation[property].save = self._annotation[property].save.post;
                     if (method == self.METHOD_PUT) self._annotation[property].save = self._annotation[property].save.put;
+                }
+
+                // Check if property should be deleted before model is saved
+                if (!self._annotation[property].save) {
+                    delete self[property];
+                    continue;
                 }
 
                 // Check if property should only be a reference to another model
@@ -1116,7 +1116,6 @@ function ModelFactory($log, $injector, Validator) {
 
     return Model;
 }
-ModelFactory.$inject = ["$log", "$injector", "Validator"];
 angular
     .module('restclient')
     .factory('Mock', MockFactory);

@@ -1,38 +1,44 @@
 <a name="ApiProvider"></a>
+
 ## ApiProvider
 **Kind**: global class  
 
 * [ApiProvider](#ApiProvider)
-  * [new ApiProvider()](#new_ApiProvider_new)
-  * [._endpoints](#ApiProvider+_endpoints) : <code>object</code>
-  * [.baseRoute](#ApiProvider+baseRoute) : <code>string</code>
-  * [.headResponseHeaderPrefix](#ApiProvider+headResponseHeaderPrefix) : <code>string</code>
-  * [.baseRoute(baseRoute)](#ApiProvider+baseRoute)
-  * [.headResponseHeaderPrefix(headResponseHeaderPrefix)](#ApiProvider+headResponseHeaderPrefix)
-  * [.endpoint(endpoint)](#ApiProvider+endpoint) ⇒ <code>EndpointConfig</code>
-  * [.$get($injector)](#ApiProvider+$get)
+    * [new ApiProvider()](#new_ApiProvider_new)
+    * [._endpoints](#ApiProvider+_endpoints) : <code>object</code>
+    * [.baseRoute](#ApiProvider+baseRoute) : <code>string</code>
+    * [.headResponseHeaderPrefix](#ApiProvider+headResponseHeaderPrefix) : <code>string</code>
+    * [.baseRoute(baseRoute)](#ApiProvider+baseRoute)
+    * [.headResponseHeaderPrefix(headResponseHeaderPrefix)](#ApiProvider+headResponseHeaderPrefix)
+    * [.endpoint(endpoint)](#ApiProvider+endpoint) ⇒ <code>EndpointConfig</code>
+    * [.$get($injector)](#ApiProvider+$get)
 
 <a name="new_ApiProvider_new"></a>
+
 ### new ApiProvider()
 AngularJD provider to provide the api
 
 <a name="ApiProvider+_endpoints"></a>
+
 ### apiProvider._endpoints : <code>object</code>
 All the endpoints
 
 **Kind**: instance property of <code>[ApiProvider](#ApiProvider)</code>  
 **Access:** protected  
 <a name="ApiProvider+baseRoute"></a>
+
 ### apiProvider.baseRoute : <code>string</code>
 The base route to the backend api
 
 **Kind**: instance property of <code>[ApiProvider](#ApiProvider)</code>  
 <a name="ApiProvider+headResponseHeaderPrefix"></a>
+
 ### apiProvider.headResponseHeaderPrefix : <code>string</code>
 Prefix of a header in a HEAD response
 
 **Kind**: instance property of <code>[ApiProvider](#ApiProvider)</code>  
 <a name="ApiProvider+baseRoute"></a>
+
 ### apiProvider.baseRoute(baseRoute)
 Set the base route
 
@@ -43,6 +49,7 @@ Set the base route
 | baseRoute | <code>string</code> | 
 
 <a name="ApiProvider+headResponseHeaderPrefix"></a>
+
 ### apiProvider.headResponseHeaderPrefix(headResponseHeaderPrefix)
 Set the head response header prefix
 
@@ -53,6 +60,7 @@ Set the head response header prefix
 | headResponseHeaderPrefix | <code>string</code> | 
 
 <a name="ApiProvider+endpoint"></a>
+
 ### apiProvider.endpoint(endpoint) ⇒ <code>EndpointConfig</code>
 Add an endpoint to the endpoint array
 
@@ -63,6 +71,7 @@ Add an endpoint to the endpoint array
 | endpoint | <code>string</code> | 
 
 <a name="ApiProvider+$get"></a>
+
 ### apiProvider.$get($injector)
 The factory method
 

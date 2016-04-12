@@ -1,4 +1,5 @@
 <a name="merge"></a>
+
 ## ~~merge(dst, src) ⇒ <code>object</code>~~
 ***Deprecated***
 

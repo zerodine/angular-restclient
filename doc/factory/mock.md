@@ -1,24 +1,27 @@
 <a name="MockFactory"></a>
+
 ## MockFactory
 **Kind**: global class  
 **Nginject**:   
 
 * [MockFactory](#MockFactory)
-  * [~Mock](#MockFactory..Mock)
-    * [new Mock()](#new_MockFactory..Mock_new)
-    * *[._routes(routes)](#MockFactory..Mock+_routes)*
-    * *[.request(method, params, body)](#MockFactory..Mock+request) ⇒ <code>\*</code>*
+    * [~Mock](#MockFactory..Mock)
+        * [new Mock()](#new_MockFactory..Mock_new)
+        * *[._routes(routes)](#MockFactory..Mock+_routes)*
+        * *[.request(method, params, body)](#MockFactory..Mock+request) ⇒ <code>\*</code>*
 
 <a name="MockFactory..Mock"></a>
+
 ### MockFactory~Mock
 **Kind**: inner class of <code>[MockFactory](#MockFactory)</code>  
 
 * [~Mock](#MockFactory..Mock)
-  * [new Mock()](#new_MockFactory..Mock_new)
-  * *[._routes(routes)](#MockFactory..Mock+_routes)*
-  * *[.request(method, params, body)](#MockFactory..Mock+request) ⇒ <code>\*</code>*
+    * [new Mock()](#new_MockFactory..Mock_new)
+    * *[._routes(routes)](#MockFactory..Mock+_routes)*
+    * *[.request(method, params, body)](#MockFactory..Mock+request) ⇒ <code>\*</code>*
 
 <a name="new_MockFactory..Mock_new"></a>
+
 #### new Mock()
 Abstract mock object in order to mock backend data.
 
@@ -57,6 +60,7 @@ angular.module('UsersMock', [])
 )
 ```
 <a name="MockFactory..Mock+_routes"></a>
+
 #### *mock._routes(routes)*
 Creates a object representing all the defined routes for a specific mock. Implemented in the constructor of the concrete mock.
 
@@ -80,6 +84,7 @@ function TestUsersMock() {
 }
 ```
 <a name="MockFactory..Mock+request"></a>
+
 #### *mock.request(method, params, body) ⇒ <code>\*</code>*
 Will be called from the endpoint to actually request the mock.
 
