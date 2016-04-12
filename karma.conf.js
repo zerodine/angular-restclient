@@ -35,6 +35,7 @@ module.exports = function (config) {
             'test/models/company.js',
             'test/models/location.js',
             'test/models/role.js',
+            'test/models/room.js',
             'test/mocks/users.js',
             'test/*Spec.js'
         ],

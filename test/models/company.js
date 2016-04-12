@@ -38,6 +38,18 @@
                     }
                 };
 
+                this.rooms = {
+                    type: 'relation',
+                    relation: {
+                        type: 'many',
+                        model: 'RoomModel'
+                    },
+                    save: {
+                        post: true,
+                        put: false
+                    }
+                };
+
                 // Map the given object
                 this._init(object);
             }

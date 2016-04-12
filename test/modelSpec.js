@@ -5,6 +5,7 @@ describe('model', function() {
     beforeEach(module('CompanyModel'));
     beforeEach(module('LocationModel'));
     beforeEach(module('RoleModel'));
+    beforeEach(module('RoomModel'));
 
     it('clean', inject(function(UserModel, CompanyModel) {
         var user = new UserModel({
@@ -113,15 +114,7 @@ describe('model', function() {
 
         // After clean
         expect(company1._annotation).not.toBeDefined();
-        expect(company1.users._annotation).not.toBeDefined();
-        expect(company1.users[0].id).not.toBeDefined();
-        expect(company1.users[0].firstname).toBe('Bart_');
-        expect(company1.users[0].lastname).toBe('Simpsons');
-        expect(company1.users[0].fullname).not.toBeDefined();
-        expect(company1.users[1].id).not.toBeDefined();
-        expect(company1.users[1].firstname).toBe('Marge_');
-        expect(company1.users[1].lastname).toBe('Simpsons');
-        expect(company1.users[1].fullname).not.toBeDefined();
+        expect(company1.users).not.toBeDefined();
         expect(company1.id).not.toBeDefined();
 
         var company2 = new CompanyModel({
@@ -167,6 +160,36 @@ describe('model', function() {
         expect(company2.users[1].lastname).not.toBeDefined();
         expect(company2.users[1].fullname).not.toBeDefined();
         expect(company2.id).not.toBeDefined();
+
+        var company3 = new CompanyModel({
+            id: 1,
+            name: 'ACME',
+            rooms: [
+                {
+                    id: 1,
+                    name: 'room1'
+                },
+                {
+                    id: 2,
+                    name: 'room2'
+                }
+            ]
+        });
+
+        // Before clean
+        expect(company3._annotation).toBeDefined();
+        expect(company3.rooms[0]._annotation).toBeDefined();
+        expect(company3.rooms[0].name).toBe('room1');
+        expect(company3.rooms[1]._annotation).toBeDefined();
+        expect(company3.rooms[1].name).toBe('room2');
+        expect(company3.id).toBe(1);
+
+        company3.clean(company3.METHOD_UPDATE);
+
+        // After clean
+        expect(company3._annotation).not.toBeDefined();
+        expect(company3.rooms).not.toBeDefined();
+        expect(company3.id).not.toBeDefined();
     }));
 
     it('_afterLoad', inject(function(UserModel) {
