@@ -26,6 +26,7 @@ function Endpoint(endpointConfig, $injector) {
         get: {
             method: 'GET',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
@@ -38,6 +39,7 @@ function Endpoint(endpointConfig, $injector) {
         save: {
             method: 'POST',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
@@ -47,6 +49,7 @@ function Endpoint(endpointConfig, $injector) {
         update: {
             method: 'PUT',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
