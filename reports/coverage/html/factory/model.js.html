@@ -1,0 +1,1388 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for factory/model.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">factory/</a> model.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.67% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>128/146</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.93% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>102/116</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">84.21% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>16/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88.37% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>114/129</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">334×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">126×</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-yes">49×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">77×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">34×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">34×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">99×</span>
+<span class="cline-any cline-yes">99×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">99×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">99×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2136×</span>
+<span class="cline-any cline-yes">751×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">651×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">651×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">651×</span>
+<span class="cline-any cline-yes">365×</span>
+<span class="cline-any cline-yes">365×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">286×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">286×</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">99×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">54×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">506×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">170×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">146×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">136×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">71×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">angular
+    .module('restclient')
+    .factory('Model', ModelFactory);
+&nbsp;
+/**
+ * @ngInject
+ * @class
+ */
+function ModelFactory($log, $injector, Validator) {
+&nbsp;
+    /**
+     * Abstract model class
+     *
+     * @class
+     * @example
+     * angular.module('UserModel', [])
+     *  .factory('UserModel', function(Model) {
+     *
+     *      angular.extend(UserModel.prototype, Model.prototype);
+     *
+     *       function UserModel(object) {
+     *
+     *           this.id = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           this.firstname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.lastname = {
+     *               type: 'string'
+     *           };
+     *
+     *           this.fullname = {
+     *               type: 'string',
+     *               save: false
+     *           };
+     *
+     *           // Map the given object
+     *           this._init(object);
+     *       }
+     *
+     *       UserModel.prototype._afterLoad = function(foreignData) {
+     *           this.fullname = foreignData['firstname'] + ' ' + foreignData['lastname'];
+     *       };
+     *
+     *       UserModel.prototype._beforeSave = function() {
+     *           this.firstname = this.firstname + '_';
+     *       };
+     *
+     *       return UserModel;
+     *  })
+     */
+<span class="fstat-no" title="function not covered" >    function Model() {</span>
+        /**
+         * Holds the annotation of every property of a model.
+         * This object gets deleted when the model is sent to the backend.
+         *
+         * @type {object}
+         * @private
+         */
+<span class="cstat-no" title="statement not covered" >        this._annotation = {};</span>
+    }
+&nbsp;
+    /**
+     * The reference is used to get the identifier of a model
+     * @type {string}
+     * @example
+     * ConcreteModel.prototype.reference = 'identifier';
+     */
+    Model.prototype.reference = 'id';
+&nbsp;
+    /**
+     * Constant to define the performed method on a model
+     *
+     * @type {string}
+     * @constant
+     */
+    Model.prototype.METHOD_SAVE = 'save';
+    Model.prototype.METHOD_POST = 'save';
+&nbsp;
+    /**
+     * Constant to define the performed method on a model
+     *
+     * @type {string}
+     * @constant
+     */
+    Model.prototype.METHOD_UPDATE = 'update';
+    Model.prototype.METHOD_PUT = 'update';
+&nbsp;
+    /**
+     * This method gets called by the endpoint before the model is sent to the backend.
+     * It removes all decorator methods and attributes from a model so its clean to be sent.
+     *
+     * @param {string} method Provides the method that is performed on this model
+     * @param {boolean} parent Defines if the clean was called by a parent model
+     */
+    Model.prototype.clean = function(method, parent) {
+        var self = this;
+&nbsp;
+        if (!angular.isDefined(method)) {
+            method = self.METHOD_SAVE;
+            if (self[self.reference] !== null) method = self.METHOD_UPDATE;
+        }
+&nbsp;
+        if (!angular.isDefined(parent)) parent = false;
+&nbsp;
+        // Call the beforeSave method on the model
+        self._beforeSave(method, parent);
+&nbsp;
+        // Go thru every property of the model
+        for (var property in self) {
+            // Ckeck if property is a method
+            if (!self.hasOwnProperty(property)) continue;
+&nbsp;
+            // Check if property is null
+            if (self[property] === null) {
+                delete self[property];
+                continue;
+            }
+&nbsp;
+            if (angular.isDefined(self._annotation[property]) &amp;&amp; angular.isDefined(self._annotation[property].save)) {
+&nbsp;
+                // Check if save annotation is a object
+                if (angular.isObject(self._annotation[property].save)) {
+                    if (method == self.METHOD_POST) self._annotation[property].save = self._annotation[property].save.post;
+                    if (method == self.METHOD_PUT) self._annotation[property].save = self._annotation[property].save.put;
+                }
+&nbsp;
+                // Check if property should be deleted before model is saved
+                if (!self._annotation[property].save) {
+                    delete self[property];
+                    continue;
+                }
+&nbsp;
+                // Check if property should only be a reference to another model
+                if (self._annotation[property].save == 'reference') {
+                    self._referenceOnly(self[property]);
+                    continue;
+                }
+            }
+&nbsp;
+            if (angular.isDefined(self._annotation[property]) &amp;&amp; angular.isDefined(self._annotation[property].type)) {
+                // If property is a relation then call the clean method of related models
+                if (self._annotation[property].type == 'relation' &amp;&amp; self[property] !== null) {
+&nbsp;
+                    <span class="missing-if-branch" title="if path not taken" >I</span>if (!angular.isDefined(self._annotation[property].relation.type)) <span class="cstat-no" title="statement not covered" >continue;</span>
+&nbsp;
+                    <span class="missing-if-branch" title="else path not taken" >E</span>if (self._annotation[property].relation.type == 'one') {
+&nbsp;
+                        // Call the clean method on the related model
+                        self[property].clean(method, true);
+                        continue;
+                    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                    if (self._annotation[property].relation.type == 'many') {</span>
+<span class="cstat-no" title="statement not covered" >                        angular.forEach(self[property], <span class="fstat-no" title="function not covered" >function(model) {</span></span>
+&nbsp;
+                            // Call the clean method on the related model
+<span class="cstat-no" title="statement not covered" >                            model.clean(method, true);</span>
+                        });
+&nbsp;
+                        // not needed
+                        // continue;
+                    }
+                }
+            }
+        }
+&nbsp;
+        // Delete self two properties before model gets saved
+        delete self._annotation;
+    };
+&nbsp;
+    /**
+     * This method gets called after the response was transformed into te model.
+     * It's helpful when you want to remap attributes or make some changed.
+     * To use it, just override it in the concrete model.
+     *
+     * @param {object} foreignData Provides the foreign data in order to perform custom mapping after the model was loaded
+     * @protected
+     * @example
+     * ConcreteModel.prototype._afterLoad = function(foreignData) {
+     *      this.activation_token = this.activation_token.toUpperCase();
+     * };
+     */
+    Model.prototype._afterLoad = function(foreignData) {};
+&nbsp;
+    /**
+     * This method gets called before a model gets sent to the backend.
+     * It's helpful when you want to remap attributes or make some changed.
+     * To use it, just override it in the concrete model.
+     *
+     * @param {string} method Provides the method that is performed on this model
+     * @param {boolean} parent Defines if the clean was called by a parent model
+     * @protected
+     * @example
+     * ConcreteModel.prototype._beforeSave = function(method, parent) {
+     *      this.activation_token = this.activation_token.toLowerCase();
+     * };
+     */
+    Model.prototype._beforeSave = function(method, parent) {};
+&nbsp;
+    /**
+     * Every model must call this method in it's constructor. It in charge of mapping the given object to the model.
+     *
+     * @param {object} object The given object. This can come ether from the backend or created manually.
+     * @protected
+     */
+    Model.prototype._init = function(object) {
+        var foreignData = object;
+        this._annotation = {};
+&nbsp;
+        $log.debug("Model (" + this.constructor.name + "): Original response object is:", foreignData);
+&nbsp;
+        for (var property in this) {
+            // If property is a method, then continue
+            if (!this.hasOwnProperty(property)) continue;
+            if (['_afterLoad', '_annotation'].indexOf(property) &gt; -1) continue;
+&nbsp;
+            // If annotations are given, set them
+            if (angular.isObject(this[property]) &amp;&amp; angular.isDefined(this[property].type)) this._annotation[property] = this[property];
+&nbsp;
+            // If no object is given, stop here
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (angular.isUndefined(object)) <span class="cstat-no" title="statement not covered" >continue;</span>
+&nbsp;
+            // If the given object does not have an property set, it's going to be null
+            if(!angular.isObject(object) || !object.hasOwnProperty(property)) {
+                this[property] = null;
+                continue;
+            }
+&nbsp;
+            // Assign the properties
+            this[property] = object[property];
+&nbsp;
+            // Check if the property is a relation
+            if (angular.isDefined(this._annotation[property]) &amp;&amp; this._annotation[property].type == 'relation') {
+                var relation = this._annotation[property].relation;
+&nbsp;
+                // Check if a foreign field is set and if not, set it to the name of the property
+                <span class="missing-if-branch" title="else path not taken" >E</span>if (angular.isUndefined(relation.foreignField)) relation.foreignField = property;
+&nbsp;
+                // If the foreign field can not be found, continue
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (angular.isUndefined(foreignData[relation.foreignField])) <span class="cstat-no" title="statement not covered" >continue;</span>
+&nbsp;
+                // If the foreign field is null, set the property to null
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (foreignData[relation.foreignField] === null) {
+<span class="cstat-no" title="statement not covered" >                    this[property] = null;</span>
+<span class="cstat-no" title="statement not covered" >                    continue;</span>
+                }
+&nbsp;
+                // Check which relation typ is defined and map the data
+                if (relation.type == 'many') this._mapArray(property, foreignData[relation.foreignField], relation.model);
+                if (relation.type == 'one') this._mapProperty(property, foreignData[relation.foreignField], relation.model);
+            }
+        }
+&nbsp;
+        this._afterLoad(foreignData);
+    };
+&nbsp;
+    /**
+     * Maps an array of models to a property.
+     *
+     * @protected
+     * @param {string} property The property which should be mapped
+     * @param {array} apiProperty Foreign property as it comes from the backend
+     * @param {string} modelName Name of the model which is used for the mapping
+     */
+    Model.prototype._mapArray = function(property, apiProperty, modelName) {
+        var self = this;
+&nbsp;
+        // Check if the api property is set
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (angular.isUndefined(apiProperty) || apiProperty === null || apiProperty.length === 0) {
+<span class="cstat-no" title="statement not covered" >            self[property] = [];</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+        // If no model is set return the raw value
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (modelName === null) {
+<span class="cstat-no" title="statement not covered" >            angular.forEach(apiProperty, <span class="fstat-no" title="function not covered" >function(value) {</span></span>
+<span class="cstat-no" title="statement not covered" >                self[property].push(value);</span>
+            });
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+        // Load the model
+        var model = $injector.get(modelName);
+&nbsp;
+        self[property] = [];
+&nbsp;
+        // Map the model
+        angular.forEach(apiProperty, function(value) {
+            self[property].push(new model(value));
+        });
+    };
+&nbsp;
+    /**
+     * Maps a model to an property.
+     *
+     * @protected
+     * @param {string} property The property which should be mapped
+     * @param {string} apiProperty Foreign property as it comes from the api
+     * @param {string} modelName Name of the model which is used for the matching
+     */
+    Model.prototype._mapProperty = function(property, apiProperty, modelName) {
+&nbsp;
+        // Check if the api property is set
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (angular.isUndefined(apiProperty)) {
+<span class="cstat-no" title="statement not covered" >            this[property] = null;</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+&nbsp;
+        // If no model is set return the raw value
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (modelName === null) {
+<span class="cstat-no" title="statement not covered" >            this[property] = apiProperty;</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+        // Load the model
+        var model = $injector.get(modelName);
+&nbsp;
+        // Map the model
+        this[property] = new model(apiProperty);
+    };
+&nbsp;
+    /**
+     * Returns only the reference of a related model.
+     *
+     * @protected
+     * @param {Model/array&lt;Model&gt;} models
+     */
+    Model.prototype._referenceOnly = function(models) {
+&nbsp;
+        // Check if models is an array
+        if (angular.isArray(models)) {
+&nbsp;
+            // Go thru all models in the array an call the __referenceOnly method
+            angular.forEach(models, function(model) {
+                model._referenceOnly(model);
+            });
+        } else {
+&nbsp;
+            // Go thru all properties an delete all that are not the identifier
+            for (var property in models) {
+                if(models.hasOwnProperty(property)) {
+                    if (property != models.reference) {
+                        delete models[property];
+                    }
+                }
+            }
+        }
+    };
+&nbsp;
+    /**
+     * Validates the model and provides the result as an callback
+     *
+     * @param {function} result Callback that provides the boolean "valid" and object "errors"
+     */
+    Model.prototype.validate = function(result) {
+        var validator = new Validator();
+        var valid = true;
+        var errors = {};
+&nbsp;
+        for (var property in this) {
+&nbsp;
+            // If property is a method, then continue
+            if (!this.hasOwnProperty(property)) continue;
+&nbsp;
+            // First check if model is annotated
+            if (angular.isDefined(this._annotation[property])) {
+&nbsp;
+                // Required
+                if (
+                    angular.isDefined(this._annotation[property].required) &amp;&amp;
+                    (
+                        this._annotation[property].required &amp;&amp; this[property] === null ||
+                        this._annotation[property].required &amp;&amp; this[property] === ''
+                    )
+                ) {
+                    valid = false;
+                    errors[property] = 'required';
+                }
+&nbsp;
+                // Not Required and Not Null
+                else if (!angular.isDefined(this._annotation[property].required) &amp;&amp; this[property] === null) {}
+&nbsp;
+                // Relation One
+                else if (this._annotation[property].type == 'relation' &amp;&amp; this._annotation[property].relation.type == 'one') {
+&nbsp;
+                    this[property].validate(function(model_valid, model_errors) {
+                        if (!model_valid) {
+                            valid = false;
+                            errors[property] = model_errors;
+                        }
+                    });
+                }
+&nbsp;
+                // Relation Many
+                else if (this._annotation[property].type == 'relation' &amp;&amp; this._annotation[property].relation.type == 'many') {
+                    angular.forEach(this[property], function(model, key) {
+&nbsp;
+                        model.validate(function(model_valid, model_errors) {
+                            if (!model_valid) {
+                                valid = false;
+                                <span class="missing-if-branch" title="else path not taken" >E</span>if (!angular.isArray(errors[property])) errors[property] = [];
+                                errors[property][key] = model_errors;
+                            }
+                        });
+                    });
+                }
+&nbsp;
+                // Format
+                else {
+                   if(!validator[this._annotation[property].type](this[property])) {
+                       valid = false;
+                       errors[property] = 'format_error_' + this._annotation[property].type;
+                   }
+                }
+            }
+        }
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (angular.isFunction(result)) result(valid, errors);
+    };
+&nbsp;
+    /**
+     * Validates the properties of the model.
+     *
+     * @return {boolean}
+     */
+    Model.prototype.isValid = function() {
+        var valid = false;
+        this.validate(function(model_valid) {
+            valid = model_valid;
+        });
+&nbsp;
+        return valid;
+    };
+&nbsp;
+    return Model;
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 17 2016 15:29:08 GMT+0200 (CEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

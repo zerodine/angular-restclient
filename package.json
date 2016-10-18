@@ -1,6 +1,6 @@
 {
   "name": "angular-restclient",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "An angularJS rest client with ORM",
   "main": "angular-restclient.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "gulp-util": "^3.0.7",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
+    "karma-coverage": "^0.5.5",
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-verbose-reporter": "0.0.3",

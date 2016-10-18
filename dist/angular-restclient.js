@@ -235,6 +235,7 @@ function Endpoint(endpointConfig, $injector) {
         get: {
             method: 'GET',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
@@ -247,6 +248,7 @@ function Endpoint(endpointConfig, $injector) {
         save: {
             method: 'POST',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
@@ -256,6 +258,7 @@ function Endpoint(endpointConfig, $injector) {
         update: {
             method: 'PUT',
             transformResponse: function(data, headers, status) {
+                if (status >= 500) return false;
                 data = angular.fromJson(data);
                 if (status >= 400) return data;
 
@@ -1194,8 +1197,6 @@ function MockFactory() {
         this._routeMatcher = {};
 
         for (var route in routes) {
-            if (!routes.hasOwnProperty(route)) continue;
-
             this._routeMatcher[route.match(/\[(GET|POST|PUT|DELETE|PATCH|HEAD)\]/)[1] + (route.match(/:/g) || []).length] = routes[route];
         }
     };
@@ -1204,7 +1205,7 @@ function MockFactory() {
      * Will be called from the endpoint to actually request the mock.
      *
      * @param {string} method The HTTP method as found in the HTTP/1.1 description
-     * @param {object} params All parameters as defined in the route object. Parameters not defined in the route configuration will be requested as query parameters.
+     * @param {Array} params All parameters as defined in the route object. Parameters not defined in the route configuration will be requested as query parameters.
      * @param {string} body The HTTP body as described in HTTP/1.1
      * @abstract
      * @returns {*} Defined in the concret mock
@@ -1212,12 +1213,10 @@ function MockFactory() {
     Mock.prototype.request = function (method, params, body) {
         if (!angular.isDefined(params)) params = [];
 
-        if (angular.isDefined(this._routeMatcher[method + params.length])) {
-            var methodName = method + params.length;
-            if (angular.isDefined(body)) params.push({body: body});
+        var methodName = method + params.length;
+        if (angular.isDefined(body)) params.push({body: body});
 
-            return this._routeMatcher[methodName].apply(this, params);
-        }
+        return this._routeMatcher[methodName].apply(this, params);
     };
 
     return Mock;

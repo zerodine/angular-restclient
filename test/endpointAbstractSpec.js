@@ -9,7 +9,6 @@ describe('endpointAbstract', function() {
     beforeEach(module('restclient', function(apiProvider) {
         provider = apiProvider;
         provider.baseRoute('');
-        provider.headResponseHeaderPrefix('X-');
         provider.endpoint('users')
             .route('/users/:id')
             .model('UserModel');

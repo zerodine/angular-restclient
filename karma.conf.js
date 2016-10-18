@@ -47,14 +47,36 @@ module.exports = function (config) {
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: {},
+        //preprocessors: {},
+        preprocessors: {
+            // source files, that you wanna generate coverage for
+            // do not include tests or libraries
+            // (these files will be instrumented by Istanbul)
+            'src/pojo/**/*.js': ['coverage'],
+            'src/factory/**/*.js': ['coverage'],
+            'src/provider/**/*.js': ['coverage']
+        },
+
 
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
         //reporters: ['progress'],
-        reporters: ['verbose'],
+        //reporters: ['verbose'],
+        //reporters: ['progress', 'coverage'],
+        reporters: ['verbose', 'coverage'],
+
+        coverageReporter: {
+            // specify a common output directory
+            dir: 'reports/coverage',
+            reporters: [
+                // reporters not supporting the `file` property
+                { type: 'html', subdir: 'html' },
+                { type: 'text' },
+                { type: 'text-summary' },
+            ]
+        },
 
 
         // web server port

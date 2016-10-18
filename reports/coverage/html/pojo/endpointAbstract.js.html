@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for pojo/endpointAbstract.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">pojo/</a> endpointAbstract.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">80.77% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>42/52</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">70.83% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>17/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85.71% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>6/7</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.23% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>41/47</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">angular.extend(EndpointAbstract.prototype, EndpointInterface.prototype);
+&nbsp;
+/**
+ * Abstract Endpoint class with all helper methods
+ *
+ * @class
+ * @implements {EndpointInterface}
+ */
+<span class="fstat-no" title="function not covered" >function EndpointAbstract() {</span>}
+&nbsp;
+/**
+ * Maps an object or array to the endpoint model
+ *
+ * @protected
+ * @param {object} data Object or array of raw data
+ * @return {Model|Array}
+ * @abstract
+ */
+EndpointAbstract.prototype._mapResult = function(data) {
+    var self = this;
+    var result;
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Endpoint called");
+&nbsp;
+    // Set the name of the wrapping container
+    var container = self._endpointConfig.container;
+    // Get the model object that is used to map the result
+    var model = this._injector.get(self._endpointConfig.model);
+&nbsp;
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Container set to " + container);
+&nbsp;
+    // Check if response is an array
+    if (angular.isArray(data) || angular.isArray(data[container])) {
+        self._log.debug("apiFactory (" + self._endpointConfig.name + "): Result is an array");
+&nbsp;
+        var arrayData = angular.isArray(data) ? data : data[container];
+        var models = [];
+&nbsp;
+        // Iterate thru every object in the response and map it to a model
+        angular.forEach(arrayData, function (value) {
+            models.push(new model(value));
+        });
+&nbsp;
+        result = models;
+&nbsp;
+    } else {
+        self._log.debug("apiFactory (" + self._endpointConfig.name + "): Result is NOT an array");
+&nbsp;
+        // If only one object is given, map it to the model
+        result = new model(data);
+    }
+&nbsp;
+    self._log.debug("apiFactory (" + self._endpointConfig.name + "): Mapped result is:", result);
+&nbsp;
+    return result;
+};
+&nbsp;
+/**
+ * Extract the pagination data from the result
+ *
+ * @protected
+ * @param {object} data Object or array of raw data
+ * @return {object}
+ * @abstract
+ */
+EndpointAbstract.prototype._getPagination = function(data) {
+    if (
+        angular.isDefined(data.count) &amp;&amp;
+        angular.isDefined(data.limit) &amp;&amp;
+        angular.isDefined(data.skip) &amp;&amp;
+        data.limit &gt; 0
+    ) {
+        // Calc the number of pages and generate array
+        data.pagesArray = [];
+&nbsp;
+        var pages = data.count / data.limit;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (pages % 1 !== 0) <span class="cstat-no" title="statement not covered" >pages = Math.ceil(pages);</span>
+&nbsp;
+        var currentPage = parseInt(data.skip / data.limit + 1);
+        var currentPageItemsCount = data.limit;
+        if (data.skip+1+data.limit &gt; data.count) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (currentPage == 1) {
+<span class="cstat-no" title="statement not covered" >                currentPageItemsCount = data.limit;</span>
+            } else {
+                currentPageItemsCount = data.count - ((currentPage-1)*data.limit);
+            }
+        }
+&nbsp;
+        var i;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (pages &lt; 11) {
+            for (i=1; i&lt;=pages; i++) data.pagesArray.push(i);
+        } else <span class="cstat-no" title="statement not covered" >if (currentPage &lt;= 5) {</span>
+<span class="cstat-no" title="statement not covered" >            for (i=1; i&lt;=11; i++) <span class="cstat-no" title="statement not covered" >data.pagesArray.push(i);</span></span>
+        } else <span class="cstat-no" title="statement not covered" >if (currentPage &gt;= pages-5) {</span>
+<span class="cstat-no" title="statement not covered" >            for (i=pages-11; i&lt;=pages; i++) <span class="cstat-no" title="statement not covered" >data.pagesArray.push(i);</span></span>
+        } else {
+<span class="cstat-no" title="statement not covered" >            for (i=currentPage-5; i&lt;=currentPage+5; i++) <span class="cstat-no" title="statement not covered" >data.pagesArray.push(i);</span></span>
+        }
+&nbsp;
+&nbsp;
+        return {
+            count: data.count,
+            limit: data.limit,
+            skip: data.skip,
+            pagesArray: data.pagesArray,
+            pagesCount: pages,
+            currentPage: currentPage,
+            currentPageItemsCount: currentPageItemsCount
+        };
+    }
+&nbsp;
+    return null;
+};
+&nbsp;
+/**
+ * @abstract
+ */
+EndpointAbstract.prototype.update = function() {
+    return this.put.apply(this, arguments);
+};
+&nbsp;
+/**
+ * @abstract
+ */
+EndpointAbstract.prototype.save = function() {
+    return this.post.apply(this, arguments);
+};
+&nbsp;
+/**
+ * @abstract
+ */
+EndpointAbstract.prototype.remove = function() {
+    return this.delete.apply(this, arguments);
+};</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Oct 17 2016 15:29:08 GMT+0200 (CEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
