@@ -236,7 +236,11 @@ function Endpoint(endpointConfig, $injector) {
             method: 'GET',
             transformResponse: function(data, headers, status) {
                 if (status >= 500) return false;
-                data = angular.fromJson(data);
+
+                try {
+                    data = angular.fromJson(data);
+                } catch (e) {}
+
                 if (status >= 400) return data;
 
                 return {
@@ -249,7 +253,11 @@ function Endpoint(endpointConfig, $injector) {
             method: 'POST',
             transformResponse: function(data, headers, status) {
                 if (status >= 500) return false;
-                data = angular.fromJson(data);
+
+                try {
+                    data = angular.fromJson(data);
+                } catch (e) {}
+
                 if (status >= 400) return data;
 
                 return {result: self._mapResult(data)};
@@ -259,7 +267,11 @@ function Endpoint(endpointConfig, $injector) {
             method: 'PUT',
             transformResponse: function(data, headers, status) {
                 if (status >= 500) return false;
-                data = angular.fromJson(data);
+
+                try {
+                    data = angular.fromJson(data);
+                } catch (e) {}
+
                 if (status >= 400) return data;
 
                 return {result: self._mapResult(data)};
