@@ -104,7 +104,9 @@ EndpointAbstract.prototype._getPagination = function(data) {
             pagesArray: data.pagesArray,
             pagesCount: pages,
             currentPage: currentPage,
-            currentPageItemsCount: currentPageItemsCount
+            currentPageItemsCount: currentPageItemsCount,
+            sort_field: data.sort_field,
+            sort_asc: data.sort_asc
         };
     }
 

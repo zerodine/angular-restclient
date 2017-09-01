@@ -113,13 +113,16 @@ Endpoint.prototype.get = function (params) {
         data.result.pagination = data.pagination;
         data.result.endpoint = self;
         data.result.next = function() {
-            return this.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit}));
+            return this.endpoint.get(merge(params, {_skip: this.pagination.skip+this.pagination.limit, _limit: this.pagination.limit, _sort_field: this.pagination.sort_field, _sort_asc: this.pagination.sort_asc}));
         };
         data.result.previous = function() {
-            return this.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit}));
+            return this.endpoint.get(merge(params, {_skip: this.pagination.skip-this.pagination.limit, _limit: this.pagination.limit, _sort_field: this.pagination.sort_field, _sort_asc: this.pagination.sort_asc}));
         };
         data.result.page = function(page) {
-            return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit}));
+            return this.endpoint.get(merge(params, {_skip: page*this.pagination.limit-this.pagination.limit, _limit: this.pagination.limit, _sort_field: this.pagination.sort_field, _sort_asc: this.pagination.sort_asc}));
+        };
+        data.result.sort = function(field, asc) {
+            return this.endpoint.get(merge(params, {_skip: this.pagination.skip, _limit: this.pagination.limit, _sort_field: field, _sort_asc: asc}))
         };
         defer.resolve(data.result);
     }, function (error) {
